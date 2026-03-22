@@ -13,7 +13,7 @@ const events = [
     title: 'Hands-On: Deploy Your First App on AWS',
     date: 'TBD — Check Meetup',
     location: 'University of Houston',
-    desc: 'A step-by-step workshop where you'll deploy a web application using AWS Amplify and S3.',
+    desc: 'A step-by-step workshop where you will deploy a web application using AWS Amplify and S3.',
   },
 ];
 
