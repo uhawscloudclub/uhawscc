@@ -1,6 +1,7 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
-import { ArrowRight, Cloud } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const HomePage = () => (
   <PageLayout>
@@ -20,13 +21,14 @@ const HomePage = () => (
 
       <div className="container mx-auto px-6 text-center relative z-10">
         <ScrollReveal>
-          {/* Logo placeholder */}
-          <div className="mx-auto mb-8 w-24 h-24 rounded-2xl glass-card flex items-center justify-center">
-            <Cloud className="w-10 h-10 text-primary" />
+          {/* Logo */}
+          <div className="mx-auto mb-8 w-96 h-96 flex items-center justify-center p-2">
+            <img 
+              src="/images/AWS_Cloud_Club_at_University_of_Houston-removebg-preview.png" 
+              alt="AWS Cloud Club Logo"
+              className="w-full h-full object-contain"
+            />
           </div>
-          <p className="text-xs text-muted-foreground tracking-widest uppercase mb-2">
-            [AWS Cloud Club Logo — to be swapped in]
-          </p>
         </ScrollReveal>
 
         <ScrollReveal delay={100}>
@@ -47,7 +49,7 @@ const HomePage = () => (
         <ScrollReveal delay={300}>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
-              href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+              href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-full bg-primary text-primary-foreground font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 glow-purple"

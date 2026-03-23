@@ -1,6 +1,7 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import { Calendar, MapPin, ArrowRight } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const events = [
   {
@@ -45,7 +46,7 @@ const EventsPage = () => (
                 </div>
                 <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{ev.desc}</p>
                 <a
-                  href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+                  href={EXTERNAL_LINKS.meetup}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-secondary transition-colors active:scale-95"
@@ -60,7 +61,7 @@ const EventsPage = () => (
         <ScrollReveal delay={250}>
           <div className="text-center mt-12">
             <a
-              href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+              href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Cloud, Menu, X } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const navLinks = [
   { label: 'About', to: '/about' },
@@ -50,7 +51,7 @@ const Navbar = () => {
             </Link>
           ))}
           <a
-            href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+            href={EXTERNAL_LINKS.meetup}
             target="_blank"
             rel="noopener noreferrer"
             className="px-5 py-2 rounded-full bg-primary text-primary-foreground text-sm font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 glow-purple"
@@ -84,7 +85,7 @@ const Navbar = () => {
               </Link>
             ))}
             <a
-              href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+              href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
               className="mt-2 px-5 py-2.5 rounded-full bg-primary text-primary-foreground text-sm font-semibold text-center"

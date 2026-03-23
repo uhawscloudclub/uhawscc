@@ -1,6 +1,7 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import { Ticket, BookOpen, Server, MessageCircle, ArrowRight } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const resources = [
   {
@@ -8,7 +9,7 @@ const resources = [
     title: 'AWS Certification Vouchers',
     desc: 'AWS offers discounted or free exam vouchers to active Cloud Club members. Join the club to learn how to claim yours.',
     cta: 'Learn How to Join →',
-    href: 'https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups',
+    href: EXTERNAL_LINKS.meetup,
     external: true,
   },
   {
@@ -32,7 +33,7 @@ const resources = [
     title: 'Join Our Discord',
     desc: 'Connect with club members between events, ask questions, and stay updated on club news.',
     cta: 'Join Discord →',
-    href: 'https://discord.gg/8eABTmM8mT',
+    href: EXTERNAL_LINKS.discord,
     external: true,
   },
 ];

@@ -1,14 +1,15 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const team = [
-  { name: 'Perry Takyi', role: 'Captain & Founding Member' },
-  { name: 'Hiab Negash', role: 'Director of Marketing & Outreach' },
-  { name: 'Quincy Britton', role: 'Director of Events' },
-  { name: 'Ananya Shekhawat', role: 'Director of Operations' },
-  { name: 'Charles Ezeribe', role: 'Director of Technical Education' },
-  { name: 'Abdul Ayinde Alao', role: 'Director of Content & Media' },
+  { name: 'Perry Takyi', role: 'Captain & Founding Member', image: '/images/perry Headshot .jpg' },
+  { name: 'Hiab Negash', role: 'Director of Marketing & Outreach', image: '/images/hiab headshot.jpg' },
+  { name: 'Quincy Britton', role: 'Director of Events', image: '/images/Quincy Britton Headshot.jpeg' },
+  { name: 'Ananya Shekhawat', role: 'Director of Operations', image: '/images/ananya.jpg' },
+  { name: 'Charles Ezeribe', role: 'Director of Technical Education', image: '/images/Charles Ezeribe Headshot.jpg' },
+  { name: 'Abdul Ayinde Alao', role: 'Director of Content & Media', image: '/images/Abdul Ayinde Photo.jpg' },
 ];
 
 const steps = [
@@ -62,7 +63,7 @@ const TeamPage = () => (
         <ScrollReveal delay={300}>
           <div className="text-center mt-12">
             <a
-              href="https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups"
+              href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-full bg-primary text-primary-foreground font-semibold transition-all duration-200 hover:opacity-90 active:scale-95 glow-purple text-base"
@@ -87,9 +88,13 @@ const TeamPage = () => (
           {team.map((member, i) => (
             <ScrollReveal key={member.name} delay={i * 60}>
               <div className="glass-card p-6 rounded-xl text-center transition-all duration-300">
-                {/* Avatar placeholder */}
-                <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-4 flex items-center justify-center text-lg font-heading font-bold text-primary">
-                  {member.name.split(' ').map(n => n[0]).join('')}
+                {/* Avatar with headshot */}
+                <div className="w-20 h-20 rounded-full bg-muted mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={member.image} 
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <h3 className="font-heading font-semibold text-foreground text-sm">{member.name}</h3>
                 <p className="text-xs text-muted-foreground mt-1">{member.role}</p>

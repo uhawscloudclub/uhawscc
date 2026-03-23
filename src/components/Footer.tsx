@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Linkedin, MessageCircle } from 'lucide-react';
+import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const Footer = () => (
   <footer className="relative z-10 border-t border-border/30 bg-background/80 backdrop-blur-sm">
@@ -8,8 +9,8 @@ const Footer = () => (
         {/* Left */}
         <div>
           <p className="font-heading font-bold text-foreground">AWS Cloud Club at the University of Houston</p>
-          <a href="mailto:uhawscloudclub@gmail.com" className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
-            uhawscloudclub@gmail.com
+          <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
+            {EXTERNAL_LINKS.emailContact}
           </a>
         </div>
 
@@ -29,15 +30,15 @@ const Footer = () => (
 
         {/* Right — social icons */}
         <div className="flex gap-4 md:justify-end">
-          <a href="https://www.linkedin.com/company/aws-cloud-club-uh/about/" target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer"
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all active:scale-95">
             <Linkedin className="w-5 h-5" />
           </a>
-          <a href="https://www.instagram.com/awscloudclub_uh/" target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.instagram} target="_blank" rel="noopener noreferrer"
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all active:scale-95">
             <Instagram className="w-5 h-5" />
           </a>
-          <a href="https://discord.gg/8eABTmM8mT" target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.discord} target="_blank" rel="noopener noreferrer"
             className="p-2 rounded-lg text-muted-foreground hover:text-secondary hover:bg-muted/50 transition-all active:scale-95">
             <MessageCircle className="w-5 h-5" />
           </a>
