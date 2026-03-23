@@ -1,15 +1,15 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
-import { Ticket, BookOpen, Server, MessageCircle, ArrowRight } from 'lucide-react';
+import { UserPlus, BookOpen, Server, MessageCircle, ArrowRight } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const resources = [
   {
-    icon: <Ticket className="w-7 h-7 text-primary" />,
-    title: 'AWS Certification Vouchers',
-    desc: 'AWS offers discounted or free exam vouchers to active Cloud Club members. Join the club to learn how to claim yours.',
-    cta: 'Learn How to Join →',
-    href: EXTERNAL_LINKS.meetup,
+    icon: <UserPlus className="w-7 h-7 text-primary" />,
+    title: 'Create Your First AWS Account',
+    desc: 'Get started with AWS by creating a free account and accessing the AWS Free Tier.',
+    cta: 'Create AWS Account →',
+    href: 'https://aws.amazon.com/resources/create-account/',
     external: true,
   },
   {
