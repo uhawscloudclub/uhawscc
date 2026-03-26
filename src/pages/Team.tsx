@@ -26,8 +26,38 @@ const steps = [
 
 const TeamPage = () => (
   <PageLayout>
-    {/* Join section */}
+    {/* Leadership */}
     <section className="py-24">
+      <div className="container mx-auto px-6">
+        <ScrollReveal>
+          <h2 className="font-heading font-bold text-3xl md:text-4xl text-center mb-16">
+            <span className="text-gradient">Leadership</span>
+          </h2>
+        </ScrollReveal>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+          {team.map((member, i) => (
+            <ScrollReveal key={member.name} delay={i * 60}>
+              <div className="glass-card p-6 rounded-xl text-center transition-all duration-300">
+                {/* Avatar with headshot */}
+                <div className="w-20 h-20 rounded-full bg-muted mx-auto mb-4 overflow-hidden flex items-center justify-center">
+                  <img 
+                    src={member.image}
+                    alt={member.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <h3 className="font-heading font-semibold text-foreground text-sm">{member.name}</h3>
+                <p className="text-xs text-muted-foreground mt-1">{member.role}</p>
+              </div>
+            </ScrollReveal>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* Join section */}
+    <section className="py-24 border-t border-border/20">
       <div className="container mx-auto px-6">
         <ScrollReveal>
           <h1 className="font-heading font-bold text-4xl md:text-5xl text-center mb-4">
@@ -78,38 +108,6 @@ const TeamPage = () => (
             </a>
           </div>
         </ScrollReveal>
-      </div>
-    </section>
-
-    {/* Leadership */}
-    <section className="py-24 border-t border-border/20">
-      <div className="container mx-auto px-6">
-        <ScrollReveal>
-          <h2 className="font-heading font-bold text-3xl md:text-4xl text-center mb-16">
-            <span className="text-gradient">Leadership</span>
-          </h2>
-        </ScrollReveal>
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-          {team.map((member, i) => (
-            <ScrollReveal key={member.name} delay={i * 60}>
-              <div className="glass-card p-6 rounded-xl text-center transition-all duration-300">
-                {/* Avatar with headshot */}
-                <div className="w-20 h-20 rounded-full bg-muted mx-auto mb-4 overflow-hidden flex items-center justify-center">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <h3 className="font-heading font-semibold text-foreground text-sm">{member.name}</h3>
-                <p className="text-xs text-muted-foreground mt-1">{member.role}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
   </PageLayout>
 );
 
