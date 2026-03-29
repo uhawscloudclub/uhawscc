@@ -6,7 +6,7 @@ import perryHeadshot from '@/images/perry-headshot.jpg';
 import hiabHeadshot from '@/images/hiab-headshot.jpg';
 import quincyHeadshot from '@/images/quincy-britton-headshot.jpeg';
 import ananyaHeadshot from '@/images/ananya.jpg';
-import charlesHeadshot from '@/images/charles-ezeribe-headshot.jpg';
+import charlesHeadshot from '@/images/charles-headshot.jpg';
 import abdulHeadshot from '@/images/abdul-ayinde-alao-headshot.jpg';
 
 const team = [
