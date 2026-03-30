@@ -7,7 +7,7 @@
 export const EXTERNAL_LINKS = {
   meetup: 'https://www.meetup.com/aws-cloud-club-at-univ-of-houston/?eventOrigin=your_groups',
   discord: 'https://discord.gg/8eABTmM8mT',
-  linkedin: 'https://linkedin.com/company/aws-cloud-club-at-university-of-houston/',
+  linkedin: 'https://linkedin.com/company/aws-cloud-club-uh/',
   instagram: 'https://instagram.com/awscloudclub_uh',
   emailContact: 'uhawscloudclub@gmail.com',
 } as const;
