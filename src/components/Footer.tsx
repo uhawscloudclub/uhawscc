@@ -30,15 +30,15 @@ const Footer = () => (
 
         {/* Right — social icons */}
         <div className="flex gap-4 md:justify-end">
-          <a href={EXTERNAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn"
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all active:scale-95">
             <Linkedin className="w-5 h-5" />
           </a>
-          <a href={EXTERNAL_LINKS.instagram} target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.instagram} target="_blank" rel="noopener noreferrer" aria-label="Instagram"
             className="p-2 rounded-lg text-muted-foreground hover:text-primary hover:bg-muted/50 transition-all active:scale-95">
             <Instagram className="w-5 h-5" />
           </a>
-          <a href={EXTERNAL_LINKS.discord} target="_blank" rel="noopener noreferrer"
+          <a href={EXTERNAL_LINKS.discord} target="_blank" rel="noopener noreferrer" aria-label="Discord"
             className="p-2 rounded-lg text-muted-foreground hover:text-secondary hover:bg-muted/50 transition-all active:scale-95">
             <MessageCircle className="w-5 h-5" />
           </a>
