@@ -1,0 +1,28 @@
+#!/usr/bin/env sh
+# Prefix commit messages with AgentPierre: for collaborative consistency.
+
+MSG_FILE="$1"
+SOURCE="$2"
+
+# Skip merge, squash, and commit-amend generated messages.
+case "$SOURCE" in
+  merge|squash|commit)
+    exit 0
+    ;;
+esac
+
+# Skip if commit message already starts with the desired prefix.
+FIRST_LINE=$(head -n 1 "$MSG_FILE")
+case "$FIRST_LINE" in
+  "AgentPierre:"*|"AgentPierre: "*)
+    exit 0
+    ;;
+esac
+
+TMP_FILE=$(mktemp)
+{
+  printf "AgentPierre: "
+  cat "$MSG_FILE"
+} > "$TMP_FILE"
+cat "$TMP_FILE" > "$MSG_FILE"
+rm -f "$TMP_FILE"

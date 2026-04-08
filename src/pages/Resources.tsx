@@ -1,7 +1,6 @@
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import { UserPlus, BookOpen, Server, TreePine, ArrowRight } from 'lucide-react';
-import { EXTERNAL_LINKS } from '@/config/externalLinks';
 
 const resources = [
   {

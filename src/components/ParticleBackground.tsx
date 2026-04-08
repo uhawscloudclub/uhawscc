@@ -10,7 +10,7 @@ const ParticleBackground = () => {
     if (!ctx) return;
 
     let animationId: number;
-    let particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
+    const particles: { x: number; y: number; vx: number; vy: number; size: number }[] = [];
 
     const resize = () => {
       canvas.width = window.innerWidth;
