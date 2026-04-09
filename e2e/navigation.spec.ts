@@ -69,4 +69,11 @@ test.describe("Navigation flow", () => {
             page.getByRole("heading", { name: /What We Do/i }),
         ).toBeVisible();
     });
+
+    test("learning paths is reachable by direct URL for internal review", async ({ page }) => {
+        await page.goto("/learning-paths");
+        await expect(
+            page.getByRole("heading", { name: /Your Cloud Path/i }),
+        ).toBeVisible();
+    });
 });

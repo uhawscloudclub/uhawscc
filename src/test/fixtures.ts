@@ -31,8 +31,13 @@ export const TEAM_MEMBERS = [
 ] as const;
 
 export const RESOURCE_LINKS = {
-    awsAccount: "https://aws.amazon.com/resources/create-account/",
-    skillBuilder: "https://skillbuilder.aws",
-    freeTier: "https://aws.amazon.com/free",
-    linkTree: "https://linktr.ee/uhawscc",
+    skillBuilderHome: "https://skillbuilder.aws/",
+    "AWS CCP Certification Page": "https://aws.amazon.com/certification/certified-cloud-practitioner/",
+    "Official Exam Guide PDF (CLF-C02)": "https://d1.awsstatic.com/training-and-certification/docs-cloud-practitioner/AWS-Certified-Cloud-Practitioner_Exam-Guide.pdf",
+    "AWS Cloud Practitioner Essentials": "https://skillbuilder.aws/learn/94T2BEN85A/aws-cloud-practitioner-essentials/8D79F3AVR7",
+    "AWS Cloud Quest: Cloud Practitioner": "https://explore.skillbuilder.aws/learn/course/external/view/elearning/11458/aws-cloud-quest-cloud-practitioner",
+    "AWS Free Tier — Create Your Account": "https://aws.amazon.com/free",
+    "Exam Prep Plan: CLF-C02": "https://skillbuilder.aws/learning-plan/8UUCEZGNX4/exam-prep-plan-aws-certified-cloud-practitioner-clfc02--english/1J2VTQSGU2",
+    "Official Practice Exam (CLF-C02)": "https://skillbuilder.aws/learn/JSJ5VBDBRG/official-practice-exam-aws-certified-cloud-practitioner-clfc02--english/FHCY1FNYXJ",
+    "Cloud Practitioner Training Hub": "https://aws.amazon.com/training/learn-about/cloud-practitioner/",
 } as const;
