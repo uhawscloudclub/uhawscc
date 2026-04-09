@@ -43,7 +43,7 @@ describe("route smoke tests", () => {
 
     it("renders resources route", () => {
         renderRoute("/resources");
-        expect(screen.getByRole("heading", { name: /Your Cloud Path/i })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Member Resources/i })).toBeInTheDocument();
     });
 
     it("renders learning paths route", () => {
