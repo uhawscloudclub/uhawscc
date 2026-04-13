@@ -6,7 +6,7 @@ import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
 import rateLimit from "express-rate-limit";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -255,8 +255,8 @@ app.get("/api/events", async (req, res) => {
 
 // ── Contact form API ───────────────────────────────────────────────────────
 // Accepts POST { name, email, subject, message }, validates, sends email via
-// Gmail SMTP (app password). Set CONTACT_EMAIL_USER + CONTACT_EMAIL_PASS in
-// your Render.com environment variables before deploying.
+// Resend (HTTPS — avoids Render.com's SMTP port block).
+// Set RESEND_API_KEY + optionally CONTACT_EMAIL_TO in Render env vars.
 
 const contactLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
@@ -285,27 +285,22 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
   const safeName    = name.trim().replace(/[\r\n]/g, " ");
   const safeSubject = (subject || "").trim().replace(/[\r\n]/g, " ") || "New message from website";
 
-  const CONTACT_USER = process.env.CONTACT_EMAIL_USER;
-  const CONTACT_PASS = process.env.CONTACT_EMAIL_PASS;
-  const CONTACT_TO   = process.env.CONTACT_EMAIL_TO || "uhawscloudclub@gmail.com";
+  const RESEND_API_KEY = process.env.RESEND_API_KEY;
+  const CONTACT_TO    = process.env.CONTACT_EMAIL_TO || "uhawscloudclub@gmail.com";
 
-  if (!CONTACT_USER || !CONTACT_PASS) {
+  if (!RESEND_API_KEY) {
     if (isDev) {
       // Dev-only fallback: log and return success so the UX isn't broken locally.
-      console.warn("[/api/contact] Email credentials not set — message not sent.");
+      console.warn("[/api/contact] RESEND_API_KEY not set — message not sent.");
       console.info("[/api/contact] Message from:", email, "|", name, "|", subject?.trim() || "(no subject)");
       return res.json({ ok: true });
     }
-    // In production, missing credentials is a misconfiguration — don't silently drop.
-    console.error("[/api/contact] CONTACT_EMAIL_USER / CONTACT_EMAIL_PASS not set in production.");
+    console.error("[/api/contact] RESEND_API_KEY not set in production.");
     return res.status(503).json({ error: "Contact form is temporarily unavailable. Please email us directly." });
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: { user: CONTACT_USER, pass: CONTACT_PASS },
-    });
+    const resend = new Resend(RESEND_API_KEY);
 
     // HTML-safe versions for email body
     const safeNameHtml    = escapeHtml(safeName);
@@ -313,10 +308,10 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
     const safeSubjectHtml = escapeHtml(safeSubject === "New message from website" ? "—" : safeSubject);
     const safeMessageHtml = escapeHtml(message.trim());
 
-    await transporter.sendMail({
-      from: `"AWS Cloud Club UH — Contact" <${CONTACT_USER}>`,
-      to: CONTACT_TO,
-      replyTo: `"${safeName}" <${email.trim()}>`,
+    const { error: resendError } = await resend.emails.send({
+      from: "AWS Cloud Club UH <contact@cloudhubuh.com>",
+      to: [CONTACT_TO],
+      reply_to: `${safeName} <${email.trim()}>`,
       subject: `[Contact] ${safeSubject}`,
       text: [
         `Name:    ${safeName}`,
@@ -333,6 +328,8 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
         <p style="white-space:pre-wrap">${safeMessageHtml}</p>
       `,
     });
+
+    if (resendError) throw new Error(resendError.message);
 
     res.json({ ok: true });
   } catch (err) {

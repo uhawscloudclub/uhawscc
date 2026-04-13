@@ -98,19 +98,27 @@ const ContactPage = () => {
   const onSubmit = async (data: FormValues) => {
     setStatus('loading');
     setServerError('');
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 20_000); // 20 s hard cap
     try {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
+        signal: controller.signal,
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Something went wrong.');
       setStatus('success');
       reset();
     } catch (err: unknown) {
-      setServerError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      const msg = err instanceof Error
+        ? (err.name === 'AbortError' ? 'Request timed out. Please try again.' : err.message)
+        : 'Something went wrong. Please try again.';
+      setServerError(msg);
       setStatus('error');
+    } finally {
+      clearTimeout(timer);
     }
   };
 
