@@ -259,6 +259,14 @@ app.use(express.json({ limit: "16kb" }));
 app.post("/api/contact", contactLimiter, async (req, res) => {
   const { name, email, subject, message } = req.body ?? {};
 
+  const escapeHtml = (value) =>
+    String(value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
   // Server-side validation
   if (
     typeof name !== "string" || name.trim().length < 2 ||
@@ -286,6 +294,11 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
       auth: { user: CONTACT_USER, pass: CONTACT_PASS },
     });
 
+    const safeName = escapeHtml(name.trim());
+    const safeEmail = escapeHtml(email.trim());
+    const safeSubject = escapeHtml((subject || "").trim() || "—");
+    const safeMessage = escapeHtml(message.trim());
+
     await transporter.sendMail({
       from: `"AWS Cloud Club UH — Contact" <${CONTACT_USER}>`,
       to: CONTACT_TO,
@@ -299,11 +312,11 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
         message.trim(),
       ].join("\n"),
       html: `
-        <p><strong>Name:</strong> ${name.trim()}</p>
-        <p><strong>Email:</strong> <a href="mailto:${email.trim()}">${email.trim()}</a></p>
-        <p><strong>Subject:</strong> ${(subject || "").trim() || "—"}</p>
+        <p><strong>Name:</strong> ${safeName}</p>
+        <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
+        <p><strong>Subject:</strong> ${safeSubject}</p>
         <hr/>
-        <p style="white-space:pre-wrap">${message.trim()}</p>
+        <p style="white-space:pre-wrap">${safeMessage}</p>
       `,
     });
 
