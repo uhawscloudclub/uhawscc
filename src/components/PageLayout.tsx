@@ -15,7 +15,7 @@ const reducedMotion =
 const PageLayout = ({ children, intensity = 'medium' }: { children: ReactNode; intensity?: Intensity }) => (
   <div className="min-h-screen flex flex-col relative">
     <GridBackground />
-    <NetworkCanvas intensity={intensity} respectReducedMotion={true} />
+    <NetworkCanvas intensity={intensity} respectReducedMotion={false} />
     <Navbar />
     {reducedMotion ? (
       <main className="flex-1 relative z-10 pt-16 bg-background/85">{children}</main>
