@@ -69,7 +69,7 @@ const ALLOWED_ORIGINS = (process.env.ALLOWED_ORIGINS || "")
 app.use(
   cors({
     origin: ALLOWED_ORIGINS.length > 0 ? ALLOWED_ORIGINS : false,
-    methods: ["GET"],
+    methods: ["GET", "POST"],
   })
 );
 
@@ -269,22 +269,19 @@ app.use(express.json({ limit: "16kb" }));
 app.post("/api/contact", contactLimiter, async (req, res) => {
   const { name, email, subject, message } = req.body ?? {};
 
-  const escapeHtml = (value) =>
-    String(value)
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
-
-  // Server-side validation
+  // Server-side validation — length caps also prevent header-injection and ReDoS
   if (
-    typeof name !== "string" || name.trim().length < 2 ||
+    typeof name !== "string" || name.trim().length < 2 || name.length > 100 ||
     typeof email !== "string" || email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ||
-    typeof message !== "string" || message.trim().length < 10
+    typeof subject === "string" && subject.length > 200 ||
+    typeof message !== "string" || message.trim().length < 10 || message.length > 5000
   ) {
     return res.status(400).json({ error: "Please fill in all required fields." });
   }
+
+  // Strip CR/LF from header-bound fields to prevent email header injection
+  const safeName    = name.trim().replace(/[\r\n]/g, " ");
+  const safeSubject = (subject || "").trim().replace(/[\r\n]/g, " ") || "New message from website";
 
   const CONTACT_USER = process.env.CONTACT_EMAIL_USER;
   const CONTACT_PASS = process.env.CONTACT_EMAIL_PASS;
@@ -308,29 +305,30 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
       auth: { user: CONTACT_USER, pass: CONTACT_PASS },
     });
 
-    const safeName = escapeHtml(name.trim());
-    const safeEmail = escapeHtml(email.trim());
-    const safeSubject = escapeHtml((subject || "").trim() || "—");
-    const safeMessage = escapeHtml(message.trim());
+    // HTML-safe versions for email body
+    const safeNameHtml    = escapeHtml(safeName);
+    const safeEmailHtml   = escapeHtml(email.trim());
+    const safeSubjectHtml = escapeHtml(safeSubject === "New message from website" ? "—" : safeSubject);
+    const safeMessageHtml = escapeHtml(message.trim());
 
     await transporter.sendMail({
       from: `"AWS Cloud Club UH — Contact" <${CONTACT_USER}>`,
       to: CONTACT_TO,
-      replyTo: `"${name.trim()}" <${email.trim()}>`,
-      subject: `[Contact] ${(subject || "").trim() || "New message from website"}`,
+      replyTo: `"${safeName}" <${email.trim()}>`,
+      subject: `[Contact] ${safeSubject}`,
       text: [
-        `Name:    ${name.trim()}`,
+        `Name:    ${safeName}`,
         `Email:   ${email.trim()}`,
-        `Subject: ${(subject || "").trim() || "—"}`,
+        `Subject: ${safeSubject}`,
         ``,
         message.trim(),
       ].join("\n"),
       html: `
-        <p><strong>Name:</strong> ${safeName}</p>
-        <p><strong>Email:</strong> <a href="mailto:${safeEmail}">${safeEmail}</a></p>
-        <p><strong>Subject:</strong> ${safeSubject}</p>
+        <p><strong>Name:</strong> ${safeNameHtml}</p>
+        <p><strong>Email:</strong> <a href="mailto:${safeEmailHtml}">${safeEmailHtml}</a></p>
+        <p><strong>Subject:</strong> ${safeSubjectHtml}</p>
         <hr/>
-        <p style="white-space:pre-wrap">${safeMessage}</p>
+        <p style="white-space:pre-wrap">${safeMessageHtml}</p>
       `,
     });
 

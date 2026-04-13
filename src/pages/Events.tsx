@@ -226,7 +226,7 @@ const EventsPage = () => {
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 whitespace-nowrap"
               >
-                All events on Meetup
+                See all events on Meetup
                 <ArrowRight className="w-3.5 h-3.5" />
               </a>
             </div>

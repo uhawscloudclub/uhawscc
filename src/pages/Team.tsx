@@ -79,7 +79,7 @@ const TeamPage = () => (
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center p-3 -m-3 rounded-lg"
-                  aria-label={`${member.name} on LinkedIn`}
+                  aria-label={`Visit ${member.name}'s LinkedIn profile`}
                 >
                   <Linkedin className="linkedin-icon w-4 h-4" />
                 </a>

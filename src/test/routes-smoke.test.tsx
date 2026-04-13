@@ -3,9 +3,11 @@ import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { describe, expect, it } from "vitest";
 import About from "@/pages/About";
+import Contact from "@/pages/Contact";
 import Events from "@/pages/Events";
 import HomePage from "@/pages/Index";
 import LearningPaths from "@/pages/LearningPaths";
+import News from "@/pages/News";
 import NotFound from "@/pages/NotFound";
 import Resources from "@/pages/Resources";
 import Team from "@/pages/Team";
@@ -21,6 +23,8 @@ const renderRoute = (route: string) => {
                     <Route path="/" element={<HomePage />} />
                     <Route path="/about" element={<About />} />
                     <Route path="/events" element={<Events />} />
+                    <Route path="/news" element={<News />} />
+                    <Route path="/contact" element={<Contact />} />
                     <Route path="/learning-paths" element={<LearningPaths />} />
                     <Route path="/resources" element={<Resources />} />
                     <Route path="/team" element={<Team />} />
@@ -60,6 +64,16 @@ describe("route smoke tests", () => {
     it("renders team route", () => {
         renderRoute("/team");
         expect(screen.getByRole("heading", { name: /The people/i })).toBeInTheDocument();
+    });
+
+    it("renders news route", () => {
+        renderRoute("/news");
+        expect(screen.getByRole("heading", { name: /AWS news/i })).toBeInTheDocument();
+    });
+
+    it("renders contact route", () => {
+        renderRoute("/contact");
+        expect(screen.getByRole("heading", { name: /We'd love to/i })).toBeInTheDocument();
     });
 
     it("renders not found fallback", () => {
