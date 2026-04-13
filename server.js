@@ -42,12 +42,12 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://challenges.cloudflare.com"],
         styleSrc: ["'self'", "https://fonts.googleapis.com"],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:", "https:"],
-        connectSrc: ["'self'"],
-        frameSrc: ["https://agentpierre.github.io"], // News page iframe
+        connectSrc: ["'self'", "https://challenges.cloudflare.com"],
+        frameSrc: ["https://agentpierre.github.io", "https://challenges.cloudflare.com"], // News page iframe + Turnstile
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
@@ -269,7 +269,38 @@ const contactLimiter = rateLimit({
 app.use(express.json({ limit: "16kb" }));
 
 app.post("/api/contact", contactLimiter, async (req, res) => {
-  const { name, email, subject, message } = req.body ?? {};
+  const { name, email, subject, message, _hp, cfToken } = req.body ?? {};
+
+  // Honeypot — bots fill hidden fields, humans don't. Silently succeed so bots
+  // think they got through and don't retry with a different strategy.
+  if (typeof _hp === "string" && _hp.length > 0) {
+    return res.json({ ok: true });
+  }
+
+  // Cloudflare Turnstile verification (skipped in dev if secret not set)
+  const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET_KEY;
+  if (TURNSTILE_SECRET) {
+    if (!cfToken || typeof cfToken !== "string") {
+      return res.status(400).json({ error: "Please complete the bot check." });
+    }
+    try {
+      const verifyRes = await fetch(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ secret: TURNSTILE_SECRET, response: cfToken }),
+        }
+      );
+      const { success } = await verifyRes.json();
+      if (!success) {
+        return res.status(400).json({ error: "Bot check failed. Please try again." });
+      }
+    } catch (err) {
+      // Fail open — log and continue rather than blocking real users
+      console.warn("[/api/contact] Turnstile verification error:", err instanceof Error ? err.message : String(err));
+    }
+  }
 
   // Server-side validation — length caps also prevent header-injection and ReDoS
   if (

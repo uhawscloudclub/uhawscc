@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PageLayout from '@/components/PageLayout';
@@ -86,10 +87,15 @@ const Field = ({
 const inputClass =
   'w-full bg-transparent border-b border-border text-foreground text-sm py-2.5 placeholder:text-muted-foreground/40 focus:border-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-0 transition-colors duration-200';
 
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 const ContactPage = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  const [cfToken, setCfToken] = useState('');
+  const honeypotRef = useRef<HTMLInputElement>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -104,19 +110,26 @@ const ContactPage = () => {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          _hp: honeypotRef.current?.value ?? '',
+          cfToken,
+        }),
         signal: controller.signal,
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Something went wrong.');
       setStatus('success');
       reset();
+      setCfToken('');
+      turnstileRef.current?.reset();
     } catch (err: unknown) {
       const msg = err instanceof Error
         ? (err.name === 'AbortError' ? 'Request timed out. Please try again.' : err.message)
         : 'Something went wrong. Please try again.';
       setServerError(msg);
       setStatus('error');
+      turnstileRef.current?.reset();
     } finally {
       clearTimeout(timer);
     }
@@ -210,6 +223,17 @@ const ContactPage = () => {
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
 
+                  {/* Honeypot — hidden from real users, bots fill it in */}
+                  <div aria-hidden="true" style={{ display: 'none' }}>
+                    <input
+                      ref={honeypotRef}
+                      type="text"
+                      name="website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
+
                   {/* Row: name + email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <Field id="contact-name" label="Name" required error={errors.name?.message}>
@@ -254,6 +278,18 @@ const ContactPage = () => {
                     />
                   </Field>
 
+                  {/* Cloudflare Turnstile — only rendered when site key is configured */}
+                  {TURNSTILE_SITE_KEY && (
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={TURNSTILE_SITE_KEY}
+                      onSuccess={setCfToken}
+                      onExpire={() => setCfToken('')}
+                      onError={() => setCfToken('')}
+                      options={{ theme: 'dark' }}
+                    />
+                  )}
+
                   {/* Server error */}
                   {status === 'error' && serverError && (
                     <p className="text-sm text-destructive flex items-center gap-2">
@@ -266,7 +302,7 @@ const ContactPage = () => {
                   <div className="flex items-center gap-4 pt-2">
                     <button
                       type="submit"
-                      disabled={status === 'loading'}
+                      disabled={status === 'loading' || (!!TURNSTILE_SITE_KEY && !cfToken)}
                       className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {status === 'loading' ? (
