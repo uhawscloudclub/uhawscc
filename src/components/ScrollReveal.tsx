@@ -9,14 +9,31 @@ interface Props {
 const ScrollReveal = ({ children, className = '', delay = 0 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
+  // Synchronous check so reduced-motion users never see an invisible flash.
+  // window check guards SSR / test environments.
+  const reducedMotion =
+    typeof window !== 'undefined'
+      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      : false;
+
   useEffect(() => {
+    if (reducedMotion) return; // already rendered fully visible — no observer needed
     const el = ref.current;
     if (!el) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          // Hint the browser just before the transition starts, not on every mount
+          el.style.willChange = 'opacity, transform, filter';
           el.style.transitionDelay = `${delay}ms`;
           el.classList.add('revealed');
+          // Release the compositing layer once the transition has finished
+          el.addEventListener(
+            'transitionend',
+            () => { el.style.willChange = 'auto'; },
+            { once: true }
+          );
         } else {
           el.style.transitionDelay = '0ms';
           el.classList.remove('revealed');
@@ -26,7 +43,12 @@ const ScrollReveal = ({ children, className = '', delay = 0 }: Props) => {
     );
     observer.observe(el);
     return () => observer.disconnect();
-  }, [delay]);
+  }, [delay, reducedMotion]);
+
+  // Reduced motion: render immediately visible, no animation classes at all
+  if (reducedMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <div

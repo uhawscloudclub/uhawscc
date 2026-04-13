@@ -19,7 +19,7 @@ const pillars = [
 ];
 
 const AboutPage = () => (
-  <PageLayout>
+  <PageLayout intensity="low">
 
     {/* ── What We Do ── */}
     <section className="relative z-10 min-h-screen flex flex-col justify-center py-24">
@@ -71,7 +71,7 @@ const AboutPage = () => (
             {pillars.map((p, i) => (
               <ScrollReveal key={p.title} delay={i * 70}>
                 <div className="py-7 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                  <span className="text-xs font-mono text-primary/50 pt-0.5">
+                  <span className="text-xs font-mono text-primary/70 pt-0.5">
                     0{i + 1}
                   </span>
                   <div>

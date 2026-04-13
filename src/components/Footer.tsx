@@ -15,9 +15,9 @@ const Footer = () => (
         {/* Left */}
         <div>
           <p className="font-heading font-bold text-foreground">AWS Cloud Club at the University of Houston</p>
-          <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
-            {EXTERNAL_LINKS.emailContact}
-          </a>
+          <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
+            Get in touch →
+          </Link>
         </div>
 
         {/* Center */}
@@ -27,7 +27,9 @@ const Footer = () => (
             { label: 'Events', to: '/events' },
             { label: 'Learning Paths', to: '/learning-paths' },
             { label: 'Resources', to: '/resources' },
+            { label: 'News', to: '/news' },
             { label: 'Team', to: '/team' },
+            { label: 'Contact', to: '/contact' },
           ].map((l) => (
             <Link key={l.to} to={l.to} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               {l.label}

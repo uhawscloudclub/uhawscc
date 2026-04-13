@@ -21,6 +21,7 @@ export const EXTERNAL_LINKS = {
   ccpTrainingHub: 'https://aws.amazon.com/training/learn-about/cloud-practitioner/',
   skillBuilderHome: 'https://skillbuilder.aws/',
   skillBuilderSetupGuide: '/docs/skill-builder-guide.pdf',
+  cloudNews: 'https://agentpierre.github.io/awscloudclub-uh-cloud-news/',
 } as const;
 
 export const LINKS = EXTERNAL_LINKS;

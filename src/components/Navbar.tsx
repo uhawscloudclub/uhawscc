@@ -9,7 +9,9 @@ const navLinks = [
   { label: 'Events', to: '/events' },
   { label: 'Learning Paths', to: '/learning-paths' },
   { label: 'Resources', to: '/resources' },
+  { label: 'News', to: '/news' },
   { label: 'Team', to: '/team' },
+  // Contact lives in the footer — omitted from nav to prevent overflow at tablet
 ];
 
 const Navbar = () => {
@@ -46,8 +48,8 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop */}
-        <div className="hidden md:flex items-center gap-7">
+        {/* Desktop — lg breakpoint so 6 links + CTA don't overflow at tablet */}
+        <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -71,20 +73,20 @@ const Navbar = () => {
           </a>
         </div>
 
-        {/* Mobile toggle */}
+        {/* Mobile/tablet toggle — visible below lg */}
         <button
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close navigation' : 'Open navigation'}
           aria-expanded={open}
-          className="md:hidden p-3 text-muted-foreground hover:text-foreground transition-colors"
+          className="lg:hidden p-3 text-muted-foreground hover:text-foreground transition-colors"
         >
           {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile/tablet menu */}
       {open && (
-        <div className="md:hidden bg-background/95 backdrop-blur-xl border-t border-border/40 animate-fade-up">
+        <div className="lg:hidden bg-background/95 backdrop-blur-xl border-t border-border/40 animate-fade-up">
           <div className="container mx-auto px-6 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link

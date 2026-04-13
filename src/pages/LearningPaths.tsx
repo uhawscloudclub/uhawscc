@@ -153,8 +153,7 @@ function ResourceRow({
     onToggle: (id: number) => void;
 }) {
     return (
-        <motion.div
-            layout
+        <div
             role="button"
             tabIndex={0}
             aria-pressed={checked}
@@ -170,6 +169,7 @@ function ResourceRow({
             onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(resource.id); } }}
         >
             {/* Checkbox */}
+
             <div
                 className={`
                     w-[17px] h-[17px] rounded-[4px] flex-shrink-0 flex items-center
@@ -205,7 +205,7 @@ function ResourceRow({
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
                 className="
-                    flex-shrink-0 text-[11px] font-medium px-3 py-2 rounded-md
+                    flex-shrink-0 text-[11px] font-medium px-3 py-3 rounded-md
                     border border-border text-muted-foreground
                     hover:border-primary/50 hover:text-primary
                     transition-colors duration-150
@@ -213,7 +213,7 @@ function ResourceRow({
             >
                 Open ↗
             </a>
-        </motion.div>
+        </div>
     );
 }
 
@@ -361,7 +361,7 @@ export default function LearningPaths() {
     }, [showCelebration, prefersReducedMotion, celebrationRun]);
 
     return (
-        <PageLayout>
+        <PageLayout intensity="low">
 
             {/* ── Header ── */}
             <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
@@ -403,7 +403,7 @@ export default function LearningPaths() {
                                 {checked.length > 0 && (
                                     <button
                                         onClick={() => { setChecked([]); saveProgress([]); }}
-                                        className="text-[11px] text-muted-foreground/40 hover:text-muted-foreground transition-colors"
+                                        className="text-[11px] text-muted-foreground/60 hover:text-muted-foreground transition-colors"
                                     >
                                         Reset
                                     </button>
@@ -466,7 +466,7 @@ export default function LearningPaths() {
                             style={{
                                 bottom: '160px',
                                 background:
-                                    'linear-gradient(to bottom, oklch(0.58 0.23 292) 0%, oklch(0.76 0.12 207) 75%, oklch(0.76 0.12 207 / 0) 100%)',
+                                    'linear-gradient(to bottom, var(--primary) 0%, var(--secondary) 75%, transparent 100%)',
                             }}
                         />
 

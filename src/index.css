@@ -134,7 +134,7 @@
 /* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: oklch(0.35 0.12 292) oklch(0.09 0.008 292);
+  scrollbar-color: var(--border) var(--background);
 }
 
 /* Chrome / Safari / Edge */
@@ -144,37 +144,39 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: oklch(0.09 0.008 292);
+  background: var(--background);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.30 0.10 292);
+  background: var(--border);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: oklch(0.50 0.20 292);
+  background: var(--ring);
 }
 
 ::-webkit-scrollbar-corner {
-  background: oklch(0.09 0.008 292);
+  background: var(--background);
 }
 
 /* ── Genesis Block-style outlined gradient-border pill ── */
+/* Note: CSS gradients accept var() color stops directly in modern browsers.
+   The border gradient uses --primary / --secondary so it tracks token changes. */
 .btn-outline-gradient {
   border: 1px solid transparent;
   border-radius: 9999px;
   background:
     linear-gradient(var(--background), var(--background)) padding-box,
-    linear-gradient(135deg, oklch(0.58 0.23 292), oklch(0.76 0.12 207)) border-box;
-  color: oklch(0.93 0.007 292);
+    linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
+  color: var(--foreground);
   transition: background 0.2s ease, opacity 0.2s ease;
 }
 
 .btn-outline-gradient:hover {
   background:
-    linear-gradient(oklch(0.14 0.008 292), oklch(0.14 0.008 292)) padding-box,
-    linear-gradient(135deg, oklch(0.58 0.23 292), oklch(0.76 0.12 207)) border-box;
+    linear-gradient(var(--muted), var(--muted)) padding-box,
+    linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
 }
 
 /* ── Focus-visible — keyboard navigation ── */

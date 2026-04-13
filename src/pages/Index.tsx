@@ -99,7 +99,7 @@ const HomePage = () => (
             {features.map((f, i) => (
               <ScrollReveal key={f.title} delay={i * 70}>
                 <div className="py-7 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                  <span className="text-xs font-mono text-primary/50 pt-0.5">
+                  <span className="text-xs font-mono text-primary/70 pt-0.5">
                     0{i + 1}
                   </span>
                   <div>

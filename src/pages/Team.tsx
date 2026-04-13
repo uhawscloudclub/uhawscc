@@ -25,7 +25,7 @@ const steps = [
 ];
 
 const TeamPage = () => (
-  <PageLayout>
+  <PageLayout intensity="low">
 
     {/* ── Header ── */}
     <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
@@ -52,7 +52,7 @@ const TeamPage = () => (
     {/* ── Leadership grid ── */}
     <section className="relative z-10 py-16">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-border">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
           {team.map((member, i) => (
             <ScrollReveal key={member.name} delay={i * 50}>
               <div className="bg-background p-6 flex flex-col items-start gap-3">
@@ -116,7 +116,7 @@ const TeamPage = () => (
               {steps.map((step, i) => (
                 <ScrollReveal key={i} delay={i * 70}>
                   <div className="py-6 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                    <span className="text-xs font-mono text-primary/50 pt-0.5">
+                    <span className="text-xs font-mono text-primary/70 pt-0.5">
                       0{i + 1}
                     </span>
                     <p className="text-base text-muted-foreground leading-relaxed">

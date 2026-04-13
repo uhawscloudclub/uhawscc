@@ -48,7 +48,7 @@ const resources = [
 ];
 
 const ResourcesPage = () => (
-  <PageLayout>
+  <PageLayout intensity="low">
 
     {/* ── Header ── */}
     <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
@@ -79,7 +79,7 @@ const ResourcesPage = () => (
           {resources.map((r, i) => (
             <ScrollReveal key={r.title} delay={i * 70}>
               <div className="py-8 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                <span className="text-xs font-mono text-primary/50 pt-1">
+                <span className="text-xs font-mono text-primary/70 pt-1">
                   0{i + 1}
                 </span>
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">

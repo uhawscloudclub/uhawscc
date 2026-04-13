@@ -111,7 +111,10 @@ export default function NetworkCanvas({
 
         const init = () => {
             resize();
-            nodesRef.current = Array.from({ length: preset.nodeCount }, () => ({
+            // Halve node count on mobile — O(n²) edge loop is expensive on low-end CPUs
+            const isMobile = window.innerWidth < 768;
+            const nodeCount = isMobile ? Math.min(preset.nodeCount, 28) : preset.nodeCount;
+            nodesRef.current = Array.from({ length: nodeCount }, () => ({
                 x: Math.random() * sizeRef.current.width,
                 y: Math.random() * sizeRef.current.height,
                 vx: (Math.random() - 0.5) * preset.speed,
