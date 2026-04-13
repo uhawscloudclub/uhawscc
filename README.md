@@ -15,6 +15,10 @@ This is the website for the University of Houston AWS Cloud Club.
 5. Build production bundle:
 	`npm run build`
 
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in the values (ask the club captain for credentials). `.env` is gitignored and should never be committed.
+
 ## GitHub Actions (Beginner Friendly)
 
 This repository includes starter automation in `.github/workflows/`:

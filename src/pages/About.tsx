@@ -6,7 +6,7 @@ import { EXTERNAL_LINKS } from '@/config/externalLinks';
 const pillars = [
   {
     title: 'Hands-On Learning',
-    desc: 'Workshops, labs, and live cloud demos built around real AWS services. From EC2 to Lambda, we learn by building — not by watching slides.',
+    desc: 'Workshops, labs, and live cloud demos built around real AWS services. From EC2 to Lambda, we learn by building, not watching slides.',
   },
   {
     title: 'AWS Badge Progression',
@@ -40,7 +40,7 @@ const AboutPage = () => (
             </h1>
             <p className="text-muted-foreground text-lg leading-relaxed max-w-[55ch]">
               We bring cloud computing education, community, and career opportunities
-              to University of Houston students — for free.
+              to University of Houston students, for free.
             </p>
           </div>
         </ScrollReveal>
@@ -97,9 +97,9 @@ const AboutPage = () => (
         <ScrollReveal>
           <p className="text-base text-muted-foreground max-w-[60ch]">
             AWS Cloud Club at UH is part of the{' '}
-            <strong className="text-foreground font-medium">AWS Cloud Clubs program</strong> — a
+            <strong className="text-foreground font-medium">AWS Cloud Clubs program</strong>, a
             global network of student communities supported by Amazon Web Services.
-            We are not an Amazon employee organization — we are students building
+            We are not an Amazon employee organization; we are students building
             for the cloud, together.
           </p>
         </ScrollReveal>

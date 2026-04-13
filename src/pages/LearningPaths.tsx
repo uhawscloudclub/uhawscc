@@ -48,7 +48,7 @@ const CCP_RESOURCES: Resource[] = [
     },
     {
         id: 4,
-        name: 'AWS Free Tier — Create Your Account',
+        name: 'AWS Free Tier: Create Your Account',
         tag: 'Hands-on console access · aws.amazon.com/free',
         url: LINKS.awsFreeTier,
     },
@@ -84,7 +84,7 @@ const MILESTONES = [
     {
         number: '02',
         title: 'Learn the Fundamentals',
-        desc: 'Official AWS training — a free 12-hour course and a game-based learning track.',
+        desc: 'Official AWS training: a free 12-hour course and a game-based learning track.',
         resources: [2, 3],
     },
     {
@@ -451,7 +451,7 @@ export default function LearningPaths() {
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.35 }}
                                 >
-                                    Path complete — time to schedule your exam. 🎉
+                                    Path complete! Time to schedule your exam. 🎉
                                 </motion.p>
                             )}
                         </div>
@@ -504,7 +504,7 @@ export default function LearningPaths() {
 
                         {/* Coming soon — locked milestones fade out below the spine */}
                         <ScrollReveal delay={280}>
-                            <div className="relative pl-12 mb-6 pt-2" aria-label="Upcoming certifications — currently locked">
+                            <div className="relative pl-12 mb-6 pt-2" aria-label="Upcoming certifications, currently locked">
                                 <p className="text-[11px] font-medium tracking-widest text-primary/50 uppercase mb-5">
                                     What's next
                                 </p>

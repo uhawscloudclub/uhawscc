@@ -104,7 +104,7 @@ const EventsPage = () => {
             </h1>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-                All events are published on Meetup. RSVP to save your spot —
+                All events are published on Meetup. RSVP to save your spot;
                 seats go fast.
               </p>
               {/* Live indicator */}
