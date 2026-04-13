@@ -105,7 +105,7 @@ const TeamPage = () => (
                 Become a<br />member
               </h2>
               <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-[30ch]">
-                Open to all UH students. No experience required — just curiosity.
+                Open to all UH students. No experience required, just curiosity.
               </p>
             </div>
           </ScrollReveal>

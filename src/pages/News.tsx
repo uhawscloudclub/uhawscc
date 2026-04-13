@@ -26,7 +26,7 @@ const NewsPage = () => {
             </h1>
             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
               <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-                The latest AWS announcements, updates, and cloud industry news —
+                The latest AWS announcements, updates, and cloud industry news,
                 hand-picked for the UH cloud community.
               </p>
               <div className="inline-flex items-center gap-2 shrink-0 self-start sm:self-auto px-3 py-1.5 rounded-full border border-[var(--success)]/30 bg-[var(--success)]/[8%]">
@@ -82,7 +82,7 @@ const NewsPage = () => {
 
               <iframe
                 src={EXTERNAL_LINKS.cloudNews}
-                title="AWS Cloud Club UH — Cloud News"
+                title="AWS Cloud Club UH: Cloud News"
                 className={`w-full h-full transition-opacity duration-500 ${
                   loaded ? 'opacity-100' : 'opacity-0'
                 }`}
@@ -113,7 +113,7 @@ const NewsPage = () => {
 
               <p className="text-sm text-muted-foreground leading-relaxed">
                 The latest AWS announcements, service updates, and cloud industry
-                news — curated for the UH community and updated regularly.
+                news curated for the UH community and updated regularly.
               </p>
 
               <a

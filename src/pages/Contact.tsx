@@ -153,8 +153,8 @@ const ContactPage = () => {
               hear from <span style={{ color: 'var(--primary)' }}>you.</span>
             </h1>
             <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-              Questions about membership, events, partnerships, or anything else —
-              send us a message and we'll get back to you.
+              Questions about membership, events, partnerships, or anything else?
+              Send us a message and we'll get back to you.
             </p>
           </ScrollReveal>
         </div>

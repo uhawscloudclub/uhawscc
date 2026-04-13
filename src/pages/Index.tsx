@@ -6,7 +6,7 @@ import { EXTERNAL_LINKS } from '@/config/externalLinks';
 const features = [
   {
     title: 'Hands-On Workshops',
-    desc: 'Build real things on AWS — not just slides and theory. Every session has something to deploy.',
+    desc: 'Build real things on AWS, not just slides and theory. Every session has something to deploy.',
   },
   {
     title: 'AWS Badge Progression',
@@ -43,7 +43,7 @@ const HomePage = () => (
           {/* Body */}
           <p className="hero-item hero-item-3 text-muted-foreground text-lg leading-relaxed max-w-[55ch] mb-12">
             UH students building real AWS skills, earning certifications, and
-            supporting each other through the journey — for free.
+            supporting each other through the journey, for free.
           </p>
 
           {/* CTAs */}
@@ -124,7 +124,7 @@ const HomePage = () => (
       <div className="container mx-auto px-6">
         <ScrollReveal>
           <p className="text-base text-muted-foreground max-w-[60ch]">
-            AWS Cloud Club at UH is part of the AWS Cloud Clubs program — a
+            AWS Cloud Club at UH is part of the AWS Cloud Clubs program, a
             global network of student communities supported directly by Amazon
             Web Services.
           </p>

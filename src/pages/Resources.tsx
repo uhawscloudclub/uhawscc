@@ -20,12 +20,12 @@ const resources = [
   {
     title: 'AWS Free Tier',
     tag: 'Hands-on practice',
-    desc: 'Practice building on real AWS infrastructure with the AWS Free Tier — no cost for eligible services within limits.',
+    desc: 'Practice building on real AWS infrastructure with the AWS Free Tier at no cost for eligible services within limits.',
     cta: 'Get started free',
     href: 'https://aws.amazon.com/free',
   },
   {
-    title: 'Free Exam Vouchers — AWS Academy',
+    title: 'Free Exam Vouchers via AWS Academy',
     tag: 'UH students only',
     desc: 'UH students can receive up to 4 fully discounted certification exam vouchers and a free 1-year Skill Builder subscription through AWS Academy. Fill out the form and we\'ll get you access via the CIS department.',
     cta: 'Request Access',
