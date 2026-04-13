@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+/* Fonts loaded via <link> in index.html — avoids render-blocking @import */
 
 @tailwind base;
 @tailwind components;
@@ -6,44 +6,54 @@
 
 @layer base {
   :root {
-    --background: 228 50% 7%;
-    --foreground: 210 40% 95%;
+    /* Near-black with a barely perceptible purple tint */
+    --background: oklch(0.09 0.008 292);
+    --foreground: oklch(0.93 0.007 292);
 
-    --card: 228 40% 10%;
-    --card-foreground: 210 40% 95%;
+    --card: oklch(0.12 0.007 292);
+    --card-foreground: oklch(0.93 0.007 292);
 
-    --popover: 228 40% 10%;
-    --popover-foreground: 210 40% 95%;
+    --popover: oklch(0.12 0.007 292);
+    --popover-foreground: oklch(0.93 0.007 292);
 
-    --primary: 263 70% 66%;
-    --primary-foreground: 0 0% 100%;
+    /* Vivid violet-purple */
+    --primary: oklch(0.58 0.23 292);
+    --primary-foreground: oklch(0.97 0.004 292);
 
-    --secondary: 187 94% 43%;
-    --secondary-foreground: 0 0% 100%;
+    /* Cyan — secondary, use sparingly */
+    --secondary: oklch(0.76 0.12 207);
+    --secondary-foreground: oklch(0.09 0.008 292);
 
-    --muted: 228 30% 15%;
-    --muted-foreground: 215 20% 60%;
+    --muted: oklch(0.16 0.006 292);
+    --muted-foreground: oklch(0.63 0.008 292);
 
-    --accent: 263 70% 66%;
-    --accent-foreground: 0 0% 100%;
+    --accent: oklch(0.16 0.006 292);
+    --accent-foreground: oklch(0.93 0.007 292);
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
+    --destructive: oklch(0.55 0.22 27);
+    --destructive-foreground: oklch(0.97 0.004 27);
 
-    --border: 228 20% 18%;
-    --input: 228 20% 18%;
-    --ring: 263 70% 66%;
+    --border: oklch(0.20 0.006 292);
+    --input: oklch(0.20 0.006 292);
+    --ring: oklch(0.58 0.23 292);
 
-    --radius: 0.75rem;
+    /* Tighter radius — more structural, less soft */
+    --radius: 0.375rem;
 
-    --sidebar-background: 228 40% 8%;
-    --sidebar-foreground: 210 40% 95%;
-    --sidebar-primary: 263 70% 66%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 228 30% 15%;
-    --sidebar-accent-foreground: 210 40% 95%;
-    --sidebar-border: 228 20% 18%;
-    --sidebar-ring: 263 70% 66%;
+    --sidebar-background: oklch(0.10 0.007 292);
+    --sidebar-foreground: oklch(0.93 0.007 292);
+    --sidebar-primary: oklch(0.58 0.23 292);
+    --sidebar-primary-foreground: oklch(0.97 0.004 292);
+    --sidebar-accent: oklch(0.16 0.006 292);
+    --sidebar-accent-foreground: oklch(0.93 0.007 292);
+    --sidebar-border: oklch(0.20 0.006 292);
+    --sidebar-ring: oklch(0.58 0.23 292);
+
+    /* Semantic state tokens — checked/progress (success) and Academy badge (warning) */
+    --success: oklch(0.55 0.17 155);
+    --success-fg: oklch(0.78 0.14 162);
+    --warning: oklch(0.78 0.16 72);
+    --warning-fg: oklch(0.18 0.03 72);
   }
 }
 
@@ -54,134 +64,62 @@
 
   body {
     @apply bg-background text-foreground font-body antialiased;
+    line-height: 1.7;
+    font-size: 1rem;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
+  h1, h2, h3, h4, h5, h6 {
     @apply font-heading;
   }
 }
 
 @layer utilities {
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary;
-  }
-
+  /* Purposeful glass for the navbar only — not decorative */
   .glass {
-    @apply bg-card/60 backdrop-blur-xl border border-border/50;
-  }
-
-  .glass-card {
-    @apply bg-card/40 backdrop-blur-lg border border-border/30 rounded-xl;
-    box-shadow: 0 0 20px hsla(263, 70%, 66%, 0.05), 0 0 40px hsla(187, 94%, 43%, 0.03);
-  }
-
-  .glass-card:hover {
-    box-shadow: 0 0 30px hsla(263, 70%, 66%, 0.1), 0 0 60px hsla(187, 94%, 43%, 0.05);
-    border-color: hsla(263, 70%, 66%, 0.2);
-  }
-
-  .glow-purple {
-    box-shadow: 0 0 40px hsla(263, 70%, 66%, 0.15);
-  }
-
-  .glow-cyan {
-    box-shadow: 0 0 40px hsla(187, 94%, 43%, 0.15);
+    background: color-mix(in oklch, var(--card) 70%, transparent);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid color-mix(in oklch, var(--border) 60%, transparent);
   }
 
   .linkedin-icon {
-    transition: all 0.3s ease;
-    color: hsl(187, 94%, 43%);
+    transition: color 0.3s ease, transform 0.3s ease, filter 0.3s ease;
+    color: var(--secondary);
   }
 
   .linkedin-icon:hover {
-    filter: drop-shadow(0 0 12px hsla(187, 94%, 43%, 0.8));
+    filter: drop-shadow(0 0 10px oklch(0.76 0.12 207 / 0.7));
     transform: scale(1.15);
   }
 }
 
-/* Aurora background blobs */
-@keyframes aurora-1 {
-
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.3;
+/* Hero entrance animations */
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(3px);
   }
-
-  33% {
-    transform: translate(30px, -20px) scale(1.1);
-    opacity: 0.4;
-  }
-
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
-    opacity: 0.25;
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
 }
 
-@keyframes aurora-2 {
-
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-    opacity: 0.2;
-  }
-
-  50% {
-    transform: translate(-40px, 30px) scale(1.15);
-    opacity: 0.35;
-  }
+.hero-item {
+  opacity: 0;
+  animation: hero-fade-up 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+.hero-item-1 { animation-delay: 0.05s; }
+.hero-item-2 { animation-delay: 0.18s; }
+.hero-item-3 { animation-delay: 0.30s; }
+.hero-item-4 { animation-delay: 0.42s; }
 
 @keyframes float {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-@keyframes rotate-slow {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes particle-drift {
-
-  0%,
-  100% {
-    transform: translate(0, 0);
-    opacity: 0.6;
-  }
-
-  25% {
-    transform: translate(10px, -15px);
-    opacity: 0.8;
-  }
-
-  50% {
-    transform: translate(-5px, 10px);
-    opacity: 0.4;
-  }
-
-  75% {
-    transform: translate(15px, 5px);
-    opacity: 0.7;
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-16px); }
 }
 
 .confetti-canvas {
@@ -189,4 +127,69 @@
   inset: 0;
   pointer-events: none;
   z-index: 9999;
+}
+
+/* ── Custom scrollbar ── */
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--background);
+}
+
+/* Chrome / Safari / Edge */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--ring);
+}
+
+::-webkit-scrollbar-corner {
+  background: var(--background);
+}
+
+/* ── Genesis Block-style outlined gradient-border pill ── */
+/* Note: CSS gradients accept var() color stops directly in modern browsers.
+   The border gradient uses --primary / --secondary so it tracks token changes. */
+.btn-outline-gradient {
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  background:
+    linear-gradient(var(--background), var(--background)) padding-box,
+    linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
+  color: var(--foreground);
+  transition: background 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-outline-gradient:hover {
+  background:
+    linear-gradient(var(--muted), var(--muted)) padding-box,
+    linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
+}
+
+/* ── Focus-visible — keyboard navigation ── */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .hero-item {
+    animation: none;
+    opacity: 1;
+  }
 }

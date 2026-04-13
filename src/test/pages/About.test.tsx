@@ -4,10 +4,10 @@ import AboutPage from "@/pages/About";
 import { renderWithRouter } from "../test-utils";
 
 describe("About page", () => {
-    it("renders the What We Do heading", () => {
+    it("renders the page heading", () => {
         renderWithRouter(<AboutPage />);
         expect(
-            screen.getByRole("heading", { name: /What We Do/i }),
+            screen.getByRole("heading", { name: /Built by students/i }),
         ).toBeInTheDocument();
     });
 

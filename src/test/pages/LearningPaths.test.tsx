@@ -25,7 +25,7 @@ describe("Learning Paths page", () => {
 
     it("renders the page heading", () => {
         renderWithRouter(<LearningPathsPage />);
-        expect(screen.getByRole("heading", { name: /Learning Paths/i })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Your path to/i })).toBeInTheDocument();
     });
 
     it("renders the Skill Builder explainer with link", () => {

@@ -14,15 +14,10 @@ describe("Footer", () => {
         expect(screen.getByRole("link", { name: "Team" })).toBeInTheDocument();
     });
 
-    it("email contact link has the correct mailto href", () => {
+    it("renders a Get in touch link pointing to /contact", () => {
         renderWithRouter(<Footer />);
-        const emailLink = screen.getByRole("link", {
-            name: EXTERNAL_LINKS.emailContact,
-        });
-        expect(emailLink).toHaveAttribute(
-            "href",
-            `mailto:${EXTERNAL_LINKS.emailContact}`,
-        );
+        const contactLink = screen.getByRole("link", { name: /Get in touch/i });
+        expect(contactLink).toHaveAttribute("href", "/contact");
     });
 
     it("LinkedIn icon link points to the correct URL with target _blank", () => {

@@ -6,7 +6,7 @@ import { renderWithRouter } from "../test-utils";
 describe("Resources page", () => {
     it("renders the page heading", () => {
         renderWithRouter(<ResourcesPage />);
-        expect(screen.getByRole("heading", { name: /Member Resources/i })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Everything you/i })).toBeInTheDocument();
     });
 
     it("renders all four resource card titles", () => {

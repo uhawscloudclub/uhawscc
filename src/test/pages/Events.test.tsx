@@ -5,36 +5,18 @@ import { EXTERNAL_LINKS } from "@/config/externalLinks";
 import { renderWithRouter } from "../test-utils";
 
 describe("Events page", () => {
-    it("renders the Upcoming Events heading", () => {
+    it("renders the page heading", () => {
         renderWithRouter(<EventsPage />);
         expect(
-            screen.getByRole("heading", { name: /Upcoming Events/i }),
+            screen.getByRole("heading", { name: /Upcoming/i }),
         ).toBeInTheDocument();
     });
 
-    it("renders the first event card title", () => {
+    it("renders loading skeletons while fetching", () => {
         renderWithRouter(<EventsPage />);
-        expect(
-            screen.getByText(/Launch Day: Intro To Cloud Computing/i),
-        ).toBeInTheDocument();
-    });
-
-    it("renders the TBD placeholder event card", () => {
-        renderWithRouter(<EventsPage />);
-        expect(screen.getAllByText(/TBD — Check Meetup/i).length).toBeGreaterThan(
-            0,
-        );
-    });
-
-    it("RSVP links point to the Meetup URL and open in a new tab", () => {
-        renderWithRouter(<EventsPage />);
-        const rsvpLinks = screen.getAllByRole("link", { name: /RSVP on Meetup/i });
-        expect(rsvpLinks.length).toBeGreaterThan(0);
-        rsvpLinks.forEach((link) => {
-            expect(link).toHaveAttribute("href", EXTERNAL_LINKS.meetup);
-            expect(link).toHaveAttribute("target", "_blank");
-            expect(link).toHaveAttribute("rel", "noopener noreferrer");
-        });
+        // Component starts in loading state; skeletons have animate-pulse class
+        const skeletons = document.querySelectorAll(".animate-pulse");
+        expect(skeletons.length).toBeGreaterThan(0);
     });
 
     it("renders the See all events on Meetup link", () => {

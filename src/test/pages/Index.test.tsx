@@ -8,7 +8,7 @@ describe("Home page (Index)", () => {
     it("renders the hero heading", () => {
         renderWithRouter(<HomePage />);
         expect(
-            screen.getByRole("heading", { name: /Build in the Cloud/i }),
+            screen.getByRole("heading", { name: /Build cloud skills/i }),
         ).toBeInTheDocument();
     });
 
@@ -48,10 +48,10 @@ describe("Home page (Index)", () => {
         expect(screen.getByText("Community & Careers")).toBeInTheDocument();
     });
 
-    it("renders the What We Do section heading", () => {
+    it("renders the What happens at meetups section heading", () => {
         renderWithRouter(<HomePage />);
         expect(
-            screen.getByRole("heading", { name: /What We Do/i }),
+            screen.getByRole("heading", { name: /What happens/i }),
         ).toBeInTheDocument();
     });
 });

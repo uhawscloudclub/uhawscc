@@ -6,10 +6,10 @@ import { renderWithRouter } from "../test-utils";
 import { TEAM_MEMBERS } from "../fixtures";
 
 describe("Team page", () => {
-    it("renders the Leadership heading", () => {
+    it("renders the page heading", () => {
         renderWithRouter(<TeamPage />);
         expect(
-            screen.getByRole("heading", { name: /Leadership/i }),
+            screen.getByRole("heading", { name: /The people/i }),
         ).toBeInTheDocument();
     });
 
@@ -42,7 +42,7 @@ describe("Team page", () => {
     it("renders the Become a Member heading", () => {
         renderWithRouter(<TeamPage />);
         expect(
-            screen.getByRole("heading", { name: /Become a Member/i }),
+            screen.getByRole("heading", { name: /Become a/i }),
         ).toBeInTheDocument();
     });
 

@@ -9,6 +9,8 @@ import Events from "./pages/Events.tsx";
 import LearningPaths from "./pages/LearningPaths.tsx";
 import Resources from "./pages/Resources.tsx";
 import Team from "./pages/Team.tsx";
+import News from "./pages/News.tsx";
+import Contact from "./pages/Contact.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import ScrollToTop from "./components/ScrollToTop.tsx";
 import ErrorBoundary from "./components/ErrorBoundary.tsx";
@@ -29,7 +31,9 @@ const App = () => (
             <Route path="/events" element={<Events />} />
             <Route path="/learning-paths" element={<LearningPaths />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/news" element={<News />} />
             <Route path="/team" element={<Team />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </ErrorBoundary>
