@@ -6,6 +6,15 @@
 // Each allowlist entry must say why it's here and when to revisit it.
 import { execSync } from "node:child_process";
 
+// react-router-dom was bumped to ^7.18.1 to close these three advisories, but
+// v7 wraps all navigation in React.startTransition unconditionally (v6 kept
+// this behind an opt-in flag specifically because it breaks Suspense/lazy
+// route trees like this app's). That caused a real production incident —
+// navigation randomly hitting a genuine React render error, caught by
+// ErrorBoundary — so react-router-dom is reverted to ^6.30.4 pending a more
+// careful v7 migration. These entries are listed below (even though the two
+// moderate ones fall under FAIL_SEVERITIES already and wouldn't fail CI on
+// their own) so the accepted risk is documented in one place.
 const ALLOWLIST = {
   "GHSA-qwww-vcr4-c8h2": {
     reason:
@@ -14,6 +23,20 @@ const ALLOWLIST = {
       "only available fix is react-router@8.3.0, which requires React 19 " +
       "(this app is on React 18.3.1) — a separate migration, not a dependency bump.",
     revisit: "When react-router-dom publishes a release compatible with the patched react-router, or when React 19 migration is planned.",
+  },
+  "GHSA-wrjc-x8rr-h8h6": {
+    reason:
+      "Open redirect via backslash in <Link>/useNavigate. Requires passing " +
+      "untrusted, user-controlled input as a navigation target — this app " +
+      "only ever navigates to static, hardcoded routes.",
+    revisit: "If any route ever navigates to a dynamic/user-supplied target, or when react-router-dom v7 is safely re-adopted.",
+  },
+  "GHSA-337j-9hxr-rhxg": {
+    reason:
+      "Arbitrary constructor injection via deserializeErrors() during SSR " +
+      "hydration. This app is client-rendered only (createRoot, no " +
+      "hydrateRoot/SSR anywhere), so this code path is never reached.",
+    revisit: "If server-side rendering is ever introduced, or when react-router-dom v7 is safely re-adopted.",
   },
 };
 

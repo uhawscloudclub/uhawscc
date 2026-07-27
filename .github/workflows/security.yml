@@ -27,11 +27,16 @@ jobs:
       - name: Dependency review
         uses: actions/dependency-review-action@v4
         with:
-          # GHSA-qwww-vcr4-c8h2: react-router RSC-mode CSRF bypass. Only affects
-          # unstable RSC APIs this app doesn't use; the real fix (react-router@8.3.0)
-          # requires React 19. See .github/scripts/check-audit.mjs for the same
-          # accepted-risk entry used by the npm-audit job.
-          allow-ghsas: GHSA-qwww-vcr4-c8h2
+          # react-router-dom is pinned to v6.30.4 (not the patched v7 line) after
+          # v7's unconditional startTransition-wrapped navigation caused a real
+          # production incident with this app's Suspense/lazy route tree. The
+          # three advisories below are accepted-risk / inapplicable to this app's
+          # architecture — see .github/scripts/check-audit.mjs for the full
+          # reasoning, used by the npm-audit job.
+          allow-ghsas: |
+            GHSA-qwww-vcr4-c8h2
+            GHSA-wrjc-x8rr-h8h6
+            GHSA-337j-9hxr-rhxg
 
   npm-audit:
     name: npm audit
