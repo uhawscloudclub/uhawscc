@@ -26,6 +26,12 @@ jobs:
 
       - name: Dependency review
         uses: actions/dependency-review-action@v4
+        with:
+          # GHSA-qwww-vcr4-c8h2: react-router RSC-mode CSRF bypass. Only affects
+          # unstable RSC APIs this app doesn't use; the real fix (react-router@8.3.0)
+          # requires React 19. See .github/scripts/check-audit.mjs for the same
+          # accepted-risk entry used by the npm-audit job.
+          allow-ghsas: GHSA-qwww-vcr4-c8h2
 
   npm-audit:
     name: npm audit
@@ -45,7 +51,7 @@ jobs:
         run: npm ci
 
       - name: Audit dependencies
-        run: npm audit --audit-level=high
+        run: node .github/scripts/check-audit.mjs
 
   codeql:
     name: CodeQL Analysis
