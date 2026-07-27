@@ -27,12 +27,20 @@ jobs:
       - name: Dependency review
         uses: actions/dependency-review-action@v4
         with:
+          # Match the npm-audit job's threshold (high/critical only) rather than
+          # this action's low-severity default. allow-ghsas has a documented bug
+          # where it doesn't reliably suppress moderate findings even when listed
+          # (actions/dependency-review-action#618), so fail-on-severity is the
+          # actual gate here; allow-ghsas is kept for defense-in-depth in case a
+          # listed advisory is ever reclassified as high/critical upstream.
+          #
           # react-router-dom is pinned to v6.30.4 (not the patched v7 line) after
           # v7's unconditional startTransition-wrapped navigation caused a real
           # production incident with this app's Suspense/lazy route tree. The
           # three advisories below are accepted-risk / inapplicable to this app's
           # architecture — see .github/scripts/check-audit.mjs for the full
           # reasoning, used by the npm-audit job.
+          fail-on-severity: high
           allow-ghsas: |
             GHSA-qwww-vcr4-c8h2
             GHSA-wrjc-x8rr-h8h6
