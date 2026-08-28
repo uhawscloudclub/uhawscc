@@ -24,15 +24,18 @@
     <meta property="og:image" content="/images/aws-student-builder-group-logo.png" />
 
     <!-- Fonts: preconnect + preload trick so the stylesheet never blocks rendering.
-         onload swaps rel from preload→stylesheet once the CSS is fetched. -->
+         font-preload-swap.js swaps rel from preload→stylesheet once the CSS is
+         fetched. It's a same-origin script (not an inline attribute) so CSP's
+         script-src-attr 'none' default doesn't block it. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      id="gfonts-preload"
       rel="preload"
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@300;400;500;600;700&display=swap"
       as="style"
-      onload="this.onload=null;this.rel='stylesheet'"
     />
+    <script src="/font-preload-swap.js"></script>
     <noscript>
       <link
         rel="stylesheet"

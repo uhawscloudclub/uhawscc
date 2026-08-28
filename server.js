@@ -43,7 +43,20 @@ app.use(
       directives: {
         defaultSrc: ["'self'"],
         scriptSrc: ["'self'", "https://challenges.cloudflare.com"],
-        styleSrc: ["'self'", "https://fonts.googleapis.com"],
+        styleSrc: [
+          "'self'",
+          "https://fonts.googleapis.com",
+          // sonner (toast lib) unconditionally injects its own <style> tag via
+          // document.createElement("style") at module load — no config to
+          // disable it. It does this in two steps (append an empty <style>,
+          // then fill its text content), so both the empty-content hash and
+          // the real-content hash are needed. Verified live against the
+          // installed sonner@1.7.4. MUST be regenerated (check the browser
+          // console's CSP violation message for the new hash) if sonner is
+          // ever upgraded and its bundled CSS string changes.
+          "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='", // sha256("") — the transient empty <style> tag
+          "'sha256-Od9mHMH7x2G6QuoV3hsPkDCwIyqbg2DX3F5nLeCYQBc='", // sonner's actual injected CSS
+        ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:"],
         connectSrc: ["'self'", "https://challenges.cloudflare.com"],
