@@ -50,11 +50,15 @@ export default defineConfig(({ mode }) => ({
           if (!id.includes("node_modules")) return;
           if (id.includes("recharts") || id.includes("/d3-"))
             return "vendor-charts";
-          if (id.includes("@radix-ui"))
+          if (id.includes("@radix-ui") || id.includes("use-sync-external-store"))
             return "vendor-radix";
           if (id.includes("framer-motion"))
             return "vendor-motion";
-          if (id.includes("react-dom") || /\/react\//.test(id))
+          // scheduler is react-dom's own runtime dependency (imported at module
+          // scope); leaving it unassigned lets Rollup auto-chunk it separately
+          // from vendor-react, which risks cross-chunk init-order bugs at
+          // runtime ("X is not a function" deep in the vendor-react bundle).
+          if (id.includes("react-dom") || id.includes("/scheduler/") || /\/react\//.test(id))
             return "vendor-react";
           if (id.includes("react-router"))
             return "vendor-router";
