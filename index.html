@@ -24,9 +24,15 @@
     <meta property="og:image" content="/images/aws-student-builder-group-logo.png" />
 
     <!-- Fonts: preconnect + preload trick so the stylesheet never blocks rendering.
-         font-preload-swap.js swaps rel from preload→stylesheet once the CSS is
-         fetched. It's a same-origin script (not an inline attribute) so CSP's
-         script-src-attr 'none' default doesn't block it. -->
+         The inline script swaps rel from preload→stylesheet once the CSS is
+         fetched. It MUST be an inline <script> (not an external src=, and not
+         an onload="" attribute) — this is the only way to attach the load
+         listener synchronously, before the (cross-origin) CSS fetch can
+         possibly finish. An external file loses that race under real network
+         latency, permanently stranding the fonts at rel="preload". CSP allows
+         this exact inline script via a sha256 hash in server.js (script-src),
+         not 'unsafe-inline' — if this script's content changes, regenerate
+         that hash. -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -35,7 +41,7 @@
       href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Figtree:wght@300;400;500;600;700&display=swap"
       as="style"
     />
-    <script src="/font-preload-swap.js"></script>
+    <script>document.getElementById("gfonts-preload").addEventListener("load",function(){this.rel="stylesheet"},{once:true});</script>
     <noscript>
       <link
         rel="stylesheet"

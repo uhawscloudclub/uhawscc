@@ -42,7 +42,17 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://challenges.cloudflare.com"],
+        scriptSrc: [
+          "'self'",
+          "https://challenges.cloudflare.com",
+          // The font-preload rel-swap inline <script> in index.html. Must stay
+          // inline (not an external file) to attach its load listener before
+          // the cross-origin font CSS fetch can finish — an external file
+          // loses that race under real network latency and permanently
+          // strands the fonts at rel="preload". Regenerate this hash if that
+          // script's content ever changes.
+          "'sha256-VXQXWUhgaCREDk52BHXsHGjzQONEvMmmqj+ET9X1C3M='",
+        ],
         styleSrc: [
           "'self'",
           "https://fonts.googleapis.com",
