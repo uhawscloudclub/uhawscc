@@ -27,13 +27,14 @@ Runs on:
 - every push to `main`
 - every pull request into `main`
 
-Runs four jobs in parallel (not one after another) — each checks out the repo, installs Node.js 20, and runs `npm ci` before its own step:
+`lint`, `test`, and `build` run on both triggers, in parallel (not one after another) — each checks out the repo, installs Node.js 20, and runs `npm ci` before its own step:
 - `lint` — runs `npm run lint`
 - `test` — runs `npm run test`
 - `build` — runs `npm run build`
-- `lockfile-check` — PR only; confirms `package-lock.json` was updated alongside `package.json`
 
-A fifth job, `ci-status`, waits on all four and is the single required status check — it fails if any job failed or was cancelled.
+A fourth job, `lockfile-check`, only runs on pull requests (skipped on a direct push to `main`) — so only three jobs run on a push. It's structured differently from the other three: first a quick check that `package-lock.json` was touched whenever `package.json` was, then Node.js setup and a real `npm ci` to verify the lockfile's content actually matches (not just that both files were edited).
+
+A fifth job, `ci-status`, waits on whichever of the above ran for that trigger and is the single required status check — it fails if any job failed or was cancelled.
 
 Why this helps:
 - catches broken code before merge

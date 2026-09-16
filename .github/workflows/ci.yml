@@ -26,11 +26,17 @@ jobs:
       # Cheap co-change check first: catches the common "edited package.json,
       # forgot to run npm install" mistake with a specific, friendly message
       # before spending time on setup-node below.
+      #
+      # On a fork PR, $HEAD's SHA belongs to the fork, not `origin` (this base
+      # repo) — fetching it by raw SHA can fail. `refs/pull/<N>/head` is a ref
+      # GitHub always mirrors onto the base repo for every PR regardless of
+      # where it came from, so fetch HEAD that way instead of by SHA.
       - name: Check package.json/package-lock.json co-change
         run: |
           BASE=${{ github.event.pull_request.base.sha }}
-          HEAD=${{ github.event.pull_request.head.sha }}
-          git fetch --depth=2 origin "$BASE" "$HEAD"
+          git fetch --depth=2 origin "$BASE"
+          git fetch --depth=2 origin "refs/pull/${{ github.event.pull_request.number }}/head"
+          HEAD=$(git rev-parse FETCH_HEAD)
           CHANGED=$(git diff --name-only "$BASE" "$HEAD")
           if echo "$CHANGED" | grep -q '^package\.json$'; then
             if ! echo "$CHANGED" | grep -q '^package-lock\.json$'; then
