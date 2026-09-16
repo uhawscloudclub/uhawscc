@@ -14,10 +14,56 @@ permissions:
   contents: read
 
 jobs:
-  quality:
-    name: Lint, Test, Build
+  # Fast standalone check - doesn't block or wait on the others
+  lockfile-check:
+    name: Lockfile Sync Check
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
 
+      # Cheap co-change check first: catches the common "edited package.json,
+      # forgot to run npm install" mistake with a specific, friendly message
+      # before spending time on setup-node below.
+      #
+      # On a fork PR, $HEAD's SHA belongs to the fork, not `origin` (this base
+      # repo) — fetching it by raw SHA can fail. `refs/pull/<N>/head` is a ref
+      # GitHub always mirrors onto the base repo for every PR regardless of
+      # where it came from, so fetch HEAD that way instead of by SHA.
+      - name: Check package.json/package-lock.json co-change
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          git fetch --depth=2 origin "$BASE"
+          git fetch --depth=2 origin "refs/pull/${{ github.event.pull_request.number }}/head"
+          HEAD=$(git rev-parse FETCH_HEAD)
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
+          if echo "$CHANGED" | grep -q '^package\.json$'; then
+            if ! echo "$CHANGED" | grep -q '^package-lock\.json$'; then
+              echo "::error::package.json was changed but package-lock.json was not updated. Run 'npm install' and commit the updated lockfile."
+              exit 1
+            fi
+          fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      # Co-change above only proves both files were touched, not that the
+      # lockfile's content actually matches package.json. `npm ci` is npm's
+      # own strict validator and fails hard on any mismatch — this is the
+      # real sync check.
+      - name: Verify lockfile matches package.json
+        run: npm ci --ignore-scripts
+
+  # Lint, test, and build run in PARALLEL (independent jobs), not sequentially.
+  # Each spends a few seconds extra on `npm ci`, but wall-clock time for the
+  # whole pipeline is the length of the slowest job, not the sum of all three.
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -28,28 +74,66 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Check lockfile is in sync with package.json
-        if: github.event_name == 'pull_request'
-        run: |
-          BASE=${{ github.event.pull_request.base.sha }}
-          HEAD=${{ github.event.pull_request.head.sha }}
-          git fetch --depth=2 origin "$BASE" "$HEAD"
-          CHANGED=$(git diff --name-only "$BASE" "$HEAD")
-          if echo "$CHANGED" | grep -q '^package\.json$'; then
-            if ! echo "$CHANGED" | grep -q '^package-lock\.json$'; then
-              echo "::error::package.json was changed but package-lock.json was not updated. Run 'npm install' and commit the updated lockfile."
-              exit 1
-            fi
-          fi
-
       - name: Install dependencies
         run: npm ci
 
       - name: Run lint
         run: npm run lint
 
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run unit tests
         run: npm run test
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
       - name: Run production build
         run: npm run build
+
+  # Single required status check for branch protection, instead of configuring
+  # four separate required checks. Treats "skipped" (lockfile-check on a push
+  # event) as fine, but fails on an actual job failure OR a cancellation —
+  # `concurrency: cancel-in-progress` above can cancel an in-flight lint/test/
+  # build job mid-run, and a cancelled result must not read as "passed".
+  ci-status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs: [lockfile-check, lint, test, build]
+    if: always()
+    steps:
+      - name: Verify all checks passed
+        run: |
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
+             [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "::error::One or more required checks failed or were cancelled"
+            exit 1
+          fi
+          echo "All required checks passed"
