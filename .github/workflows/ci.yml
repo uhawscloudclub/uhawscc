@@ -23,7 +23,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Check lockfile is in sync with package.json
+      # Cheap co-change check first: catches the common "edited package.json,
+      # forgot to run npm install" mistake with a specific, friendly message
+      # before spending time on setup-node below.
+      - name: Check package.json/package-lock.json co-change
         run: |
           BASE=${{ github.event.pull_request.base.sha }}
           HEAD=${{ github.event.pull_request.head.sha }}
@@ -35,6 +38,19 @@ jobs:
               exit 1
             fi
           fi
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 20
+          cache: npm
+
+      # Co-change above only proves both files were touched, not that the
+      # lockfile's content actually matches package.json. `npm ci` is npm's
+      # own strict validator and fails hard on any mismatch — this is the
+      # real sync check.
+      - name: Verify lockfile matches package.json
+        run: npm ci --ignore-scripts
 
   # Lint, test, and build run in PARALLEL (independent jobs), not sequentially.
   # Each spends a few seconds extra on `npm ci`, but wall-clock time for the

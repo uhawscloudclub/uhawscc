@@ -23,7 +23,7 @@
 
 ### Vite + React.lazy() Chunk Crashes
 If users see "TypeError: X is not a function" on navigation:
-1. Check `vite.config.ts` `manualChunks` — ensure all node_modules are assigned to chunks
+1. Check `vite.config.ts` `manualChunks` — it deliberately leaves most `node_modules` unmatched (Rollup auto-chunks those, which is fine); the bug pattern is a package that's a tightly-coupled runtime dependency of something *already* manually pinned to a vendor chunk (e.g. `scheduler` under `react-dom`) but itself falls through unmatched, risking a cross-chunk init-order race
 2. Add missing deps to existing chunks (e.g., `scheduler` → `vendor-react`)
 3. Test with `npm run build` + `npm start` (dev server hides chunking issues)
 
@@ -63,10 +63,10 @@ npx playwright test  # E2E tests — manual-dispatch workflow (e2e-playwright.ym
 ## CI/CD Pipeline (actual, not aspirational)
 
 **[ci.yml](.github/workflows/ci.yml)** runs on every push/PR to `main`. `lint`, `test`, and `build` run as three parallel jobs on both triggers; `lockfile-check` only runs on PRs (skipped on a direct push to `main`); `ci-status` is the aggregate gate over all four:
-- `lockfile-check` — package.json/package-lock.json stay in sync (PR-only)
+- `lockfile-check` — package.json/package-lock.json actually stay in sync, verified with a real `npm ci`, not just a co-change diff (PR-only)
 - `lint` — ESLint
 - `test` — Vitest unit tests
-- `build` — production build (catches CSP/chunking/type regressions)
+- `build` — `vite build` only — catches chunking/bundling regressions, but does **not** type-check (no `tsc` step) and does **not** validate CSP (that requires running `server.js`, not a headless build)
 - `ci-status` — required check that fails if any of the above failed; this is what branch protection should require, not the four jobs individually
 
 **[security.yml](.github/workflows/security.yml)** runs on every push/PR to `main`, plus a weekly scheduled scan — but not every job runs on every trigger: `dependency-review` is PR-only (`if: github.event_name == 'pull_request'`), while `npm-audit` and `codeql` run on both push and PR.
