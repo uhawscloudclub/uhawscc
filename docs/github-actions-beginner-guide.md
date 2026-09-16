@@ -95,6 +95,21 @@ Why this helps:
 
 With that on, Dependabot opens a dedicated fix PR as soon as a vulnerability is disclosed, instead of it only surfacing via a failing `npm audit` check on whatever PR happens to be open at the time.
 
+## Copilot Code Review
+
+Files: `.github/copilot-instructions.md`, `.github/skills/code-review/SKILL.md`
+
+GitHub Copilot can review pull requests automatically (this is the `copilot-pull-request-reviewer[bot]` you'll see commenting on PRs). Two files steer what it looks for in this repo:
+
+- `.github/copilot-instructions.md` — short, repo-wide guidance applied to every review (e.g. "prefer the smallest correct diff").
+- `.github/skills/code-review/SKILL.md` — a longer, detailed checklist Copilot pulls in when relevant, built from real bugs this project has actually shipped and caught (shell-quoting mistakes in workflows, the CI cancelled-job gating bug, the `manualChunks` gotcha, CSP hash rules, the pinned `react-router-dom` version, and more).
+
+Copilot also automatically reads `CLAUDE.md` (and `GEMINI.md`/`REVIEW.md`, if present) from the pull request's branch for additional context — no extra setup needed for that part.
+
+Why this helps:
+- encodes hard-won lessons so the same class of bug gets caught automatically next time, instead of relying on a human (or Claude) remembering it
+- keeps review feedback specific to this project instead of generic style commentary
+
 ## How to view results in GitHub
 
 1. Open your repository on GitHub
