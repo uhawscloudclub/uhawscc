@@ -81,12 +81,19 @@ Why manual first:
 File: `.github/dependabot.yml`
 
 What it does:
-- opens weekly PRs for npm package updates
-- opens weekly PRs for GitHub Actions updates
+- opens weekly PRs for npm package updates (patch/minor bumps grouped into one PR; major bumps get their own PR, since those are the ones worth reviewing carefully — see the `react-router-dom` note in `CLAUDE.md`)
+- opens weekly PRs for GitHub Actions updates (grouped into one PR)
 
 Why this helps:
 - keeps dependencies current and safer
 - makes updates small and regular
+- grouping cuts down on PR noise without hiding the changes that actually need individual review
+
+**This file only covers routine version updates on a schedule.** It does *not* automatically fix a newly-disclosed vulnerability the moment it's published — that's a separate, admin-only repo setting:
+
+> Settings → Code security → **Dependabot alerts** (on) → **Dependabot security updates** (on)
+
+With that on, Dependabot opens a dedicated fix PR as soon as a vulnerability is disclosed, instead of it only surfacing via a failing `npm audit` check on whatever PR happens to be open at the time.
 
 ## How to view results in GitHub
 

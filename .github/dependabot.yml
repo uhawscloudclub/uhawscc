@@ -7,11 +7,33 @@ updates:
       day: "monday"
       time: "09:00"
     open-pull-requests-limit: 5
+    # Patch/minor bumps are low-risk — group them into one weekly PR instead
+    # of up to 5 separate ones. Major bumps are deliberately left out of the
+    # group so each gets its own PR for individual review — react-router-dom's
+    # v7 bump caused a real production incident (see CLAUDE.md), which is
+    # exactly the kind of change that shouldn't be bundled with routine noise.
+    groups:
+      npm-patch-and-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    labels:
+      - "dependencies"
 
   - package-ecosystem: "github-actions"
     directory: "/"
-    schedule: 
+    schedule:
       interval: "weekly"
       day: "monday"
       time: "09:15"
     open-pull-requests-limit: 5
+    # Action version bumps are low-risk enough to group unconditionally.
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+    labels:
+      - "dependencies"
+      - "github-actions"
