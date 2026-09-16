@@ -1,0 +1,58 @@
+name: Close Accepted-Risk Dependabot PRs
+
+# Uses pull_request_target (not pull_request) deliberately: this needs a
+# write-scoped GITHUB_TOKEN to comment/close, which Dependabot-authored
+# pull_request events don't get by default. Safe here because this workflow
+# never checks out the PR's code and only reads PR metadata (title).
+on:
+  pull_request_target:
+    branches: ["main"]
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  close-accepted-risk:
+    name: Auto-close accepted-risk dependency bumps
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      # Only react-router/react-router-dom is a *formally documented*
+      # accepted-risk package — see .github/scripts/check-audit.mjs's
+      # ALLOWLIST and CLAUDE.md's gotcha entry. It's pinned to ^6.30.4 after
+      # v7 caused a real production incident with this app's Suspense/lazy
+      # route tree. Do not add other packages here without the same level of
+      # documented justification — a package just being moderate-severity
+      # (and so not failing npm-audit) is not the same as someone having
+      # evaluated and rejected its fix.
+      - name: Check whether this bumps react-router/react-router-dom
+        id: check
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if echo "$PR_TITLE" | grep -qiE "react-router"; then
+            echo "match=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "match=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Close with explanation
+        if: steps.check.outputs.match == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          # Written to a file and passed via --body-file rather than inline:
+          # this text is full of backticks and apostrophes, and backticks
+          # inside a double-quoted shell string are command substitution, not
+          # markdown — inline would silently execute `react-router-dom` etc.
+          # as commands and mangle the comment. A quoted heredoc ('EOF') is
+          # fully literal, no expansion or substitution of any kind.
+          cat > /tmp/close-comment.md <<'EOF'
+          Closing automatically: `react-router-dom` is pinned to `^6.30.4` as a documented accepted-risk decision (see `CLAUDE.md` and `.github/scripts/check-audit.mjs`'s `ALLOWLIST`) — v7 wraps all navigation in an unconditional `React.startTransition`, which caused a real production incident with this app's Suspense/lazy route tree. Re-open manually (or open a fresh PR) once a v7 migration has been evaluated and verified safe.
+          EOF
+          gh pr comment "$PR_NUMBER" --repo "$REPO" --body-file /tmp/close-comment.md
+          gh pr close "$PR_NUMBER" --repo "$REPO"
