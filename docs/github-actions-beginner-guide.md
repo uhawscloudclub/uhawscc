@@ -27,17 +27,18 @@ Runs on:
 - every push to `main`
 - every pull request into `main`
 
-What it does in order:
-1. checks out the repo
-2. installs Node.js 20
-3. runs `npm ci`
-4. runs `npm run lint`
-5. runs `npm run test`
-6. runs `npm run build`
+Runs four jobs in parallel (not one after another) — each checks out the repo, installs Node.js 20, and runs `npm ci` before its own step:
+- `lint` — runs `npm run lint`
+- `test` — runs `npm run test`
+- `build` — runs `npm run build`
+- `lockfile-check` — PR only; confirms `package-lock.json` was updated alongside `package.json`
+
+A fifth job, `ci-status`, waits on all four and is the single required status check — it fails if any job failed or was cancelled.
 
 Why this helps:
 - catches broken code before merge
 - ensures teammates do not merge failing builds
+- parallel jobs mean total CI time is bounded by the slowest job, not the sum of all of them
 
 ## Workflow 2: Security
 
@@ -101,7 +102,7 @@ Red X means fail.
 In GitHub: Settings -> Branches -> Branch protection rules -> `main`
 
 Require these status checks before merge:
-- `Lint, Test, Build`
+- `CI Status`
 - `CodeQL Analysis`
 
 You can add E2E later when your Playwright suite is stable.

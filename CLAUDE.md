@@ -11,7 +11,7 @@
 
 ## File Structure Essentials
 
-- Routes: `src/routes/` (lazy-loaded via `lazyWithReload()`)
+- Routes: declared in `src/App.tsx`; the lazy-loaded page modules themselves live in `src/pages/` (via `lazyWithReload()`)
 - Components: `src/components/` (use ErrorBoundary for lazy route protection)
 - Utils: `src/lib/` (type helpers, error classes, lazy loaders)
 - Tests: `src/test/`
@@ -62,7 +62,7 @@ npx playwright test  # E2E tests — manual-dispatch workflow (e2e-playwright.ym
 
 ## CI/CD Pipeline (actual, not aspirational)
 
-**[ci.yml](.github/workflows/ci.yml)** runs on every push/PR to `main`, as four parallel jobs plus one gate:
+**[ci.yml](.github/workflows/ci.yml)** runs on every push/PR to `main`. `lint`, `test`, and `build` run as three parallel jobs on both triggers; `lockfile-check` only runs on PRs (skipped on a direct push to `main`); `ci-status` is the aggregate gate over all four:
 - `lockfile-check` — package.json/package-lock.json stay in sync (PR-only)
 - `lint` — ESLint
 - `test` — Vitest unit tests
