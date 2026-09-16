@@ -98,7 +98,9 @@ jobs:
 
   # Single required status check for branch protection, instead of configuring
   # four separate required checks. Treats "skipped" (lockfile-check on a push
-  # event) as fine, and only fails on an actual job failure.
+  # event) as fine, but fails on an actual job failure OR a cancellation —
+  # `concurrency: cancel-in-progress` above can cancel an in-flight lint/test/
+  # build job mid-run, and a cancelled result must not read as "passed".
   ci-status:
     name: CI Status
     runs-on: ubuntu-latest
@@ -107,8 +109,9 @@ jobs:
     steps:
       - name: Verify all checks passed
         run: |
-          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]]; then
-            echo "::error::One or more required checks failed"
+          if [[ "${{ contains(needs.*.result, 'failure') }}" == "true" ]] || \
+             [[ "${{ contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "::error::One or more required checks failed or were cancelled"
             exit 1
           fi
           echo "All required checks passed"

@@ -69,7 +69,7 @@ npx playwright test  # E2E tests — manual-dispatch workflow (e2e-playwright.ym
 - `build` — production build (catches CSP/chunking/type regressions)
 - `ci-status` — required check that fails if any of the above failed; this is what branch protection should require, not the four jobs individually
 
-**[security.yml](.github/workflows/security.yml)** runs dependency review + `npm audit` on every push/PR, plus CodeQL and a weekly scheduled scan.
+**[security.yml](.github/workflows/security.yml)** runs on every push/PR to `main`, plus a weekly scheduled scan — but not every job runs on every trigger: `dependency-review` is PR-only (`if: github.event_name == 'pull_request'`), while `npm-audit` and `codeql` run on both push and PR.
 
 **[e2e-playwright.yml](.github/workflows/e2e-playwright.yml)** is manual-dispatch only (`workflow_dispatch`) — Playwright E2E is *not* wired into every PR (kept off the critical path deliberately; run it on-demand before a risky release).
 
