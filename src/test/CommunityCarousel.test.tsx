@@ -111,7 +111,7 @@ describe("CommunityCarousel", () => {
     expect(status).toHaveAttribute("aria-atomic", "true");
   });
 
-  it("keeps a failed image's slide in place with its caption", () => {
+  it("keeps a failed image's slide and shows an unavailable state", () => {
     render(<CommunityCarousel photos={makePhotos(3)} />);
 
     fireEvent.error(screen.getAllByRole("img")[0]);
@@ -122,5 +122,16 @@ describe("CommunityCarousel", () => {
     expect(screen.getAllByRole("group")).toHaveLength(3);
     expect(screen.getAllByRole("img")).toHaveLength(2);
     expect(screen.getByRole("group", { name: "1 of 3: Caption 1" })).toBeInTheDocument();
+    expect(screen.getByText("Photo unavailable")).toBeInTheDocument();
+  });
+
+  it("does not duplicate the caption when an image fails", () => {
+    render(<CommunityCarousel photos={makePhotos(3)} />);
+
+    fireEvent.error(screen.getAllByRole("img")[0]);
+
+    // The frame shows "Photo unavailable"; the caption stays in the figcaption
+    // exactly once rather than being echoed inside the frame.
+    expect(screen.getAllByText("Caption 1")).toHaveLength(1);
   });
 });

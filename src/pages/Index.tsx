@@ -97,24 +97,27 @@ const HomePage = () => (
         Rendered only when photos exist, so an empty set costs no chunk
         request and leaves no empty placeholder on the page. */}
     {communitySlides.length > 0 && (
-      <section className="relative z-10 border-t border-border py-16">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-8">
-              Our community
-            </p>
-            <SectionErrorBoundary>
+      // The boundary wraps the whole <section>, not just the carousel: if the
+      // chunk fails, the heading, border and spacing must go with it rather
+      // than leaving a labelled empty band on the page.
+      <SectionErrorBoundary>
+        <section className="relative z-10 border-t border-border py-16">
+          <div className="container mx-auto px-6">
+            <ScrollReveal>
+              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-8">
+                Our community
+              </p>
               <Suspense
                 fallback={
-                  <div className="aspect-[16/10] w-full animate-pulse rounded border border-border bg-muted" />
+                  <div className="aspect-[16/10] w-full animate-pulse motion-reduce:animate-none rounded border border-border bg-muted" />
                 }
               >
                 <CommunityCarousel photos={communitySlides} />
               </Suspense>
-            </SectionErrorBoundary>
-          </ScrollReveal>
-        </div>
-      </section>
+            </ScrollReveal>
+          </div>
+        </section>
+      </SectionErrorBoundary>
     )}
 
     {/* ── What We Do ── */}

@@ -44,10 +44,11 @@ function PhotoSlide({ photo }: { photo: CommunityPhoto }) {
         {failed ? (
           // The slide keeps its dimensions rather than being removed. Removing
           // it post-init would desync embla's slide count, canScrollNext, the
-          // "n of total" labels and the live region.
+          // "n of total" labels and the live region. The caption is not
+          // repeated here — it still renders once in the figcaption below.
           <div className="absolute inset-0 grid place-items-center px-6 text-center">
             <span className="text-sm text-muted-foreground">
-              {photo.caption}
+              Photo unavailable
             </span>
           </div>
         ) : (
