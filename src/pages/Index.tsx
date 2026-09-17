@@ -1,7 +1,21 @@
+import { lazy, Suspense } from 'react';
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
+import SectionErrorBoundary from '@/components/SectionErrorBoundary';
+import ProofStrip from '@/components/ProofStrip';
 import { ArrowRight } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import { getCommunityPhotos } from '@/data/communityPhotos';
+
+// Plain React.lazy, deliberately NOT lazyWithReload: that helper's recovery
+// path is a full window.location.reload() via the app-level ErrorBoundary,
+// which is right for a route but disproportionate for an optional section.
+// Here a failed chunk should drop only the photos. Splitting also keeps embla
+// out of the eager homepage entry chunk.
+const CommunityCarousel = lazy(() => import('@/components/CommunityCarousel'));
+
+// Read at module scope so a zero-photo set never even requests the chunk.
+const communitySlides = getCommunityPhotos();
 
 const features = [
   {
@@ -69,6 +83,39 @@ const HomePage = () => (
         </div>
       </div>
     </section>
+
+    {/* ── Proof strip ── */}
+    <section className="relative z-10 border-t border-border py-12">
+      <div className="container mx-auto px-6">
+        <ScrollReveal>
+          <ProofStrip />
+        </ScrollReveal>
+      </div>
+    </section>
+
+    {/* ── Community photos ──
+        Rendered only when photos exist, so an empty set costs no chunk
+        request and leaves no empty placeholder on the page. */}
+    {communitySlides.length > 0 && (
+      <section className="relative z-10 border-t border-border py-16">
+        <div className="container mx-auto px-6">
+          <ScrollReveal>
+            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-8">
+              Our community
+            </p>
+            <SectionErrorBoundary>
+              <Suspense
+                fallback={
+                  <div className="aspect-[16/10] w-full animate-pulse rounded border border-border bg-muted" />
+                }
+              >
+                <CommunityCarousel photos={communitySlides} />
+              </Suspense>
+            </SectionErrorBoundary>
+          </ScrollReveal>
+        </div>
+      </section>
+    )}
 
     {/* ── What We Do ── */}
     <section className="relative z-10 border-t border-border py-24">
