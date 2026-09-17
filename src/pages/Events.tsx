@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import { Calendar, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
@@ -80,13 +81,41 @@ const NoUpcomingEvents = () => (
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 const EventsPage = () => {
-  const { data: events, isLoading, isError, refetch, dataUpdatedAt } = useEvents();
+  const { data: events, isLoading, isFetching, isError, refetch } = useEvents();
+
+  // Drives a persistent status announcement (see the role="status" region
+  // below) for every fetch — including a manual Refresh or an automatic
+  // retry that happens to return data identical to what was already shown,
+  // which wouldn't otherwise produce any visible DOM change to announce.
+  const [statusMessage, setStatusMessage] = useState('');
+  const wasFetching = useRef(false);
+
+  useEffect(() => {
+    if (isFetching) {
+      if (!isLoading) {
+        setStatusMessage('Checking for updated events…');
+      }
+      wasFetching.current = true;
+    } else if (wasFetching.current) {
+      setStatusMessage(isError ? "Couldn't refresh events." : 'Events refreshed.');
+      wasFetching.current = false;
+    }
+  }, [isFetching, isLoading, isError]);
 
   const upcoming = events?.filter((e) => e.status === 'upcoming') ?? [];
   const hasUpcoming = upcoming.length > 0;
 
   return (
     <PageLayout intensity="low">
+
+      {/* Persistent status announcer, deliberately OUTSIDE the aria-busy
+          content region below: a message nested inside that region can
+          vanish the moment isFetching flips back to false — before a screen
+          reader gets a chance to announce it. role="status" has an implicit
+          polite live region, so this survives across every fetch lifecycle
+          (initial load, retry, manual refresh) regardless of whether the
+          visible content actually changed. */}
+      <p role="status" aria-atomic="true" className="sr-only">{statusMessage}</p>
 
       {/* ── Header ── */}
       <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
@@ -107,16 +136,6 @@ const EventsPage = () => {
                 All events are published on Meetup. RSVP to save your spot;
                 seats go fast.
               </p>
-              {/* Live indicator */}
-              <div className="inline-flex items-center gap-2 shrink-0 self-start sm:self-auto px-3 py-1.5 rounded-full border border-[var(--success)]/30 bg-[var(--success)]/[8%]">
-                <span className="relative flex h-2 w-2 shrink-0">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[var(--success)] opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-[var(--success)]" />
-                </span>
-                <span className="text-xs font-medium tracking-wide" style={{ color: 'var(--success)' }}>
-                  Live feed
-                </span>
-              </div>
             </div>
           </ScrollReveal>
         </div>
@@ -124,7 +143,7 @@ const EventsPage = () => {
 
       {/* ── Event list ── */}
       <section className="relative z-10 py-16">
-        <div className="container mx-auto px-6">
+        <div className="container mx-auto px-6" aria-live="polite" aria-busy={isFetching}>
 
           {/* Loading */}
           {isLoading && (
@@ -178,10 +197,10 @@ const EventsPage = () => {
                         href={ev.link}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98] whitespace-nowrap"
+                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
                       >
-                        RSVP on Meetup
-                        <ArrowRight className="w-4 h-4" />
+                        View time, location, and RSVP on Meetup
+                        <ArrowRight className="w-4 h-4 shrink-0" />
                       </a>
                     </div>
 
@@ -191,14 +210,14 @@ const EventsPage = () => {
             </div>
           )}
 
-          {/* Last updated timestamp */}
-          {dataUpdatedAt > 0 && !isLoading && (
+          {/* Manual refresh — deliberately makes no freshness/liveness claim:
+              a response here can be a 15-min-cached hit or a stale fallback
+              served after an upstream failure, so a "last updated"/"live"
+              label would misrepresent the data. Omitted while the error
+              state's own Try Again is already showing, to avoid a duplicate
+              control. */}
+          {!isLoading && !isError && (
             <p className="mt-8 text-xs text-muted-foreground/50">
-              Last updated {new Date(dataUpdatedAt).toLocaleTimeString('en-US', {
-                hour: 'numeric',
-                minute: '2-digit',
-              })}
-              {' · '}
               <button
                 onClick={() => refetch()}
                 className="hover:text-muted-foreground transition-colors duration-150 underline underline-offset-2"

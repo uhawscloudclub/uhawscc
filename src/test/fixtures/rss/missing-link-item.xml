@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Test feed</title>
+    <link>https://www.meetup.com/example/events/</link>
+    <description>Test feed with one unusable item and one valid item</description>
+    <item>
+      <title><![CDATA[Untitled event with no link or guid]]></title>
+      <description><![CDATA[This item is missing both link and guid and must be skipped.]]></description>
+      <pubDate>Tue, 01 Sep 2026 00:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Valid Event]]></title>
+      <link>https://www.meetup.com/example/events/12345/</link>
+      <guid>https://www.meetup.com/example/events/12345/</guid>
+      <description><![CDATA[Happening October 5, 2026.]]></description>
+      <pubDate>Tue, 01 Sep 2026 00:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

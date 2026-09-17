@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>CDATA edge case test feed</title>
+    <item>
+      <title><![CDATA[CDATA edge case]]></title>
+      <link>https://www.meetup.com/example/events/99/</link>
+      <guid>https://www.meetup.com/example/events/99/</guid>
+      <description><![CDATA[This workshop covers how RSS represents an entry: each one is wrapped in an <item> element. Happening December 1, 2026.]]></description>
+    </item>
+  </channel>
+</rss>

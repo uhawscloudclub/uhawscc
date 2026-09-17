@@ -13,7 +13,12 @@ export function renderWithRouter(
     { initialRoute = "/", ...renderOptions }: RenderWithRouterOptions = {},
 ) {
     const queryClient = new QueryClient({
-        defaultOptions: { queries: { retry: false } },
+        // retryDelay: 0 matters even though retry defaults to false here —
+        // useEvents() sets its own `retry: 1` directly on the query, which
+        // overrides this client's `retry` default. Without pinning the delay
+        // too, that retry would wait through TanStack Query's real ~1s
+        // exponential backoff in every test that exercises a failed fetch.
+        defaultOptions: { queries: { retry: false, retryDelay: 0 } },
     });
 
     const Wrapper = ({ children }: { children: ReactNode }) => (

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Link validation test feed</title>
+    <item>
+      <title><![CDATA[Valid link]]></title>
+      <link>https://www.meetup.com/example/events/1/</link>
+      <guid>https://www.meetup.com/example/events/1/</guid>
+      <description><![CDATA[Happening November 1, 2026.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Valid guid, no link]]></title>
+      <guid>https://www.meetup.com/example/events/2/</guid>
+      <description><![CDATA[Happening November 2, 2026.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Unsafe link and non-URL guid, must be skipped]]></title>
+      <link>javascript:alert(1)</link>
+      <guid>not-a-url</guid>
+      <description><![CDATA[Happening November 3, 2026.]]></description>
+    </item>
+    <item>
+      <title><![CDATA[Wrong host, must be skipped]]></title>
+      <link>https://evil.com/events/4/</link>
+      <description><![CDATA[Happening November 4, 2026.]]></description>
+    </item>
+  </channel>
+</rss>

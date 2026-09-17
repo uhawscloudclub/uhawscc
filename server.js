@@ -7,6 +7,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import rateLimit from "express-rate-limit";
 import { Resend } from "resend";
+import { fetchMeetupEvents, getEventsWithCache } from "./server/meetupFeed.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -137,23 +138,26 @@ if (!isDev) {
 // Fetches the public Meetup RSS feed, parses it, caches for 15 min.
 // The browser always hits /api/events (same origin) so no CORS or CSP changes
 // are needed — the outbound Meetup fetch is server-side only.
-
+// Parsing, response validation, and cache policy live in server/meetupFeed.js
+// so that decision logic is unit-testable without booting Express.
+//
+// Slug MUST stay in sync with EXTERNAL_LINKS.meetup in src/config/externalLinks.ts.
+// These drifted when AWS renamed Cloud Clubs to Student Builder Groups: the old
+// slug 404'd for months while this endpoint silently showed "no upcoming events".
 const MEETUP_RSS =
-  "https://www.meetup.com/aws-cloud-club-at-univ-of-houston/events/rss/";
+  "https://www.meetup.com/aws-sbg-at-univ-of-houston/events/rss/";
 const EVENTS_CACHE_TTL = 15 * 60 * 1000; // 15 minutes
 
 let eventsCache = { data: null, fetchedAt: 0 };
 
-/** Extract the text content of the first occurrence of <tag>…</tag>,
- *  stripping CDATA wrappers. Safe for Meetup's RSS format. */
-function rssField(block, tag) {
-  const re = new RegExp(`<${tag}[^>]*>([\\s\\S]*?)<\\/${tag}>`, "i");
-  const m = re.exec(block);
-  if (!m) return "";
-  const val = m[1].trim();
-  const cdata = val.match(/^<!\[CDATA\[([\s\S]*?)\]\]>$/);
-  return cdata ? cdata[1].trim() : val;
-}
+// A store object (not a raw value) so getEventsWithCache always reads/writes
+// the live module-level cache — required so a failed request's fallback
+// reflects the current cache, not a snapshot from before its own fetch began.
+// See the concurrency note on getEventsWithCache in server/meetupFeed.js.
+const eventsCacheStore = {
+  get: () => eventsCache,
+  set: (next) => { eventsCache = next; },
+};
 
 /** Escape user-supplied strings before embedding in an HTML email body. */
 function escapeHtml(str) {
@@ -165,125 +169,23 @@ function escapeHtml(str) {
     .replace(/'/g, "&#39;");
 }
 
-/** Strip HTML tags and collapse whitespace for clean descriptions. */
-function stripHtml(html) {
-  return html
-    .replace(/<[^>]+>/g, " ")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&amp;/g, "&")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-/** Parse Meetup RSS XML into a structured array of events. */
-function parseRSS(xml) {
-  const items = [];
-  const itemRe = /<item>([\s\S]*?)<\/item>/g;
-  let m;
-
-  while ((m = itemRe.exec(xml)) !== null) {
-    const block = m[1];
-    const title = rssField(block, "title");
-    const link = rssField(block, "link") || rssField(block, "guid");
-    const rawDescription = rssField(block, "description");
-    const pubDate = rssField(block, "pubDate");
-    const guid = rssField(block, "guid") || link;
-
-    if (!title || !link) continue;
-
-    // Meetup's /events/rss/ only surfaces upcoming events — trust the feed.
-    // pubDate is the *publication* date (when it was posted), NOT the event date,
-    // so we do NOT use it to filter upcoming vs past.
-    const status = "upcoming";
-
-    // Try to extract the real event date from the description text.
-    // Meetup descriptions consistently mention dates like "April 20th" or "April 20, 2026".
-    const plainDesc = stripHtml(rawDescription);
-    const dateMatch = plainDesc.match(
-      /\b(January|February|March|April|May|June|July|August|September|October|November|December)\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?/i
-    );
-    let date = "See Meetup for date & time";
-    let rawDate = null;
-    if (dateMatch) {
-      const year = dateMatch[3] || new Date().getFullYear();
-      // Parse at noon Central time to avoid midnight-UTC shifting the date by one day
-      // when toLocaleDateString is called with America/Chicago timezone.
-      const parsed = new Date(`${dateMatch[1]} ${dateMatch[2]}, ${year} 12:00:00 GMT-0500`);
-      if (!isNaN(parsed.getTime())) {
-        rawDate = parsed.toISOString();
-        date = parsed.toLocaleDateString("en-US", {
-          weekday: "long",
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-          timeZone: "America/Chicago",
-        });
-      }
-    }
-
-    const description = plainDesc.slice(0, 200).trimEnd();
-
-    items.push({
-      id: guid,
-      title,
-      link,
-      date,
-      rawDate,
-      description: description
-        ? description.length === 200
-          ? description + "…"
-          : description
-        : "See Meetup for details.",
-      status,
-    });
-  }
-
-  // Sort chronologically by extracted event date
-  return items.sort((a, b) => {
-    const da = a.rawDate ? new Date(a.rawDate) : 0;
-    const db = b.rawDate ? new Date(b.rawDate) : 0;
-    return da - db;
-  });
-}
-
 app.get("/api/events", async (req, res) => {
-  try {
-    const now = Date.now();
+  const result = await getEventsWithCache({
+    cacheStore: eventsCacheStore,
+    now: Date.now(),
+    ttlMs: EVENTS_CACHE_TTL,
+    fetchEvents: () => fetchMeetupEvents({ url: MEETUP_RSS }),
+  });
 
-    // Serve from cache if still fresh
-    if (eventsCache.data && now - eventsCache.fetchedAt < EVENTS_CACHE_TTL) {
-      return res.json(eventsCache.data);
-    }
-
-    // Fetch RSS with an 8-second timeout
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-
-    let xml;
-    try {
-      const response = await fetch(MEETUP_RSS, {
-        signal: controller.signal,
-        headers: { "User-Agent": "AWS-Cloud-Club-UH-Website/1.0" },
-      });
-      if (!response.ok) throw new Error(`Meetup RSS returned ${response.status}`);
-      xml = await response.text();
-    } finally {
-      clearTimeout(timeout);
-    }
-
-    const events = parseRSS(xml);
-    eventsCache = { data: events, fetchedAt: now };
-
-    res.json(events);
-  } catch (err) {
-    console.error("[/api/events]", err instanceof Error ? err.message : String(err));
-    // Return stale cache if available rather than a hard error
-    if (eventsCache.data) return res.json(eventsCache.data);
-    res.status(503).json([]);
+  if (result.error) {
+    console.error(
+      "[/api/events]",
+      result.stale ? "serving stale cache after error:" : "no usable cache, returning 503:",
+      result.error instanceof Error ? result.error.message : String(result.error)
+    );
   }
+
+  res.status(result.status).json(result.body);
 });
 
 // ── Contact form API ───────────────────────────────────────────────────────
