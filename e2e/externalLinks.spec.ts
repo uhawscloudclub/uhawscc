@@ -1,11 +1,26 @@
 import { test, expect } from "@playwright/test";
 import { EXTERNAL_LINKS } from "../src/config/externalLinks";
 
+// Events.tsx currently filters purely on the literal `status` field, not on
+// `rawDate` — so a fixed past calendar date would NOT actually break this
+// test today. It's still worth avoiding: `rawDate`/date-based filtering is
+// exactly the pattern ProofStrip.selectNextEvent already uses on the
+// homepage, so a future date-aware Events page is plausible. Computed
+// relative to the test run instead of a fixed year, so this can't go stale.
+const FIXTURE_EVENT_DATE = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+FIXTURE_EVENT_DATE.setUTCHours(17, 0, 0, 0); // noon America/Chicago, matching the real feed's convention
+
 const FIXTURE_EVENT = {
     id: "https://www.meetup.com/aws-sbg-at-univ-of-houston/events/999999/",
     title: "Fixture Workshop",
-    date: "Wednesday, October 7, 2026",
-    rawDate: "2026-10-07T17:00:00.000Z",
+    date: FIXTURE_EVENT_DATE.toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        timeZone: "America/Chicago",
+    }),
+    rawDate: FIXTURE_EVENT_DATE.toISOString(),
     link: "https://www.meetup.com/aws-sbg-at-univ-of-houston/events/999999/",
     description: "A deterministic fixture event.",
     status: "upcoming" as const,
