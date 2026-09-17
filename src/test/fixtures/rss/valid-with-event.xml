@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+    <channel>
+        <title>Events - AWS SBG at University of Houston - Sugar Land Campus</title>
+        <link>https://www.meetup.com/aws-sbg-at-university-of-houston-sugar-land-campus/events/</link>
+        <description>Events - AWS SBG at University of Houston - Sugar Land Campus</description>
+        <lastBuildDate>Mon, 14 Sep 2026 19:22:40 GMT</lastBuildDate>
+        <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
+        <generator>https://github.com/jpmonette/feed</generator>
+        <copyright>Copyright 2002-2025 Meetup, Inc.</copyright>
+        <item>
+            <title><![CDATA[Git and GitHub Foundations Workshop]]></title>
+            <link>https://www.meetup.com/aws-sbg-at-university-of-houston-sugar-land-campus/events/316558414/</link>
+            <guid>https://www.meetup.com/aws-sbg-at-university-of-houston-sugar-land-campus/events/316558414/</guid>
+            <pubDate>Mon, 14 Sep 2026 19:22:40 GMT</pubDate>
+            <description><![CDATA[Your GitHub is essentially your second resume. Let's make it good.
+GitHub Foundations Workshop: Build Your Portfolio with AI covers Git, GitHub, and GitHub Copilot from the ground up, then gets hands-on: build a real GitHub portfolio and README profile you can actually show off, and host it live with GitHub Pages before you leave.
+
+No guest speaker this round; this one's fully student-led by our own officer team, so it moves at a pace built for wherever you're actually starting from.
+
+Verified students on GitHub Education get free access to Copilot's features, so you can follow along the whole time.
+
+Bring your laptop!!
+Bring a friend!!
+Free Food and Drinks!!
+
+Hosted by the AWS Student Builder Group at the University of Houston.
+Wednesday, September 23, 4:00 to 6:00 PM
+AMG 104 (University of Houston Sugarland)
+HYBRID (Microsoft Teams)]]></description>
+        </item>
+    </channel>
+</rss>
