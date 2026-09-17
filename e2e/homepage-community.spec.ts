@@ -26,12 +26,24 @@ test.describe("Homepage community carousel", () => {
         return region;
     }
 
-    test("is reachable within one viewport scroll below the hero", async ({
+    test("is reachable within one viewport scroll below the hero (desktop)", async ({
         page,
     }) => {
         await page.goto("/");
         await page.evaluate(() => window.scrollBy(0, window.innerHeight));
-        await expect(page.getByText(/our community/i)).toBeVisible();
+        // Exact match, not /our community/i — that regex also matches the
+        // hero's "Join our community" CTA, which is always present and would
+        // make this a strict-mode violation (two elements, one locator).
+        await expect(page.getByText("Our community", { exact: true })).toBeVisible();
+    });
+
+    test("is reachable within one viewport scroll below the hero (375px mobile)", async ({
+        page,
+    }) => {
+        await page.setViewportSize({ width: 375, height: 812 });
+        await page.goto("/");
+        await page.evaluate(() => window.scrollBy(0, window.innerHeight));
+        await expect(page.getByText("Our community", { exact: true })).toBeVisible();
     });
 
     test("a single curated photo renders as a static figure with no carousel chrome", async ({
@@ -69,9 +81,13 @@ test.describe("Homepage community carousel", () => {
         test.skip(photos.length < 2, "Needs at least two slides to navigate.");
 
         await page.goto("/");
-        await focusRegion(page);
+        const region = await focusRegion(page);
 
-        const status = page.locator('[aria-live="polite"]');
+        // Scoped to the region, not page-wide: sonner's global toast
+        // container (mounted on every page via <Sonner /> in App.tsx) also
+        // renders aria-live="polite", so an unscoped locator matches two
+        // elements and is a strict-mode violation.
+        const status = region.locator('[aria-live="polite"]');
         await expect(status).toContainText(/slide 1 of/i);
 
         await page.keyboard.press("ArrowRight");
@@ -79,6 +95,30 @@ test.describe("Homepage community carousel", () => {
 
         await page.keyboard.press("ArrowLeft");
         await expect(status).toContainText(/slide 1 of/i);
+    });
+
+    test("remains keyboard-navigable and announces slides under prefers-reduced-motion: reduce", async ({
+        page,
+    }) => {
+        test.skip(photos.length < 2, "Needs at least two slides to navigate.");
+
+        // Real browser emulation, not a mocked matchMedia: this exercises the
+        // actual prefersReducedMotion() check in CommunityCarousel against a
+        // genuine reduced-motion context, so embla is genuinely constructed
+        // with duration: 0 rather than that being asserted only at the unit
+        // level (CommunityCarousel.embla.test.tsx mocks the embla API and
+        // proves the exact option value; this proves the feature keeps
+        // working end-to-end when a real user has the OS preference set).
+        await page.emulateMedia({ reducedMotion: "reduce" });
+        await page.goto("/");
+        const region = await focusRegion(page);
+        await expect(region).toBeFocused();
+
+        const status = region.locator('[aria-live="polite"]');
+        await expect(status).toContainText(/slide 1 of/i);
+
+        await page.keyboard.press("ArrowRight");
+        await expect(status).toContainText(/slide 2 of/i);
     });
 
     test("both controls have accessible names and 44px targets", async ({
@@ -121,9 +161,11 @@ test.describe("Homepage community carousel", () => {
         test.skip(photos.length < 2, "Needs at least two slides to detect drift.");
 
         await page.goto("/");
-        await page.getByRole("region", { name: REGION }).scrollIntoViewIfNeeded();
+        const region = page.getByRole("region", { name: REGION });
+        await region.scrollIntoViewIfNeeded();
 
-        const status = page.locator('[aria-live="polite"]');
+        // Scoped to the region — see the note in the arrow-keys test above.
+        const status = region.locator('[aria-live="polite"]');
         await expect(status).toContainText(/slide 1 of/i);
 
         await page.waitForTimeout(5000);
