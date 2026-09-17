@@ -62,8 +62,10 @@ describe("Home page — community section failure", () => {
     renderWithRouter(<HomePage />);
 
     // The section, including its heading, is gone — not an empty labelled band.
+    // Exact match: /our community/i would also match the hero's
+    // "Join our community" CTA, which must survive and does.
     await waitFor(() => {
-      expect(screen.queryByText(/our community/i)).not.toBeInTheDocument();
+      expect(screen.queryByText("Our community")).not.toBeInTheDocument();
     });
 
     // Everything else survives.

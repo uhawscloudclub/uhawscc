@@ -46,4 +46,6 @@ jobs:
           path: |
             playwright-report
             test-results
+            playwright-report-prod
+            test-results-prod
           if-no-files-found: ignore

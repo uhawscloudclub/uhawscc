@@ -74,7 +74,9 @@ describe("Home page (Index)", () => {
 
         renderWithRouter(<HomePage />);
 
-        expect(screen.queryByText(/our community/i)).not.toBeInTheDocument();
+        // Exact match, not /our community/i — that regex also matches the
+        // hero's "Join our community" CTA, which is always present.
+        expect(screen.queryByText("Our community")).not.toBeInTheDocument();
         expect(
             screen.queryByRole("region", { name: /photos from cloudhub uh events/i }),
         ).not.toBeInTheDocument();
