@@ -28,8 +28,15 @@ jobs:
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium
 
-      - name: Run Playwright tests
+      - name: Run Playwright tests (Vite dev server)
         run: npx playwright test
+
+      # Separate config: code-split chunks only exist in a real build, so the
+      # dev-server run above cannot exercise them. Always runs, even if the
+      # dev suite failed, so one report covers both layers.
+      - name: Run Playwright tests (production build)
+        if: '!cancelled()'
+        run: npx playwright test --config=playwright.prod.config.ts
 
       - name: Upload Playwright report on failure
         if: failure()

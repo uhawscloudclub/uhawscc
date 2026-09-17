@@ -8,7 +8,9 @@ import baseConfig from "./playwright.config";
 export default defineConfig({
   ...baseConfig,
   testDir: "./e2e",
-  testMatch: /prod-lazy-routes\.spec\.ts/,
+  // The homepage community carousel is code-split, so its chunk only exists in
+  // a real build — it belongs here rather than in the dev-server config.
+  testMatch: /(prod-lazy-routes|homepage-community)\.spec\.ts/,
   use: { ...baseConfig.use, baseURL: "http://localhost:4173" },
   webServer: {
     command: "npm run build && npm run preview -- --port 4173",
