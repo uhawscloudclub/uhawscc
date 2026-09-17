@@ -69,8 +69,12 @@ Runs on:
 What it does:
 1. installs dependencies
 2. installs Playwright Chromium browser
-3. runs `npx playwright test`
-4. uploads report artifacts if tests fail
+3. runs `npx playwright test` — the default config, against the Vite **dev** server
+4. runs `npx playwright test --config=playwright.prod.config.ts` — against a real
+   `vite build` + `vite preview`. Code-split chunks (`React.lazy`) only exist in a
+   production build, so specs covering them cannot run in step 3. This step runs
+   even if step 3 failed, so one run reports on both layers.
+5. uploads report artifacts if tests fail
 
 Why manual first:
 - beginner teams can learn without blocking every pull request
