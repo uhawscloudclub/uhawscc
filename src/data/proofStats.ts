@@ -1,9 +1,11 @@
+import { EXTERNAL_LINKS } from "@/config/externalLinks";
+
 /**
  * Hand-maintained figures shown in the homepage proof strip.
  *
- * Every figure must be verifiable at `source` and carries the date it was last
- * checked. Re-verify before publishing changes — these drift (the member count
- * moved from 132 to 133 within a week of first being recorded).
+ * Every figure must be verifiable at `source` and carries the America/Chicago
+ * calendar date it was last checked. Re-verify before publishing changes —
+ * these drift, and `asOf` must never be a future date in the club's timezone.
  *
  * Label these precisely. "members on Meetup" is NOT the same as club members,
  * and overstating it is the fastest way to lose a reader's trust.
@@ -23,7 +25,7 @@ export interface ProofStat {
 }
 
 export interface ProofStats {
-  /** ISO YYYY-MM-DD the figures below were last verified. */
+  /** ISO YYYY-MM-DD, America/Chicago, of the last verification. */
   asOf: string;
   source: string;
   sourceNote: string;
@@ -31,10 +33,10 @@ export interface ProofStats {
 }
 
 export const proofStats: ProofStats = {
-  asOf: "2026-09-17",
-  source: "https://www.meetup.com/aws-sbg-at-univ-of-houston/",
-  sourceNote:
-    "Verified directly on the club's public Meetup group page.",
+  asOf: "2026-09-16",
+  // Reuse the single client-side Meetup URL rather than duplicating it here.
+  source: EXTERNAL_LINKS.meetup,
+  sourceNote: "Verified on the club's public Meetup group page.",
   stats: [
     {
       id: "members",
