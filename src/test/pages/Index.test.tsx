@@ -79,19 +79,20 @@ describe("Home page (Index)", () => {
         expect(screen.getByText(/figures as of/i)).toBeInTheDocument();
     });
 
-    it("omits the community photo section entirely while no photos are curated", () => {
-        // Guards the zero-photo path that is live until approved photos land:
-        // no heading, no empty frame, and no lazy chunk requested.
-        expect(communityPhotos).toHaveLength(0);
+    it("renders the community photo section now that photos are curated", async () => {
+        // The zero-photo path itself (no heading, no empty frame, no lazy
+        // chunk requested) stays covered by CommunityCarousel's own test
+        // suite via prop injection — this just confirms Index.tsx wires the
+        // real, non-empty production data through to the page.
+        expect(communityPhotos.length).toBeGreaterThan(0);
+        expect(communityPhotos.length).toBeLessThanOrEqual(8);
 
         renderWithRouter(<HomePage />);
 
-        // Exact match, not /our community/i — that regex also matches the
-        // hero's "Join our community" CTA, which is always present.
-        expect(screen.queryByText("Our community")).not.toBeInTheDocument();
+        expect(screen.getByText("Our community")).toBeInTheDocument();
         expect(
-            screen.queryByRole("region", { name: /photos from cloudhub uh events/i }),
-        ).not.toBeInTheDocument();
+            await screen.findByRole("region", { name: /photos from cloudhub uh events/i }),
+        ).toBeInTheDocument();
     });
 
     it("keeps the hero and primary CTA intact even if the events feed fails", async () => {
