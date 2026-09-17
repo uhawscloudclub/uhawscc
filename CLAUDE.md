@@ -71,7 +71,7 @@ npx playwright test  # E2E tests — manual-dispatch workflow (e2e-playwright.ym
 
 **[security.yml](.github/workflows/security.yml)** runs on every push/PR to `main`, plus a weekly scheduled scan — but not every job runs on every trigger: `dependency-review` is PR-only (`if: github.event_name == 'pull_request'`), while `npm-audit` and `codeql` run on both push and PR.
 
-**[e2e-playwright.yml](.github/workflows/e2e-playwright.yml)** is manual-dispatch only (`workflow_dispatch`) — Playwright E2E is *not* wired into every PR (kept off the critical path deliberately; run it on-demand before a risky release).
+**[e2e-playwright.yml](.github/workflows/e2e-playwright.yml)** is manual-dispatch only (`workflow_dispatch`) — Playwright E2E is *not* wired into every PR (kept off the critical path deliberately; run it on-demand before a risky release). It runs **two** suites in one job: the default config against the Vite dev server, then `playwright.prod.config.ts` against a real `vite build` + `vite preview`. The second is not redundant — `React.lazy` code-split chunks only exist in a production build, so specs that exercise them (e.g. the homepage community carousel) can only run there. The prod step runs even if the dev step fails, so one dispatch reports on both.
 
 **Not yet set up (candidate improvements):**
 - Pre-commit hooks (Husky + lint-staged) for instant local feedback on obvious errors
