@@ -1,6 +1,7 @@
 import { existsSync, statSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import {
     communityPhotos,
@@ -55,6 +56,22 @@ describe("communityPhotos production data", () => {
         for (const photo of communityPhotos) {
             expect(photo.width, photo.id).toBe(1200);
             expect(photo.height, photo.id).toBe(750);
+        }
+    });
+
+    it("has real 1200x750 large and 600x375 small pixel dimensions on disk", async () => {
+        // The previous test only checks the DECLARED width/height fields —
+        // a record can lie about those. This decodes the actual WebP bytes
+        // and asserts the real pixel dimensions, so a mismatched or wrongly
+        // resized asset fails here even if its data record looks correct.
+        for (const photo of communityPhotos) {
+            const large = await sharp(assetPath(photo.src)).metadata();
+            expect(large.width, `${photo.src} width`).toBe(1200);
+            expect(large.height, `${photo.src} height`).toBe(750);
+
+            const small = await sharp(assetPath(photo.srcSmall)).metadata();
+            expect(small.width, `${photo.srcSmall} width`).toBe(600);
+            expect(small.height, `${photo.srcSmall} height`).toBe(375);
         }
     });
 
