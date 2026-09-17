@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import About from "@/pages/About";
 import Events from "@/pages/Events";
 import HomePage from "@/pages/Index";
@@ -9,6 +9,21 @@ import LearningPaths from "@/pages/LearningPaths";
 import NotFound from "@/pages/NotFound";
 import Resources from "@/pages/Resources";
 import Team from "@/pages/Team";
+
+// The home and events routes both fetch /api/events (via ProofStrip and
+// useEvents). Left unstubbed, jsdom falls through to Node's fetch with a
+// relative URL, which rejects — noise that has nothing to do with these
+// smoke assertions.
+beforeEach(() => {
+    vi.stubGlobal(
+        "fetch",
+        vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => [] }),
+    );
+});
+
+afterEach(() => {
+    vi.unstubAllGlobals();
+});
 
 const renderRoute = (route: string) => {
     const queryClient = new QueryClient({

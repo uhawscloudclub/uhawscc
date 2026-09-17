@@ -1,11 +1,23 @@
 import { screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import HomePage from "@/pages/Index";
 import { EXTERNAL_LINKS } from "@/config/externalLinks";
 import { communityPhotos } from "@/data/communityPhotos";
 import { renderWithRouter } from "../test-utils";
 
 describe("Home page (Index)", () => {
+    beforeEach(() => {
+        // ProofStrip calls useEvents on every HomePage render, so every test in
+        // this file issues fetch("/api/events"). Without a default stub that
+        // falls through to Node's fetch with a relative URL, which rejects and
+        // then retries — noisy and timing-sensitive even when assertions pass.
+        // Tests that need a failing feed override this with their own stub.
+        vi.stubGlobal(
+            "fetch",
+            vi.fn().mockResolvedValue({ ok: true, status: 200, json: async () => [] }),
+        );
+    });
+
     afterEach(() => {
         vi.unstubAllGlobals();
     });
