@@ -896,6 +896,14 @@ html {
   border-bottom: 3px solid var(--hull-shadow);
 }
 
+/* "Recently:" strip at the foot of a What-we-do card. */
+.theme-pixel .px-recently {
+  padding: 0.75rem;
+  color: var(--muted-foreground);
+  background: var(--hull-dark);
+  line-height: 1.5;
+}
+
 /* Quiz progress: one block per question, the current one outlined. */
 .theme-pixel .px-quiz-steps {
   display: flex;
