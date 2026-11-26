@@ -27,7 +27,7 @@ const team: Officer[] = [
   {
     name: 'Perry Takyi', role: 'President', image: perryHeadshot, linkedinUrl: 'https://www.linkedin.com/in/perry-takyi/',
     does: 'Leads the club, building a community around cloud, AI, cybersecurity, and other emerging tech.',
-    offTheClock: 'In the gym, out running, or grinding Marvel Rivals and Rainbow Six Siege.',
+    offTheClock: 'In the gym, playing sports, drinking matcha, trying new foods, traveling, taking pictures, and listening to music.',
     favoriteService: 'CodePipeline and CodeDeploy',
   },
   {
