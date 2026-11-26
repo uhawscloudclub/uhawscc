@@ -853,6 +853,49 @@ html {
   outline-offset: 3px;
 }
 
+/* Ways-to-join cards: equal-height pixel panels, action pinned to the bottom. */
+.theme-pixel .px-join-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem;
+}
+.theme-pixel .px-join-card.is-primary {
+  box-shadow:
+    inset 0 var(--px) 0 var(--hull-light),
+    inset 0 calc(var(--px) * -2) 0 var(--hull-dark),
+    0 -3px 0 0 var(--beacon),
+    0 3px 0 0 var(--beacon),
+    -3px 0 0 0 var(--beacon),
+    3px 0 0 0 var(--beacon),
+    0 9px 0 0 var(--hull-shadow);
+}
+.theme-pixel .px-join-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  color: var(--beacon);
+  background: var(--hull-dark);
+}
+
+/* Past-event cards: flyer on top, details below. */
+.theme-pixel .px-event-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+.theme-pixel .px-event-card img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: var(--hull-dark);
+  border-bottom: 3px solid var(--hull-shadow);
+}
+
 /* Quiz progress: one block per question, the current one outlined. */
 .theme-pixel .px-quiz-steps {
   display: flex;

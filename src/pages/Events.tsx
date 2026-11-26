@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import PageLayout from '@/components/PageLayout';
 import Mascot from '@/components/Mascot';
+import PixelIcon from '@/components/PixelIcon';
 import EventDateTile from '@/components/EventDateTile';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { useEvents } from '@/hooks/useEvents';
 import { PAST_EVENTS, formatEventDay, semesterOf } from '@/data/pastEvents';
+import { flyerFor } from '@/data/eventFlyers';
 import { hasValidEventDate, isUpcomingEvent } from '../../server/eventDates.js';
 import SkySparkles from '@/components/SkySparkles';
 
@@ -76,47 +78,53 @@ const NoUpcomingEvents = () => (
 );
 
 // ── Past events ───────────────────────────────────────────────────────────────
-// A timeline (it really is a chronological sequence), grouped by semester,
-// newest first. Stays visible when the live feed is empty or down, so a
+// Cards with each event's Meetup flyer, newest first. The first few show by
+// default; "Show all" reveals the rest and moves focus to the first newly
+// shown card. Stays visible when the live feed is empty or down, so a
 // first-time visitor can still see the club is active.
+const PAST_PREVIEW = 6;
+
 const PastEvents = () => {
-  const groups: { semester: string; events: typeof PAST_EVENTS[number][] }[] = [];
-  for (const ev of PAST_EVENTS) {
-    const semester = semesterOf(ev.date);
-    const last = groups[groups.length - 1];
-    if (last?.semester === semester) last.events.push(ev);
-    else groups.push({ semester, events: [ev] });
-  }
+  const [showAll, setShowAll] = useState(false);
+  const firstHiddenRef = useRef<HTMLAnchorElement>(null);
+  const shown = showAll ? PAST_EVENTS : PAST_EVENTS.slice(0, PAST_PREVIEW);
+  const hiddenCount = PAST_EVENTS.length - PAST_PREVIEW;
+
+  const expand = () => {
+    setShowAll(true);
+    requestAnimationFrame(() => firstHiddenRef.current?.focus());
+  };
 
   return (
     <section aria-labelledby="past-events-heading" className="relative border-t border-border py-16">
-      <div className="container mx-auto px-6 max-w-4xl">
+      <div className="container mx-auto px-6">
         <h2 id="past-events-heading" className="text-foreground mb-3">
           Past events
         </h2>
-        <p className="text-base text-muted-foreground max-w-[55ch] mb-12">
+        <p className="text-base text-muted-foreground max-w-[55ch] mb-10">
           Workshops, career nights, and study cohorts from the last two semesters.
         </p>
-        <div className="space-y-14">
-          {groups.map((group) => (
-            <div key={group.semester}>
-              <h3 className="text-lg text-foreground mb-6">{group.semester}</h3>
-              {/* Timeline: a 2px rail with a square node per event. */}
-              <ol className="relative border-l-2 border-border ml-1.5 space-y-10">
-                {group.events.map((ev) => (
-                  <li key={ev.meetupUrl} className="relative pl-7">
-                    <span className="absolute -left-[7px] top-1.5 w-3 h-3 bg-[var(--chip)]" aria-hidden="true" />
-                    <p className="text-sm text-muted-foreground">
-                      <time dateTime={ev.date}>{formatEventDay(ev.date)}</time>
-                      <span className="sr-only">:</span>
-                    </p>
-                    <p className="font-bold text-foreground leading-snug mt-1 mb-1">{ev.title}</p>
-                    <p className="text-sm text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2">
-                      <span className="px-chip ml-0">{ev.format}</span>
-                      {ev.place && <span>{ev.place}</span>}
-                    </p>
-                    <p className="text-base text-muted-foreground leading-relaxed max-w-[62ch]">{ev.summary}</p>
+        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {shown.map((ev, i) => {
+            const flyer = flyerFor(ev.meetupUrl);
+            return (
+              <li key={ev.meetupUrl} className="px-panel px-event-card">
+                {flyer && (
+                  // The flyer repeats the title and date shown below, so it is decorative.
+                  <img src={flyer} alt="" width={800} height={450} loading="lazy" decoding="async" />
+                )}
+                <div className="flex flex-col flex-1 p-5">
+                  <p className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <time dateTime={ev.date}>{formatEventDay(ev.date)}</time>
+                    <span className="px-chip ml-0">{ev.format}</span>
+                    <span className="sr-only">, {semesterOf(ev.date)}</span>
+                  </p>
+                  <h3 className="font-bold text-foreground text-lg leading-snug mt-2">{ev.title}</h3>
+                  {ev.place && <p className="text-sm text-muted-foreground mt-1">{ev.place}</p>}
+                  <p className="text-base text-muted-foreground leading-relaxed mt-2">{ev.summary}</p>
+                  <div className="mt-auto pt-3">
                     <a
+                      ref={i === PAST_PREVIEW ? firstHiddenRef : undefined}
                       href={ev.meetupUrl}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -124,13 +132,21 @@ const PastEvents = () => {
                       className="px-link text-sm"
                     >
                       Event page on Meetup
+                      <PixelIcon name="external" size={12} />
                     </a>
-                  </li>
-                ))}
-              </ol>
-            </div>
-          ))}
-        </div>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
+        </ul>
+        {!showAll && hiddenCount > 0 && (
+          <div className="mt-10 flex justify-center">
+            <button type="button" onClick={expand} className="px-button">
+              Show all {PAST_EVENTS.length} past events
+            </button>
+          </div>
+        )}
       </div>
     </section>
   );
