@@ -54,7 +54,7 @@ const HomePage = () => (
 
     {/* ── Hero + Next up ── */}
     <section className="relative overflow-hidden px-sky">
-      <SkySparkles />
+      <SkySparkles clouds />
       <div className="container mx-auto px-6 pt-24 sm:pt-32 pb-12 relative">
         <div className="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-6 max-w-5xl">
           <div className="max-w-2xl">

@@ -1131,3 +1131,55 @@ html {
     }
   }
 }
+
+/* Drifting clouds (homepage sky) and a livelier astronaut. Hidden entirely
+   for reduced motion: a static extra cloud adds nothing. */
+.theme-pixel .px-cloud {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .theme-pixel .px-cloud {
+    display: block;
+    position: absolute;
+    left: 0;
+    height: auto;
+    opacity: 0.9;
+  }
+  /* Two sizes and speeds, in the band between the nav and the heading. */
+  .theme-pixel .px-cloud-a {
+    top: 76px;
+    width: 120px;
+    animation: px-drift 85s steps(340, jump-none) -20s infinite;
+  }
+  .theme-pixel .px-cloud-b {
+    top: 104px;
+    width: 80px;
+    opacity: 0.75;
+    animation: px-drift 120s steps(480, jump-none) -75s infinite;
+  }
+  @keyframes px-drift {
+    from { transform: translateX(-160px); }
+    to { transform: translateX(calc(100vw + 40px)); }
+  }
+
+  /* Astronaut: visor glint blinks, chest chip pins twinkle. Colour (fill)
+     changes rather than opacity: per-pixel opacity on the floating sprite
+     shows hairline seams between its pixels. */
+  @keyframes px-glint {
+    0%, 86%, 100% { fill: #ffffff; }
+    90%, 96% { fill: #ad5cff; }
+  }
+  @keyframes px-pin {
+    0%, 100% { fill: #ffd34d; }
+    50% { fill: #8a6a14; }
+  }
+  .theme-pixel svg .m-glint {
+    animation: px-glint 4s steps(1, jump-end) infinite;
+  }
+  .theme-pixel svg .m-pin {
+    animation: px-pin 1.6s steps(1, jump-end) infinite;
+  }
+  .theme-pixel svg .m-pin:nth-of-type(2n) {
+    animation-delay: -0.8s;
+  }
+}
