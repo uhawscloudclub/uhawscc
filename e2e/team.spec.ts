@@ -1,9 +1,9 @@
 import { test, expect } from "@playwright/test";
 import { TEAM_MEMBERS } from "../src/test/fixtures";
 
-test.describe("Team page", () => {
+test.describe("Team section on /community", () => {
     test.beforeEach(async ({ page }) => {
-        await page.goto("/team");
+        await page.goto("/community#team");
     });
 
     test("all six team member names are visible", async ({ page }) => {
@@ -24,9 +24,7 @@ test.describe("Team page", () => {
         }
     });
 
-    test("the Become a Member heading is visible", async ({ page }) => {
-        await expect(
-            page.getByRole("heading", { name: /Become a Member/i }),
-        ).toBeVisible();
+    test("the Ways to join section is visible", async ({ page }) => {
+        await expect(page.getByRole("heading", { name: "Ways to join" })).toBeVisible();
     });
 });

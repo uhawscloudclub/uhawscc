@@ -21,8 +21,12 @@ export const EXTERNAL_LINKS = {
   ccpCertPage: 'https://aws.amazon.com/certification/certified-cloud-practitioner/',
   ccpTrainingHub: 'https://aws.amazon.com/training/learn-about/cloud-practitioner/',
   skillBuilderHome: 'https://skillbuilder.aws/',
+  builderCenterStudents: 'https://builder.aws.com/learn/students',
+  // The club's own AWS Builder Center sign-up link (supplied by the officers;
+  // a bit.ly short link, so it can be re-pointed without a code change).
+  builderCenterSignup: 'https://bit.ly/4pN9Aqs',
+  studentRewards: 'https://builder.aws.com/student-rewards',
   skillBuilderSetupGuide: '/docs/skill-builder-guide.pdf',
-  cloudNews: 'https://agentpierre.github.io/awscloudclub-uh-cloud-news/',
 } as const;
 
 export const LINKS = EXTERNAL_LINKS;

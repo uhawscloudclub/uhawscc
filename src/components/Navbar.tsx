@@ -4,14 +4,12 @@ import { Menu, X } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import clubLogo from '@/images/aws-student-builder-group-logo.png';
 
+// Mirrors the sitemap: four destinations plus the Meetup CTA.
 const navLinks = [
-  { label: 'About', to: '/about' },
   { label: 'Events', to: '/events' },
-  { label: 'Learning Paths', to: '/learning-paths' },
-  { label: 'Resources', to: '/resources' },
-  { label: 'News', to: '/news' },
-  { label: 'Team', to: '/team' },
-  // Contact lives in the footer — omitted from nav to prevent overflow at tablet
+  { label: 'Learn', to: '/learn' },
+  { label: 'Community', to: '/community' },
+  { label: 'Contact', to: '/contact' },
 ];
 
 const Navbar = () => {
@@ -48,7 +46,7 @@ const Navbar = () => {
           </span>
         </Link>
 
-        {/* Desktop — lg breakpoint so 6 links + CTA don't overflow at tablet */}
+        {/* Desktop — lg breakpoint keeps the logo, 4 links and CTA on one line */}
         <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
@@ -69,7 +67,7 @@ const Navbar = () => {
             rel="noopener noreferrer"
             className="btn-outline-gradient px-4 py-2 text-sm font-semibold active:scale-95 transition-all duration-200"
           >
-            Join the Club
+            Join on Meetup
           </a>
         </div>
 
@@ -107,7 +105,7 @@ const Navbar = () => {
               rel="noopener noreferrer"
               className="btn-outline-gradient mt-3 px-4 py-2.5 text-sm font-semibold text-center block transition-all duration-200 active:scale-[0.98]"
             >
-              Join the Club
+              Join on Meetup
             </a>
           </div>
         </div>

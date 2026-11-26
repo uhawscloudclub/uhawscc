@@ -9,6 +9,7 @@ import rateLimit from "express-rate-limit";
 import { Resend } from "resend";
 import { fetchMeetupEvents, getEventsWithCache } from "./server/meetupFeed.js";
 import { withComputedStatus } from "./server/eventDates.js";
+import { LEGACY_ROUTES, legacyRedirectTarget } from "./server/legacyRoutes.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -72,7 +73,7 @@ app.use(
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         imgSrc: ["'self'", "data:"],
         connectSrc: ["'self'", "https://challenges.cloudflare.com"],
-        frameSrc: ["https://agentpierre.github.io", "https://challenges.cloudflare.com"], // News page iframe + Turnstile
+        frameSrc: ["https://challenges.cloudflare.com"], // Turnstile (contact form)
         objectSrc: ["'none'"],
         baseUri: ["'self'"],
         formAction: ["'self'"],
@@ -80,7 +81,7 @@ app.use(
       },
     },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
-    crossOriginEmbedderPolicy: false, // News page iframe (agentpierre.github.io) lacks CORP headers; COEP must stay off
+    crossOriginEmbedderPolicy: false, // Third-party frames/fonts (Turnstile, Google Fonts) don't send CORP headers; COEP must stay off
   })
 );
 
@@ -120,12 +121,27 @@ const globalLimiter = rateLimit({
 
 app.use(globalLimiter);
 
+// Old page URLs → their new homes (permanent). Registered before static files
+// and the SPA fallback so a bookmark gets a real 301, not a client-side hop.
+// Express's default non-strict routing also matches a trailing slash.
+for (const [from, to] of Object.entries(LEGACY_ROUTES)) {
+  app.get(from, (req, res) => {
+    const queryIndex = req.originalUrl.indexOf("?");
+    const search = queryIndex === -1 ? "" : req.originalUrl.slice(queryIndex);
+    res.redirect(301, legacyRedirectTarget(to, search));
+  });
+}
+
 // Static assets — production only.
 // In dev, Vite handles the frontend; Express only serves the API.
 if (!isDev) {
   app.use(
     express.static(distPath, {
       maxAge: "1y",
+      // Don't turn a request for a directory into a "/dir/" redirect: page
+      // routes can share a name with an asset folder (/community vs.
+      // dist/community/ photos). Unmatched requests fall through to the SPA.
+      redirect: false,
       setHeaders(res, filePath) {
         if (path.basename(filePath) === "index.html") {
           res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");

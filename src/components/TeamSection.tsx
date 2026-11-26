@@ -1,7 +1,5 @@
-import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
-import { ArrowRight, Linkedin } from 'lucide-react';
-import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import { Linkedin } from 'lucide-react';
 import perryHeadshot from '@/images/perry-headshot.jpg';
 import peddojuHeadshot from '@/images/peddoju-headshot.png';
 import hiabHeadshot from '@/images/hiab-headshot.jpg';
@@ -19,40 +17,21 @@ const team = [
   { name: 'Abdul Ayinde Alao', role: 'Director of Content & Media', image: abdulHeadshot, linkedinUrl: 'https://www.linkedin.com/in/abdul-azeez-ayinde/' },
 ];
 
-const steps: { text: string; link?: { label: string; href: string } }[] = [
-  {
-    text: 'Fill out our membership interest form',
-    link: { label: 'Open the interest form', href: EXTERNAL_LINKS.memberInterestForm },
-  },
-  {
-    text: 'RSVP to an upcoming event on Meetup',
-    link: { label: 'Find an event on Meetup', href: EXTERNAL_LINKS.meetup },
-  },
-  { text: 'Show up and start building' },
-];
-
-const TeamPage = () => (
-  <PageLayout intensity="low">
-
-    {/* ── Header ── */}
-    <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
+/**
+ * Officers and faculty advisor, shown on /community under #team (the old
+ * /team URL redirects there).
+ */
+const TeamSection = () => (
+  <div id="team" className="scroll-mt-20">
+    <section aria-labelledby="team-heading" className="relative z-10 border-t border-border pt-16">
       <div className="container mx-auto px-6">
-        <ScrollReveal>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-            The team
-          </p>
-          <h1
-            className="font-heading font-extrabold leading-[0.88] tracking-tight text-foreground mb-6"
-            style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}
-          >
-            The people<br />
-            behind the <span style={{ color: 'var(--primary)' }}>club.</span>
-          </h1>
-          <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-            Students who decided to build something instead of waiting for
-            someone else to do it.
-          </p>
-        </ScrollReveal>
+        <h2 id="team-heading" className="font-heading font-bold text-2xl leading-snug text-foreground">
+          The people behind the club
+        </h2>
+        <p className="text-base text-muted-foreground leading-relaxed mt-3 max-w-[50ch]">
+          Students who decided to build something instead of waiting for
+          someone else to do it.
+        </p>
       </div>
     </section>
 
@@ -144,74 +123,7 @@ const TeamPage = () => (
       </div>
     </section>
 
-    {/* ── Join section ── */}
-    <section className="relative z-10 border-t border-border py-24">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-16 items-start">
-
-          {/* Left */}
-          <ScrollReveal>
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-                Get involved
-              </p>
-              <h2 className="font-heading font-bold text-2xl leading-snug text-foreground">
-                Become a<br />member
-              </h2>
-              <p className="text-base text-muted-foreground leading-relaxed mt-4 max-w-[30ch]">
-                Open to all UH students. No experience required, just curiosity.
-              </p>
-            </div>
-          </ScrollReveal>
-
-          {/* Right */}
-          <div>
-            <div className="divide-y divide-border mb-10">
-              {steps.map((step, i) => (
-                <ScrollReveal key={step.text} delay={i * 70}>
-                  <div className="py-6 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                    <span className="text-xs font-mono text-primary/70 pt-0.5">
-                      0{i + 1}
-                    </span>
-                    <div>
-                      <p className="text-base text-muted-foreground leading-relaxed">
-                        {step.text}
-                      </p>
-                      {step.link && (
-                        <a
-                          href={step.link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-sm text-primary py-2"
-                        >
-                          {step.link.label}
-                          <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-                        </a>
-                      )}
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-
-            <ScrollReveal delay={250}>
-              <a
-                href={EXTERNAL_LINKS.meetup}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-              >
-                Join our community
-                <ArrowRight className="w-4 h-4" />
-              </a>
-            </ScrollReveal>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-  </PageLayout>
+  </div>
 );
 
-export default TeamPage;
+export default TeamSection;

@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import ScrollReveal from '@/components/ScrollReveal';
 import PageLayout from '@/components/PageLayout';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ExternalLink } from 'lucide-react';
 import { LINKS } from '@/config/externalLinks';
+import { FREE_RESOURCES } from '@/data/learnResources';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -71,30 +72,50 @@ const CCP_RESOURCES: Resource[] = [
         tag: 'Full resource overview · AWS Training',
         url: LINKS.ccpTrainingHub,
     },
+    // Setup steps, done before any learning. Ids are appended (not renumbered)
+    // because saved progress stores ids: existing checkmarks keep their meaning.
+    {
+        id: 8,
+        name: 'Create your AWS Builder Center account',
+        tag: "Free · Use the club's sign-up link",
+        url: LINKS.builderCenterSignup,
+    },
+    {
+        id: 9,
+        name: 'Sign up for AWS Student Rewards',
+        tag: 'Verify your student status · Unlocks a year of full Skill Builder access',
+        url: LINKS.studentRewards,
+    },
 ];
 
-// Groups the 8 resources into 4 logical phases
+// Groups the resources into phases, in the order students should do them
 const MILESTONES = [
     {
         number: '01',
+        title: 'Get Set Up',
+        desc: 'Before you start learning: create your free AWS Builder Center account with the club link, then sign up for AWS Student Rewards.',
+        resources: [8, 9],
+    },
+    {
+        number: '02',
         title: 'Get Oriented',
         desc: 'Understand what the exam covers and how it\'s structured before you dive in.',
         resources: [0, 1],
     },
     {
-        number: '02',
+        number: '03',
         title: 'Learn the Fundamentals',
         desc: 'Official AWS training: a free 12-hour course and a game-based learning track.',
         resources: [2, 3],
     },
     {
-        number: '03',
+        number: '04',
         title: 'Get Hands-On',
         desc: 'Create your AWS account and start building on real infrastructure. Console time beats theory.',
         resources: [4],
     },
     {
-        number: '04',
+        number: '05',
         title: 'Prep & Practice',
         desc: 'Structured prep plan, official practice exam, and the full training hub before exam day.',
         resources: [5, 6, 7],
@@ -103,8 +124,8 @@ const MILESTONES = [
 
 // Upcoming certs — displayed as locked nodes below the active path
 const COMING_SOON = [
-    { number: '05', title: 'AWS AI Practitioner', code: 'AIF-C01' },
-    { number: '06', title: 'Solutions Architect Associate', code: 'SAA-C03' },
+    { number: '06', title: 'AWS AI Practitioner', code: 'AIF-C01' },
+    { number: '07', title: 'Solutions Architect Associate', code: 'SAA-C03' },
 ] as const;
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -212,7 +233,7 @@ function ResourceRow({
 
 // Gradient-border milestone node — inspired by KodeKloud's step markers,
 // adapted to our purple/cyan brand palette.
-function MilestoneNode({ number, title }: { number: string; title: string }) {
+function MilestoneNode({ number, title, done, total }: { number: string; title: string; done: number; total: number }) {
     return (
         <div
             className="inline-flex items-center gap-3 px-4 py-2 rounded-lg border border-transparent"
@@ -224,6 +245,9 @@ function MilestoneNode({ number, title }: { number: string; title: string }) {
         >
             <span className="font-mono text-[11px] text-primary/40 shrink-0">{number}</span>
             <span className="font-heading font-semibold text-sm text-foreground">{title}</span>
+            <span className={`text-[11px] tabular-nums ${done === total ? 'text-success-fg' : 'text-muted-foreground'}`}>
+                {done}/{total}<span className="sr-only"> done</span>
+            </span>
         </div>
     );
 }
@@ -302,10 +326,112 @@ function launchConfetti() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Continue where you left off
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Path order, step by step: the first resource not yet checked off. */
+const PATH_ORDER: readonly number[] = MILESTONES.flatMap((m) => [...m.resources]);
+
+function nextUnchecked(checked: number[]): Resource | null {
+    const id = PATH_ORDER.find((rid) => !checked.includes(rid));
+    return id === undefined ? null : CCP_RESOURCES[id];
+}
+
+function ContinueCard({ resource, started }: { resource: Resource; started: boolean }) {
+    const jumpToIt = () => {
+        const box = document.getElementById(`ccp-resource-${resource.id}`);
+        if (!box) return;
+        box.scrollIntoView({ block: 'center' });
+        box.focus();
+    };
+    return (
+        <section
+            aria-labelledby="continue-heading"
+            className="mb-12 rounded-lg border border-primary/30 bg-primary/[6%] p-5"
+        >
+            <h2 id="continue-heading" className="font-heading font-semibold text-foreground">
+                {started ? 'Continue where you left off' : 'Start here'}
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+                Next up: <span className="text-foreground">{resource.name}</span>
+                <span className="block text-[12px] mt-0.5">{resource.tag}</span>
+            </p>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 mt-4">
+                <a
+                    href={resource.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Open next step: ${resource.name} (opens in a new tab)`}
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-opacity duration-150 hover:opacity-90"
+                >
+                    Open it
+                    <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                </a>
+                <button
+                    type="button"
+                    onClick={jumpToIt}
+                    className="text-sm text-primary py-2 underline-offset-4 hover:underline"
+                >
+                    Jump to it in the checklist
+                </button>
+            </div>
+        </section>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Free resources (formerly the /resources page)
+// ─────────────────────────────────────────────────────────────────────────────
+
+function FreeResources() {
+    return (
+        <section
+            id="free-resources"
+            aria-labelledby="free-resources-heading"
+            className="relative z-10 border-t border-border py-16 scroll-mt-20"
+        >
+            <div className="container mx-auto px-6 max-w-3xl">
+                <h2 id="free-resources-heading" className="font-heading font-bold text-2xl text-foreground mb-2">
+                    Free resources
+                </h2>
+                <p className="text-base text-muted-foreground max-w-[55ch] mb-8">
+                    Accounts, training, and exam vouchers. All free for UH students.
+                </p>
+                <ul className="divide-y divide-border">
+                    {FREE_RESOURCES.map((r) => (
+                        <li key={r.title} className="py-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                            <div className="max-w-[55ch]">
+                                <h3 className="font-heading font-semibold text-foreground">
+                                    {r.title}
+                                    <span className="ml-2 align-middle text-[10px] uppercase tracking-[0.12em] text-primary/80 border border-primary/25 rounded px-1.5 py-0.5">
+                                        {r.tag}
+                                    </span>
+                                </h3>
+                                <p className="text-base text-muted-foreground leading-relaxed mt-1">{r.desc}</p>
+                            </div>
+                            <a
+                                href={r.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 text-sm text-primary py-2 whitespace-nowrap shrink-0 self-start"
+                            >
+                                {r.cta}
+                                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                                <span className="sr-only">(opens in a new tab)</span>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        </section>
+    );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Main page
 // ─────────────────────────────────────────────────────────────────────────────
 
-export default function LearningPaths() {
+export default function Learn() {
     const [checked, setChecked] = useState<number[]>([]);
     const [celebrationRun, setCelebrationRun] = useState(0);
     const [showCelebration, setShowCelebration] = useState(false);
@@ -326,6 +452,7 @@ export default function LearningPaths() {
     }, []);
 
     const progressPct = Math.round((checked.length / CCP_RESOURCES.length) * 100);
+    const nextResource = nextUnchecked(checked);
     const isComplete = progressPct === 100;
 
     useEffect(() => {
@@ -361,7 +488,7 @@ export default function LearningPaths() {
                 <div className="container mx-auto px-6">
                     <ScrollReveal>
                         <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-                            Learning paths
+                            Learn
                         </p>
                         <h1
                             className="font-heading font-extrabold leading-[0.88] tracking-tight text-foreground mb-6"
@@ -371,8 +498,8 @@ export default function LearningPaths() {
                             <span style={{ color: 'var(--primary)' }}>certification.</span>
                         </h1>
                         <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-                            AWS Cloud Practitioner is your entry point. Follow the path,
-                            check things off, get certified.
+                            Set up your free AWS accounts, then work toward AWS Cloud
+                            Practitioner. Follow the path, check things off, get certified.
                         </p>
                     </ScrollReveal>
                 </div>
@@ -450,6 +577,11 @@ export default function LearningPaths() {
                         </div>
                     </ScrollReveal>
 
+                    {/* Continue where you left off (hidden once the path is complete) */}
+                    {nextResource && (
+                        <ContinueCard resource={nextResource} started={checked.length > 0} />
+                    )}
+
                     {/* Vertical roadmap */}
                     <div className="relative">
 
@@ -473,7 +605,12 @@ export default function LearningPaths() {
 
                                     {/* Milestone node */}
                                     <div className="mb-4">
-                                        <MilestoneNode number={milestone.number} title={milestone.title} />
+                                        <MilestoneNode
+                                            number={milestone.number}
+                                            title={milestone.title}
+                                            done={milestone.resources.filter((id) => checked.includes(id)).length}
+                                            total={milestone.resources.length}
+                                        />
                                     </div>
 
                                     <p className="text-[13px] text-muted-foreground mb-4 leading-relaxed max-w-[52ch]">
@@ -550,6 +687,8 @@ export default function LearningPaths() {
 
                 </div>
             </section>
+
+            <FreeResources />
 
         </PageLayout>
     );

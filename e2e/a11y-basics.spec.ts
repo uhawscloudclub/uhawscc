@@ -1,6 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 
-// Reduced motion, skip link, and the Learning Paths checklist in a real
+// Reduced motion, skip link, and the /learn checklist in a real
 // browser (jsdom can't paint a canvas or move keyboard focus realistically).
 // Runs in both Playwright configs.
 
@@ -25,7 +25,7 @@ async function canvasChanges(page: Page): Promise<boolean> {
 }
 
 test.describe("prefers-reduced-motion", () => {
-    for (const path of ["/", "/events", "/learning-paths"]) {
+    for (const path of ["/", "/events", "/learn"]) {
         test(`background canvas stays still on ${path}`, async ({ page }) => {
             await page.emulateMedia({ reducedMotion: "reduce" });
             await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
@@ -61,8 +61,8 @@ test("skip link is the first Tab stop and moves focus into the page", async ({ p
     expect(await page.evaluate(() => !!document.activeElement?.closest("main"))).toBe(true);
 });
 
-test("Learning Paths checklist works from the keyboard and survives a reload", async ({ page }) => {
-    await page.goto("/learning-paths");
+test("/learn checklist works from the keyboard and survives a reload", async ({ page }) => {
+    await page.goto("/learn");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
     const box = page.getByRole("checkbox", { name: /AWS Cloud Practitioner Essentials/ });
     await box.focus();

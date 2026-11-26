@@ -19,7 +19,7 @@ function mockReducedMotion(initial: boolean) {
         addListener: () => {},
         removeListener: () => {},
         dispatchEvent: () => false,
-    })) as typeof window.matchMedia;
+    })) as unknown as typeof window.matchMedia;
     return {
         set(next: boolean) {
             matches = next;

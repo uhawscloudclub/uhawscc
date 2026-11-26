@@ -25,12 +25,9 @@ const Footer = () => {
         {/* Center */}
         <div className="flex flex-wrap gap-6 md:justify-center">
           {[
-            { label: 'About', to: '/about' },
             { label: 'Events', to: '/events' },
-            { label: 'Learning Paths', to: '/learning-paths' },
-            { label: 'Resources', to: '/resources' },
-            { label: 'News', to: '/news' },
-            { label: 'Team', to: '/team' },
+            { label: 'Learn', to: '/learn' },
+            { label: 'Community', to: '/community' },
             { label: 'Contact', to: '/contact' },
           ].map((l) => (
             <Link key={l.to} to={l.to} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
