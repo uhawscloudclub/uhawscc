@@ -18,7 +18,7 @@ export default {
         heading: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],
         body: ['"Figtree"', 'system-ui', 'sans-serif'],
         // Stage 3 display face: headings and the mascot only, never body text.
-        pixel: ['"Pixelify Sans"', '"Figtree"', 'system-ui', 'sans-serif'],
+        pixel: ['"Jersey 10"', '"Figtree"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "var(--border)",

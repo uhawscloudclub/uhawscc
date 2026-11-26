@@ -287,12 +287,23 @@ html {
   color: var(--foreground);
 }
 
-/* Headings in the pixel face; tighter tracking reads cleaner at large sizes. */
+/* Display face: Jersey 10 (SIL OFL, Google Fonts), a heavy, tall pixel face
+   that keeps lowercase readable. It runs small for its size, so headings are
+   set larger than Figtree would be. Used for h1/h2, button labels and date
+   tiles; Figtree for everything people read at length. */
 .theme-pixel :is(h1, h2) {
-  font-family: "Pixelify Sans", "Figtree", system-ui, sans-serif;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  line-height: 1.05;
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  line-height: 0.95;
+}
+.theme-pixel h2 {
+  font-size: 2.5rem;
+}
+/* The one extruded headline per page: Beacon face, ember step, ink step. */
+.theme-pixel h1 {
+  color: var(--beacon);
+  text-shadow: 3px 3px 0 #e0662e, 6px 6px 0 var(--hull-shadow);
 }
 .theme-pixel h3 {
   font-family: "Figtree", system-ui, sans-serif;
@@ -352,8 +363,8 @@ html {
   box-shadow: inset 0 calc(var(--px) * -1) 0 var(--hull-shadow);
 }
 .theme-pixel .px-titlebar :is(h2, h3) {
-  font-size: 1.25rem;
-  line-height: 1.2;
+  font-size: 1.75rem;
+  line-height: 1;
   text-shadow: 2px 2px 0 var(--hull-shadow);
 }
 .theme-pixel .px-winmarks {
@@ -388,8 +399,11 @@ html {
   margin: var(--px);
   background: var(--beacon);
   color: var(--beacon-ink);
-  font-weight: 700;
-  font-size: 0.9375rem;
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 1.375rem;
+  line-height: 1;
+  letter-spacing: 0.02em;
   border: 0;
   border-radius: 0;
   box-shadow:
@@ -452,6 +466,10 @@ html {
 
 /* Nav "Join on Meetup": a small pixel button instead of the gradient pill. */
 .theme-pixel .nav-cta {
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-weight: 400;
+  font-size: 1.25rem;
+  line-height: 1;
   background: var(--beacon);
   color: var(--beacon-ink);
   border: 0;
@@ -512,7 +530,7 @@ html {
   }
 }
 /* Hard pixel shadow under text that sits on the sky. */
-.theme-pixel .px-sky :is(h1, p) {
+.theme-pixel .px-sky p {
   text-shadow: 2px 2px 0 var(--hull-shadow);
 }
 .theme-pixel .px-sky .px-panel :is(h2, p) {
@@ -546,7 +564,7 @@ html {
     0 2px 0 0 var(--border),
     -2px 0 0 0 var(--border),
     2px 0 0 0 var(--border);
-  font-family: "Pixelify Sans", "Figtree", system-ui, sans-serif;
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
   line-height: 1;
   flex-shrink: 0;
 }

@@ -51,14 +51,13 @@ const HomePage = () => (
           <div className="max-w-2xl">
             <h1
               className="text-foreground mb-5"
-              style={{ fontSize: 'clamp(2.25rem, 7vw, 4.25rem)' }}
+              style={{ fontSize: 'clamp(3rem, 10vw, 5.75rem)' }}
             >
               Build cloud skills with UH students.
             </h1>
-            <p className="text-muted-foreground text-lg leading-relaxed max-w-[52ch] mb-7">
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-[48ch] mb-7">
               Free AWS workshops, certification study groups, and people to build
-              with. The AWS Student Builder Group at the University of Houston,
-              run by students.
+              with, run by students at the University of Houston.
             </p>
             <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
               <a
@@ -101,7 +100,7 @@ const HomePage = () => (
       <SectionErrorBoundary>
         <section className="relative border-t border-border py-14">
           <div className="container mx-auto px-6">
-            <h2 className="text-2xl text-foreground mb-6">Our community</h2>
+            <h2 className="text-foreground mb-6">Our community</h2>
             <Suspense
               fallback={
                 <div className="aspect-[16/10] w-full animate-pulse motion-reduce:animate-none border border-border bg-muted" />
@@ -117,7 +116,7 @@ const HomePage = () => (
     {/* ── Where to go next ── */}
     <section aria-labelledby="what-you-can-do-heading" className="relative border-t border-border py-16">
       <div className="container mx-auto px-6">
-        <h2 id="what-you-can-do-heading" className="text-2xl text-foreground mb-10">
+        <h2 id="what-you-can-do-heading" className="text-foreground mb-10">
           What you can do here
         </h2>
         <ul className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">

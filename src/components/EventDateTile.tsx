@@ -16,7 +16,7 @@ const EventDateTile = ({ rawDate }: { rawDate: string | null }) => {
       {d ? (
         <>
           <span className="font-body text-xs font-semibold text-muted-foreground">{monthFmt.format(d)}</span>
-          <span className="text-3xl text-foreground mt-1">{dayFmt.format(d)}</span>
+          <span className="text-4xl text-foreground mt-0.5">{dayFmt.format(d)}</span>
         </>
       ) : (
         <span className="font-body text-sm font-semibold text-muted-foreground">TBA</span>

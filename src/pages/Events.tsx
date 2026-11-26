@@ -90,7 +90,7 @@ const PastEvents = () => {
   return (
     <section aria-labelledby="past-events-heading" className="relative border-t border-border py-16">
       <div className="container mx-auto px-6 max-w-4xl">
-        <h2 id="past-events-heading" className="text-3xl text-foreground mb-3">
+        <h2 id="past-events-heading" className="text-foreground mb-3">
           Past events
         </h2>
         <p className="text-base text-muted-foreground max-w-[55ch] mb-12">
@@ -190,7 +190,7 @@ const EventsPage = () => {
       {/* ── Header ── */}
       <section className="relative overflow-hidden px-sky px-sky-high">
         <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative max-w-4xl">
-          <h1 className="text-foreground mb-4" style={{ fontSize: 'clamp(2.25rem, 6vw, 3.75rem)' }}>
+          <h1 className="text-foreground mb-4" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
             Events
           </h1>
           <p className="text-muted-foreground text-lg leading-relaxed max-w-[52ch]">
@@ -206,7 +206,7 @@ const EventsPage = () => {
       {/* ── Upcoming ── */}
       <section aria-labelledby="upcoming-heading" className="relative pb-16">
         <div className="container mx-auto px-6 max-w-4xl" aria-live="polite" aria-busy={isFetching}>
-          <h2 id="upcoming-heading" className="text-3xl text-foreground mb-6">Upcoming</h2>
+          <h2 id="upcoming-heading" className="text-foreground mb-6">Upcoming</h2>
 
           {/* Loading */}
           {isLoading && (
