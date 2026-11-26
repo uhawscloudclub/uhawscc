@@ -8,7 +8,15 @@ import { Link } from 'react-router-dom';
 import { Linkedin, Instagram } from 'lucide-react';
 import PixelIcon from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
-import { INTENTS, LIMITS, buildSubject, type IntentId } from '@/lib/contactForm';
+import { INTENTS, LIMITS, MESSAGE_PLACEHOLDERS, buildSubject, type IntentId } from '@/lib/contactForm';
+import type { PixelIconName } from '@/components/PixelIcon';
+
+const INTENT_ICONS: Record<IntentId, PixelIconName> = {
+  joining: 'star',
+  events: 'calendar',
+  partner: 'chat',
+  other: 'mail',
+};
 import SkySparkles from '@/components/SkySparkles';
 
 // ── Discord icon (not in lucide) ─────────────────────────────────────────────
@@ -293,7 +301,7 @@ const ContactPage = () => {
                   {/* Why are you writing? (optional) */}
                   <fieldset>
                     <legend className="text-sm font-semibold text-foreground mb-3">
-                      What brings you here? <span className="font-normal text-muted-foreground">(optional)</span>
+                      Pick your quest <span className="font-normal text-muted-foreground">(optional)</span>
                     </legend>
                     <div className="flex flex-wrap gap-2">
                       {INTENTS.map((option) => (
@@ -309,6 +317,7 @@ const ContactPage = () => {
                             onChange={() => setIntent(option.id)}
                             className="sr-only"
                           />
+                          <PixelIcon name={INTENT_ICONS[option.id]} size={16} />
                           {option.label}
                         </label>
                       ))}
@@ -326,6 +335,21 @@ const ContactPage = () => {
                         . See every option on the{' '}
                         <Link to="/community" className="text-primary underline underline-offset-2">Community page</Link>.
                         You can still send a message below.
+                      </p>
+                    )}
+                    {intent === 'events' && (
+                      <p className="text-sm text-muted-foreground mt-3 max-w-[55ch]">
+                        Dates and RSVPs are on the{' '}
+                        <Link to="/events" className="text-primary underline underline-offset-2">Events page</Link>
+                        , and study steps are on{' '}
+                        <Link to="/learn" className="text-primary underline underline-offset-2">Learn</Link>.
+                        Still have a question? Ask below.
+                      </p>
+                    )}
+                    {intent === 'partner' && (
+                      <p className="text-sm text-muted-foreground mt-3 max-w-[55ch]">
+                        Great. Tell us about your organization and what you have in mind; an
+                        officer will reply within 24 hours.
                       </p>
                     )}
                   </fieldset>
@@ -378,7 +402,7 @@ const ContactPage = () => {
                       {...register('message')}
                       id="contact-message"
                       rows={5}
-                      placeholder="Your message…"
+                      placeholder={MESSAGE_PLACEHOLDERS[intent]}
                       className={`${inputClass} resize-y`}
                       aria-required="true"
                       maxLength={LIMITS.message}

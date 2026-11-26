@@ -119,6 +119,20 @@ describe("Contact page", () => {
         expect(screen.getByRole("link", { name: /^Meetup/ })).toHaveAttribute("href", EXTERNAL_LINKS.meetup);
     });
 
+    it("tailors the hint and message placeholder to the chosen quest", () => {
+        renderWithRouter(<ContactPage />);
+        expect(screen.getByRole("group", { name: /Pick your quest/ })).toBeInTheDocument();
+        expect(screen.getByLabelText(/^Message/)).toHaveAttribute("placeholder", "Your message…");
+
+        fireEvent.click(screen.getByLabelText("Events or learning"));
+        expect(screen.getByRole("link", { name: "Events page" })).toHaveAttribute("href", "/events");
+        expect(screen.getByLabelText(/^Message/).getAttribute("placeholder")).toMatch(/Which event or topic/);
+
+        fireEvent.click(screen.getByLabelText("Speaking, sponsoring, or partnering"));
+        expect(screen.getByText(/reply within 24 hours/, { selector: "fieldset p" })).toBeInTheDocument();
+        expect(screen.getByLabelText(/^Message/).getAttribute("placeholder")).toMatch(/Your organization/);
+    });
+
     it("states the reply time and privacy note before sending", () => {
         renderWithRouter(<ContactPage />);
         expect(screen.getByText(/An officer replies within 24 hours\. We only use your email to reply to you\./)).toBeInTheDocument();

@@ -378,6 +378,7 @@ html {
 .theme-pixel .px-option {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0.5rem 0.875rem;
   margin: 2px;
@@ -404,7 +405,8 @@ html {
     -2px 0 0 0 var(--beacon-ink),
     2px 0 0 0 var(--beacon-ink);
 }
-.theme-pixel .px-option:has(:focus-visible) {
+.theme-pixel .px-option:has(:focus-visible),
+.theme-pixel button.px-option:focus-visible {
   outline: 3px solid var(--beacon);
   outline-offset: 4px;
 }
@@ -704,6 +706,48 @@ html {
 /* .px-sky p adds a text shadow; not inside the bubble. */
 .theme-pixel .px-sky .px-bubble {
   text-shadow: none;
+}
+
+/* Quiz progress: one block per question, the current one outlined. */
+.theme-pixel .px-quiz-steps {
+  display: flex;
+  gap: 4px;
+}
+.theme-pixel .px-quiz-steps span {
+  width: 20px;
+  height: 8px;
+  background: var(--hull-dark);
+}
+.theme-pixel .px-quiz-steps span.is-on {
+  background: var(--beacon);
+}
+.theme-pixel .px-quiz-steps span.is-now {
+  background: var(--chip, #ad5cff);
+}
+
+/* Officer flip cards: the face swaps with a quick horizontal squash. */
+.theme-pixel .px-officer {
+  display: flex;
+  min-height: 12rem;
+}
+.theme-pixel .px-officer > div {
+  width: 100%;
+}
+.theme-pixel .px-stat-label {
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.1;
+  color: var(--beacon);
+  letter-spacing: 0.02em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-flip-in {
+    0% { transform: scaleX(0.05); }
+    100% { transform: scaleX(1); }
+  }
+  .theme-pixel .px-flip-in {
+    animation: px-flip-in 0.24s steps(4, jump-end);
+  }
 }
 
 /* Sky sparkles: a layer over the hero sky, under the content. */

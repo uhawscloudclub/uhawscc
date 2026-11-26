@@ -22,6 +22,15 @@ export const INTENTS = [
 
 export type IntentId = (typeof INTENTS)[number]['id'];
 
+/** Message placeholder per quest, so the empty box hints at what helps us reply. */
+export const MESSAGE_PLACEHOLDERS: Record<IntentId | '', string> = {
+  '': 'Your message…',
+  joining: 'Your major and year, and what you want to get out of the club…',
+  events: 'Which event or topic, and what you would like to know…',
+  partner: 'Your organization, what you have in mind, and rough timing…',
+  other: 'Your message…',
+};
+
 export function buildSubject(intentId: IntentId | '', subject = ''): string {
   const intent = INTENTS.find((i) => i.id === intentId)?.label ?? '';
   const trimmed = subject.trim();

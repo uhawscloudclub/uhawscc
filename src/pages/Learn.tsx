@@ -5,6 +5,7 @@ import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { LINKS } from '@/config/externalLinks';
 import { FREE_RESOURCES } from '@/data/learnResources';
 import SkySparkles from '@/components/SkySparkles';
+import PathQuiz from '@/components/PathQuiz';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -482,8 +483,10 @@ export default function Learn() {
             <section className="relative py-12">
                 <div className="container mx-auto px-6 max-w-3xl">
 
+                    <PathQuiz />
+
                     {/* HUD: level and a segmented bar, one block per resource */}
-                    <div className="mb-12">
+                    <div id="path" className="mb-12 scroll-mt-24">
                         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
                             <p className="font-pixel text-3xl text-foreground leading-none">
                                 {isComplete ? 'Path complete' : `Level ${Math.min(levelsDone + 1, MILESTONES.length)} of ${MILESTONES.length}`}
