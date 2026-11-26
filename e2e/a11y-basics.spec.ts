@@ -25,7 +25,22 @@ async function canvasChanges(page: Page): Promise<boolean> {
 }
 
 test.describe("prefers-reduced-motion", () => {
-    for (const path of ["/", "/events", "/learn"]) {
+    // Pages on the Stage 3 pixel theme have no canvas at all; their only
+    // ambient motion is the mascot's float, which must stop.
+    for (const path of ["/", "/events"]) {
+        test(`no animated canvas, and the mascot is still, on ${path}`, async ({ page }) => {
+            await page.emulateMedia({ reducedMotion: "reduce" });
+            await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
+            await page.goto(path);
+            await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+            await expect(page.locator("canvas")).toHaveCount(0);
+            // Every floating element (if the page has any) has its animation off.
+            const animations = await page.locator(".px-float").evaluateAll((els) => els.map((el) => getComputedStyle(el).animationName));
+            expect(animations.every((name) => name === "none")).toBe(true);
+        });
+    }
+
+    for (const path of ["/learn"]) {
         test(`background canvas stays still on ${path}`, async ({ page }) => {
             await page.emulateMedia({ reducedMotion: "reduce" });
             await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
@@ -37,7 +52,7 @@ test.describe("prefers-reduced-motion", () => {
     test("background canvas still animates without the preference", async ({ page }) => {
         await page.emulateMedia({ reducedMotion: "no-preference" });
         await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
-        await page.goto("/");
+        await page.goto("/learn");
         expect(await canvasChanges(page)).toBe(true);
     });
 });

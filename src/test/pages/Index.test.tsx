@@ -51,26 +51,19 @@ describe("Home page (Index)", () => {
         expect(links.length).toBeGreaterThan(0);
     });
 
-    it("renders the Build Projects for Your Resume feature card", () => {
+    it("points to the three main places: events, learning, community", () => {
         renderWithRouter(<HomePage />);
-        expect(screen.getByText("Build Projects for Your Resume")).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "What you can do here" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "See events" })).toHaveAttribute("href", "/events");
+        expect(screen.getByRole("link", { name: "Start learning" })).toHaveAttribute("href", "/learn");
+        expect(screen.getByRole("link", { name: "Meet the community" })).toHaveAttribute("href", "/community");
     });
 
-    it("renders the Certifications + Free Exam Vouchers feature card", () => {
-        renderWithRouter(<HomePage />);
-        expect(screen.getByText("Certifications + Free Exam Vouchers")).toBeInTheDocument();
-    });
-
-    it("renders the Community & Careers feature card", () => {
-        renderWithRouter(<HomePage />);
-        expect(screen.getByText("Community & Careers")).toBeInTheDocument();
-    });
-
-    it("renders the Three things we focus on section heading", () => {
-        renderWithRouter(<HomePage />);
-        expect(
-            screen.getByRole("heading", { name: /Three things/i }),
-        ).toBeInTheDocument();
+    it("shows the mascot as decoration only (hidden from screen readers)", () => {
+        const { container } = renderWithRouter(<HomePage />);
+        const svg = container.querySelector("svg[viewBox='0 0 16 18']");
+        expect(svg).not.toBeNull();
+        expect(svg).toHaveAttribute("aria-hidden", "true");
     });
 
     it("renders the proof strip with its verified Meetup figures", async () => {

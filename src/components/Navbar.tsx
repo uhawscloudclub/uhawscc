@@ -29,7 +29,7 @@ const Navbar = () => {
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
-          ? 'bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
+          ? 'scrolled-nav bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
           : 'bg-transparent'
       }`}
     >
@@ -65,7 +65,7 @@ const Navbar = () => {
             href={EXTERNAL_LINKS.meetup}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-outline-gradient px-4 py-2 text-sm font-semibold active:scale-95 transition-all duration-200"
+            className="nav-cta btn-outline-gradient px-4 py-2 text-sm font-semibold active:scale-95 transition-all duration-200"
           >
             Join on Meetup
           </a>
@@ -103,7 +103,7 @@ const Navbar = () => {
               href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-outline-gradient mt-3 px-4 py-2.5 text-sm font-semibold text-center block transition-all duration-200 active:scale-[0.98]"
+              className="nav-cta btn-outline-gradient mt-3 px-4 py-2.5 text-sm font-semibold text-center block transition-all duration-200 active:scale-[0.98]"
             >
               Join on Meetup
             </a>

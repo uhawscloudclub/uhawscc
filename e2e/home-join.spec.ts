@@ -40,10 +40,15 @@ for (const [label, use] of [
 
         test("next event and its RSVP link are within one scroll of the top", async ({ page }) => {
             await openHome(page, [nextEvent]);
-            await page.evaluate(() => window.scrollBy(0, window.innerHeight));
             const rsvp = page.getByRole("link", { name: "RSVP on Meetup for Intro to Lambda" });
-            await expect(rsvp).toBeInViewport();
+            await expect(rsvp).toBeVisible();
             await expect(rsvp).toHaveAttribute("href", nextEvent.link);
+            // Page position of the button's bottom edge, from the very top.
+            const { bottom, viewport } = await rsvp.evaluate((el) => ({
+                bottom: el.getBoundingClientRect().bottom + window.scrollY,
+                viewport: window.innerHeight,
+            }));
+            expect(bottom).toBeLessThanOrEqual(viewport * 2);
         });
 
         test("with nothing scheduled, offers Meetup notifications and past events", async ({ page }) => {

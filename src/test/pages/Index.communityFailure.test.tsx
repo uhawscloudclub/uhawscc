@@ -79,7 +79,7 @@ describe("Home page — community section failure", () => {
     ).toBe(true);
     expect(screen.getByText(/members on Meetup/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /Three things/i }),
+      screen.getByRole("heading", { name: /What you can do here/i }),
     ).toBeInTheDocument();
 
     // The app-level boundary must not have taken over the page.

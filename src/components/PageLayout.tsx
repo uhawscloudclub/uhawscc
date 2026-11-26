@@ -6,10 +6,28 @@ import NetworkCanvas from './NetworkCanvas';
 
 type Intensity = 'low' | 'medium' | 'high';
 
-const PageLayout = ({ children, intensity = 'medium' }: { children: ReactNode; intensity?: Intensity }) => (
-  <div className="min-h-screen flex flex-col relative">
-    <GridBackground />
-    <NetworkCanvas intensity={intensity} />
+/**
+ * theme="pixel" is the Stage 3 design preview (src/index.css, .theme-pixel):
+ * new palette and type, and no animated network canvas or grid behind the
+ * page, just a quiet static background. Other pages keep the current look
+ * until the preview is approved.
+ */
+const PageLayout = ({
+  children,
+  intensity = 'medium',
+  theme = 'current',
+}: {
+  children: ReactNode;
+  intensity?: Intensity;
+  theme?: 'current' | 'pixel';
+}) => (
+  <div className={`min-h-screen flex flex-col relative ${theme === 'pixel' ? 'theme-pixel' : ''}`}>
+    {theme !== 'pixel' && (
+      <>
+        <GridBackground />
+        <NetworkCanvas intensity={intensity} />
+      </>
+    )}
     {/* Skip link: first thing a keyboard user reaches; visible only on focus. */}
     <a
       href="#main-content"

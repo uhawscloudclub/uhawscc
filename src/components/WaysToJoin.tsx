@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { JOIN_CHANNELS } from '@/data/joinChannels';
 
 /**
@@ -22,9 +22,11 @@ const WaysToJoin = () => (
         <ul className="divide-y divide-border">
           {JOIN_CHANNELS.map((channel, i) => {
             const primary = i === 0;
+            // px-button / px-link restyle these inside the pixel theme
+            // (.theme-pixel in index.css) and are inert elsewhere.
             const linkClass = primary
-              ? 'inline-flex items-center gap-2 px-5 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-opacity duration-150 hover:opacity-90'
-              : 'inline-flex items-center gap-1.5 text-sm text-primary py-2 hover:underline underline-offset-4';
+              ? 'px-button inline-flex items-center gap-2 px-5 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-opacity duration-150 hover:opacity-90'
+              : 'px-link inline-flex items-center gap-1.5 text-sm text-primary py-2 hover:underline underline-offset-4';
             return (
               <li key={channel.id} className="py-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="max-w-[55ch]">
@@ -34,7 +36,6 @@ const WaysToJoin = () => (
                 {channel.internal ? (
                   <Link to={channel.href} className={`${linkClass} shrink-0 self-start sm:self-auto`}>
                     {channel.action}
-                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </Link>
                 ) : (
                   <a

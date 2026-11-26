@@ -233,3 +233,320 @@ html {
     scroll-behavior: auto !important;
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Stage 3 design preview: "pixel" theme
+   Scoped to .theme-pixel (PageLayout theme="pixel") so it can be reviewed on
+   the homepage and Events before rolling out across the site.
+
+   Palette (named). Contrast is checked against Orbit, Hull and the brightest
+   sky band (#4532AD); every text pair is ≥ 6:1.
+     Orbit     #2B2072  page background: bright night violet (the sky's base)
+     Hull      #3A2D8F  raised panels
+     Starlight #F6F3FF  text
+     Dust      #D4CCF8  secondary text
+     Link      #E2CFFF  links
+     Chip      #AD5CFF  the logo's violet: mascot and brand marks only
+     Beacon    #FFD34D  the one action colour: join, RSVP, next step; also focus
+   Hero background: an original pixel sky (src/assets/pixel-sky-*.png, made by
+   scripts/pixel_sky.py), clouds kept out from behind the text.
+   Signature: square "pixel" panels and buttons with a hard 4px offset shadow.
+   Used only on the primary action and the Next up panel; everything else is
+   plain type on Orbit.
+   ═══════════════════════════════════════════════════════════════════════════ */
+.theme-pixel {
+  --background: #2b2072;
+  --foreground: #f6f3ff;
+  --card: #3a2d8f;
+  --card-foreground: #f6f3ff;
+  --popover: #3a2d8f;
+  --popover-foreground: #f6f3ff;
+  --primary: #e2cfff;
+  --primary-foreground: #1d1550;
+  --secondary: #e2cfff;
+  --secondary-foreground: #1d1550;
+  --muted: #3a2d8f;
+  --muted-foreground: #d4ccf8;
+  --accent: #3a2d8f;
+  --accent-foreground: #f6f3ff;
+  --border: #5b4bbd;
+  --input: #5b4bbd;
+  --ring: #ffd34d;
+  --success: #3fbf86;
+  --success-fg: #7ee8b3;
+
+  --orbit: #2b2072;
+  --hull: #3a2d8f;
+  --hull-shadow: #170f45;
+  --chip: #ad5cff;
+  --beacon: #ffd34d;
+  --beacon-ink: #1d1550;
+
+  background: var(--orbit);
+  color: var(--foreground);
+}
+
+/* Headings in the pixel face; tighter tracking reads cleaner at large sizes. */
+.theme-pixel :is(h1, h2) {
+  font-family: "Pixelify Sans", "Figtree", system-ui, sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+}
+.theme-pixel h3 {
+  font-family: "Figtree", system-ui, sans-serif;
+  font-weight: 700;
+}
+
+/* Focus: thick Beacon outline, square like everything else. */
+.theme-pixel :focus-visible {
+  outline: 3px solid var(--beacon);
+  outline-offset: 3px;
+  border-radius: 0;
+}
+
+/* ── Pixel component kit ───────────────────────────────────────────────────
+   Pixel corners are drawn with four un-blurred box-shadows that leave each
+   corner pixel empty (the NES-style "notched" outline), so they don't need
+   clip-path and never clip focus rings. Depth is a two-tone bevel: a light
+   top edge and a darker bottom edge (inset shadows).
+   --px is one "art pixel" (3px). */
+.theme-pixel {
+  --px: 3px;
+  --hull-light: #4a3ba6;   /* panel top bevel */
+  --hull-dark: #2a1f73;    /* panel bottom bevel */
+  --beacon-light: #fff0b0; /* button top bevel */
+  --beacon-dark: #e0a92e;  /* button bottom bevel */
+}
+
+/* Panel: notched outline + bevel. Margin leaves room for the outline. */
+.theme-pixel .px-panel {
+  background: var(--hull);
+  border-radius: 0;
+  margin: var(--px);
+  box-shadow:
+    inset 0 var(--px) 0 var(--hull-light),
+    inset 0 calc(var(--px) * -2) 0 var(--hull-dark),
+    0 calc(var(--px) * -1) 0 0 var(--hull-shadow),
+    0 var(--px) 0 0 var(--hull-shadow),
+    calc(var(--px) * -1) 0 0 0 var(--hull-shadow),
+    var(--px) 0 0 0 var(--hull-shadow),
+    0 calc(var(--px) * 3) 0 0 rgb(10 6 40 / 0.45);
+}
+
+/* Window: a panel with a title bar, like an old desktop dialog. The title
+   bar holds the panel's real heading; the – □ × marks are decoration. */
+.theme-pixel .px-window {
+  padding: 0;
+  overflow: visible;
+}
+.theme-pixel .px-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+  background: var(--chip);
+  color: #fff;
+  box-shadow: inset 0 calc(var(--px) * -1) 0 var(--hull-shadow);
+}
+.theme-pixel .px-titlebar :is(h2, h3) {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  text-shadow: 2px 2px 0 var(--hull-shadow);
+}
+.theme-pixel .px-winmarks {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.theme-pixel .px-winmarks span {
+  width: 12px;
+  height: 12px;
+  background: var(--orbit);
+  box-shadow: inset 2px 2px 0 rgb(255 255 255 / 0.25);
+}
+.theme-pixel .px-window-body {
+  padding: 1.25rem 1.25rem 1.5rem;
+}
+@media (min-width: 640px) {
+  .theme-pixel .px-window-body {
+    padding: 1.5rem 1.5rem 1.75rem;
+  }
+}
+
+/* Button: the one primary action per view. Notched ink outline, bevel, and a
+   pixel drop that it presses into on click (the motion answers the action). */
+.theme-pixel .px-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.625rem 1.25rem 0.75rem;
+  margin: var(--px);
+  background: var(--beacon);
+  color: var(--beacon-ink);
+  font-weight: 700;
+  font-size: 0.9375rem;
+  border: 0;
+  border-radius: 0;
+  box-shadow:
+    inset 0 var(--px) 0 var(--beacon-light),
+    inset 0 calc(var(--px) * -1) 0 var(--beacon-dark),
+    0 calc(var(--px) * -1) 0 0 var(--beacon-ink),
+    0 var(--px) 0 0 var(--beacon-ink),
+    calc(var(--px) * -1) 0 0 0 var(--beacon-ink),
+    var(--px) 0 0 0 var(--beacon-ink),
+    0 calc(var(--px) * 3) 0 0 var(--hull-shadow);
+  transition: transform 60ms steps(1), box-shadow 60ms steps(1);
+}
+.theme-pixel .px-button:hover {
+  background: #ffdc6e;
+}
+.theme-pixel .px-button:active {
+  transform: translateY(calc(var(--px) * 2));
+  box-shadow:
+    inset 0 var(--px) 0 var(--beacon-dark),
+    0 calc(var(--px) * -1) 0 0 var(--beacon-ink),
+    0 var(--px) 0 0 var(--beacon-ink),
+    calc(var(--px) * -1) 0 0 0 var(--beacon-ink),
+    var(--px) 0 0 0 var(--beacon-ink);
+}
+.theme-pixel .px-button:focus-visible {
+  outline-offset: 7px;
+}
+
+/* Capsule: small pixel chip for real labels (event format). */
+.theme-pixel .px-chip {
+  display: inline-block;
+  padding: 0.0625rem 0.5rem;
+  margin: 2px 4px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  background: var(--hull-dark);
+  box-shadow:
+    0 -2px 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    -2px 0 0 0 var(--border),
+    2px 0 0 0 var(--border);
+}
+
+/* Quiet text link: underline, Link violet. */
+.theme-pixel .px-link {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  font-weight: 600;
+  padding-block: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+.theme-pixel .px-link:hover {
+  color: var(--foreground);
+}
+
+/* Nav "Join on Meetup": a small pixel button instead of the gradient pill. */
+.theme-pixel .nav-cta {
+  background: var(--beacon);
+  color: var(--beacon-ink);
+  border: 0;
+  border-radius: 0;
+  margin: 2px;
+  box-shadow:
+    inset 0 2px 0 var(--beacon-light),
+    inset 0 -2px 0 var(--beacon-dark),
+    0 -2px 0 0 var(--beacon-ink),
+    0 2px 0 0 var(--beacon-ink),
+    -2px 0 0 0 var(--beacon-ink),
+    2px 0 0 0 var(--beacon-ink);
+}
+/* Current page in the nav: a pixel bar under the link, not a thin line. */
+.theme-pixel nav a.text-primary::after {
+  height: 3px !important;
+  bottom: -6px !important;
+  background: var(--beacon) !important;
+  border-radius: 0 !important;
+}
+.theme-pixel nav.scrolled-nav {
+  background: color-mix(in srgb, var(--orbit) 92%, transparent);
+}
+
+/* Pixel sky behind the hero: two tiny PNGs scaled up with hard pixels.
+   Tall art on phones, wide from md up. Static, no animation. */
+.theme-pixel .px-sky {
+  background-color: #241a63;
+  background-image: url("./assets/pixel-sky-tall.png");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+@media (min-width: 768px) {
+  .theme-pixel .px-sky {
+    background-image: url("./assets/pixel-sky-wide.png");
+  }
+}
+/* Short page headers (Events): from md up, show the starry upper sky rather
+   than the cloud bank, and dither the cropped bottom edge into the page
+   colour (2px checkerboard, then solid), the same way the art does. */
+@media (min-width: 768px) {
+  .theme-pixel .px-sky.px-sky-high {
+    background-position: center 30%;
+  }
+  .theme-pixel .px-sky.px-sky-high::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 12px;
+    background:
+      linear-gradient(var(--orbit), var(--orbit)) bottom / 100% 6px no-repeat,
+      conic-gradient(var(--orbit) 25%, transparent 0 50%, var(--orbit) 0 75%, transparent 0) 0 0 / 6px 6px;
+    image-rendering: pixelated;
+  }
+}
+/* Hard pixel shadow under text that sits on the sky. */
+.theme-pixel .px-sky :is(h1, p) {
+  text-shadow: 2px 2px 0 var(--hull-shadow);
+}
+.theme-pixel .px-sky .px-panel :is(h2, p) {
+  text-shadow: none;
+}
+
+/* Mascot idle float: the page's single ambient motion, off for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  .theme-pixel .px-float {
+    animation: px-float 3.2s steps(6, jump-none) infinite;
+  }
+}
+
+/* Event date tile: month above day, like a desk calendar page. */
+.theme-pixel .px-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 4rem;
+  height: 4.25rem;
+  background: var(--orbit);
+  margin: 2px;
+  box-shadow:
+    inset 0 -3px 0 var(--hull-dark),
+    0 -2px 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    -2px 0 0 0 var(--border),
+    2px 0 0 0 var(--border);
+  font-family: "Pixelify Sans", "Figtree", system-ui, sans-serif;
+  line-height: 1;
+  flex-shrink: 0;
+}

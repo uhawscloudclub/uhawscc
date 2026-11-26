@@ -9,7 +9,7 @@ test.describe("Navigation flow", () => {
     });
 
     for (const [label, heading] of [
-        ["Events", /meetups/i],
+        ["Events", /^Events$/],
         ["Learn", /Your path to/i],
         ["Community", /Built by students/i],
         ["Contact", /hear from/i],
