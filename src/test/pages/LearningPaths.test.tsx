@@ -1,4 +1,4 @@
-import { screen } from "@testing-library/react";
+import { fireEvent, screen } from "@testing-library/react";
 import { describe, expect, it, beforeEach } from "vitest";
 import LearningPathsPage from "@/pages/LearningPaths";
 import { renderWithRouter } from "../test-utils";
@@ -31,7 +31,7 @@ describe("Learning Paths page", () => {
     it("renders at least one Skill Builder resource link", () => {
         renderWithRouter(<LearningPathsPage />);
         const sbLinks = screen
-            .getAllByRole("link", { name: "Open ↗" })
+            .getAllByRole("link", { name: /^Open .+ \(opens in a new tab\)$/ })
             .filter((l) => l.getAttribute("href")?.includes("skillbuilder.aws"));
         expect(sbLinks.length).toBeGreaterThan(0);
     });
@@ -58,7 +58,7 @@ describe("Learning Paths page", () => {
         renderWithRouter(<LearningPathsPage />);
 
         const practiceExamOpenLink = screen
-            .getAllByRole("link", { name: "Open ↗" })
+            .getAllByRole("link", { name: /^Open .+ \(opens in a new tab\)$/ })
             .find((link) => link.getAttribute("href") === RESOURCE_LINKS["Official Practice Exam (CLF-C02)"]);
 
         expect(practiceExamOpenLink).toBeDefined();
@@ -91,5 +91,41 @@ describe("Learning Paths page", () => {
 
         expect(progressBar).toHaveAttribute("aria-valuenow", "100");
         expect(screen.getByText("100%")).toBeInTheDocument();
+    });
+
+    it("uses native checkboxes named after each resource", () => {
+        renderWithRouter(<LearningPathsPage />);
+        const boxes = screen.getAllByRole("checkbox");
+        expect(boxes).toHaveLength(expectedResourceOrder.length);
+        boxes.forEach((box) => expect(box.tagName).toBe("INPUT"));
+        expect(screen.getByRole("checkbox", { name: /AWS Cloud Practitioner Essentials/ })).not.toBeChecked();
+        expect(screen.queryByRole("button", { pressed: false })).not.toBeInTheDocument();
+    });
+
+    it("gives every Open link a distinct accessible name", () => {
+        renderWithRouter(<LearningPathsPage />);
+        const names = screen
+            .getAllByRole("link", { name: /^Open .+ \(opens in a new tab\)$/ })
+            .map((link) => link.getAttribute("aria-label"));
+        expect(new Set(names).size).toBe(names.length);
+    });
+
+    it("saves a checked item under the existing progress key", () => {
+        renderWithRouter(<LearningPathsPage />);
+        const box = screen.getByRole("checkbox", { name: /AWS CCP Certification Page/ });
+
+        fireEvent.click(box);
+
+        expect(box).toBeChecked();
+        expect(JSON.parse(localStorage.getItem(COMPLETE_PROGRESS_KEY) ?? "[]")).toEqual([0]);
+    });
+
+    it("restores progress saved before this change (same key, same format)", () => {
+        localStorage.setItem(COMPLETE_PROGRESS_KEY, JSON.stringify([0, 2]));
+        renderWithRouter(<LearningPathsPage />);
+
+        expect(screen.getByRole("checkbox", { name: /AWS CCP Certification Page/ })).toBeChecked();
+        expect(screen.getByRole("checkbox", { name: /AWS Cloud Practitioner Essentials/ })).toBeChecked();
+        expect(screen.getByRole("checkbox", { name: /Official Exam Guide/ })).not.toBeChecked();
     });
 });

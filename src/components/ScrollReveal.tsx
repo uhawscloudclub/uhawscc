@@ -1,4 +1,5 @@
 import { useEffect, useRef, ReactNode } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface Props {
   children: ReactNode;
@@ -9,12 +10,9 @@ interface Props {
 const ScrollReveal = ({ children, className = '', delay = 0 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
-  // Synchronous check so reduced-motion users never see an invisible flash.
-  // window check guards SSR / test environments.
-  const reducedMotion =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false;
+  // Read synchronously on first render, so reduced-motion users never see an
+  // invisible flash, and live afterwards if the setting changes.
+  const reducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (reducedMotion) return; // already rendered fully visible — no observer needed

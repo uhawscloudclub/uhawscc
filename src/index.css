@@ -211,4 +211,17 @@
     animation: none;
     opacity: 1;
   }
+
+  /* Safety net for every other CSS animation/transition (Tailwind animate-*,
+     shadcn/ui, hover transitions): effectively instant, ending in the final
+     state. JS-driven motion (canvas, confetti, carousel) checks the preference
+     itself via usePrefersReducedMotion / framer-motion. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

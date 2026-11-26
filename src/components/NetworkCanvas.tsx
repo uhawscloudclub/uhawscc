@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 
 interface Node {
     x: number;
@@ -73,22 +74,23 @@ const INTENSITY_PRESETS: Record<
 const PURPLE = { r: 178, g: 138, b: 255 } as const;
 const CYAN   = { r: 72,  g: 212, b: 242 } as const;
 
+/**
+ * Decorative background. With prefers-reduced-motion it draws one static frame
+ * and never animates; there is deliberately no prop to override that. The
+ * preference is read live, so toggling it while the page is open takes effect.
+ */
 export default function NetworkCanvas({
     intensity = 'medium',
-    respectReducedMotion = true,
 }: {
     intensity?: Intensity;
-    respectReducedMotion?: boolean;
 }) {
+    const prefersReducedMotion = usePrefersReducedMotion();
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const frameRef = useRef<number>(0);
     const nodesRef = useRef<Node[]>([]);
     const sizeRef = useRef({ width: 0, height: 0 });
 
     useEffect(() => {
-        const prefersReducedMotion =
-            respectReducedMotion && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
         const canvas = canvasRef.current;
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
@@ -214,7 +216,7 @@ export default function NetworkCanvas({
             cancelAnimationFrame(frameRef.current);
             window.removeEventListener('resize', handleResize);
         };
-    }, [intensity, respectReducedMotion]);
+    }, [intensity, prefersReducedMotion]);
 
     return (
         <canvas

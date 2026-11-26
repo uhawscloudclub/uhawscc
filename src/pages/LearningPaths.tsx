@@ -152,58 +152,51 @@ function ResourceRow({
     checked: boolean;
     onToggle: (id: number) => void;
 }) {
+    // A native checkbox: Space toggles it, screen readers announce "checkbox,
+    // checked/not checked", and it gets the site's :focus-visible ring. The
+    // label covers the resource name so the whole text is a click target. The
+    // "Open" link sits beside the label, not inside it, so the two controls
+    // never nest.
+    const inputId = `ccp-resource-${resource.id}`;
     return (
         <div
-            role="button"
-            tabIndex={0}
-            aria-pressed={checked}
             className={`
-                flex items-center gap-3 px-3 py-3 rounded-lg border
-                transition-colors duration-200 cursor-pointer group
+                flex items-center gap-3 px-3 py-1 rounded-lg border
+                transition-colors duration-200
                 ${checked
                     ? 'bg-success/[8%] border-success/25'
                     : 'bg-card/40 border-border hover:border-primary/50'
                 }
             `}
-            onClick={() => onToggle(resource.id)}
-            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onToggle(resource.id); } }}
         >
-            {/* Checkbox */}
+            <input
+                id={inputId}
+                type="checkbox"
+                checked={checked}
+                onChange={() => onToggle(resource.id)}
+                className="h-[18px] w-[18px] shrink-0 cursor-pointer"
+                style={{ accentColor: 'var(--success)' }}
+            />
 
-            <div
-                className={`
-                    w-[17px] h-[17px] rounded-[4px] flex-shrink-0 flex items-center
-                    justify-center border text-[10px] font-bold transition-all duration-200
-                    ${checked
-                        ? 'bg-success border-success text-white'
-                        : 'border-border text-transparent group-hover:border-primary/50'
-                    }
-                `}
-            >
-                ✓
-            </div>
-
-            {/* Text */}
-            <div className="flex-1 min-w-0">
-                <p className={`text-[13px] font-medium leading-snug ${checked ? 'text-success-fg' : 'text-foreground'}`}>
+            <label htmlFor={inputId} className="flex-1 min-w-0 py-2 cursor-pointer">
+                <span className={`block text-[13px] font-medium leading-snug ${checked ? 'text-success-fg' : 'text-foreground'}`}>
                     {resource.name}
                     {resource.requiresAcademy && (
                         <span className="ml-2 text-[10px] font-medium text-warning bg-warning/[8%] border border-warning/25 rounded px-1.5 py-0.5 align-middle">
                             Academy
                         </span>
                     )}
-                </p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                </span>
+                <span className="block text-[11px] text-muted-foreground mt-0.5 leading-snug">
                     {resource.tag}
-                </p>
-            </div>
+                </span>
+            </label>
 
-            {/* Open link — stops propagation so click doesn't also toggle checkbox */}
             <a
                 href={resource.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
+                aria-label={`Open ${resource.name} (opens in a new tab)`}
                 className="
                     flex-shrink-0 text-[11px] font-medium px-3 py-3 rounded-md
                     border border-border text-muted-foreground

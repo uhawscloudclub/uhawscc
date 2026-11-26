@@ -10,8 +10,8 @@ export default defineConfig({
   testDir: "./e2e",
   // The homepage community carousel is code-split, so its chunk only exists in
   // a real build — it belongs here rather than in the dev-server config.
-  // events and home-join specs run in both configs (dev and prod build).
-  testMatch: /(prod-lazy-routes|homepage-community|events|home-join)\.spec\.ts/,
+  // events, home-join and a11y-basics run in both configs (dev and prod build).
+  testMatch: /(prod-lazy-routes|homepage-community|events|home-join|a11y-basics)\.spec\.ts/,
   use: { ...baseConfig.use, baseURL: "http://localhost:4173" },
   // Distinct output paths. Both suites run in one job, and the defaults
   // (playwright-report/, test-results/) are shared — the prod run would
