@@ -25,3 +25,10 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Playwright output — the dev and production suites write to separate paths
+# so one run cannot clobber the other's report.
+playwright-report
+playwright-report-prod
+test-results
+test-results-prod

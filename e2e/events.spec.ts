@@ -5,9 +5,16 @@ import { test, expect, devices, type Page } from "@playwright/test";
 // configs: dev server (playwright.config.ts) and production build
 // (playwright.prod.config.ts).
 
-// Phone emulation without devices["iPhone 13"].defaultBrowserType (WebKit),
-// which can't be changed inside a describe block; this stays on Chromium.
-const { defaultBrowserType: _webkit, ...iPhone13 } = devices["iPhone 13"];
+// Phone emulation taken from devices["iPhone 13"] minus its defaultBrowserType
+// (WebKit), which can't be changed inside a describe block; stays on Chromium.
+const phone = devices["iPhone 13"];
+const iPhone13 = {
+    viewport: phone.viewport,
+    userAgent: phone.userAgent,
+    deviceScaleFactor: phone.deviceScaleFactor,
+    isMobile: phone.isMobile,
+    hasTouch: phone.hasTouch,
+};
 
 const MEETUP = "https://www.meetup.com/aws-sbg-at-univ-of-houston/events";
 

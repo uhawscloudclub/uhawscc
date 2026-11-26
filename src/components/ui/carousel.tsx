@@ -98,6 +98,9 @@ const Carousel = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivEl
       api.on("select", onSelect);
 
       return () => {
+        // Both listeners must be removed — removing only "select" leaked the
+        // "reInit" handler on every unmount.
+        api?.off("reInit", onSelect);
         api?.off("select", onSelect);
       };
     }, [api, onSelect]);
