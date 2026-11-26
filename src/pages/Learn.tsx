@@ -4,6 +4,7 @@ import PixelIcon from '@/components/PixelIcon';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { LINKS } from '@/config/externalLinks';
 import { FREE_RESOURCES } from '@/data/learnResources';
+import SkySparkles from '@/components/SkySparkles';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -464,6 +465,7 @@ export default function Learn() {
 
             {/* ── Header ── */}
             <section className="relative overflow-hidden px-sky px-sky-high">
+              <SkySparkles />
                 <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative max-w-3xl">
                     <h1 className="mb-5" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
                         Your path to certification.

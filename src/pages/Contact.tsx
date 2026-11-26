@@ -9,6 +9,7 @@ import { Linkedin, Instagram } from 'lucide-react';
 import PixelIcon from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { INTENTS, LIMITS, buildSubject, type IntentId } from '@/lib/contactForm';
+import SkySparkles from '@/components/SkySparkles';
 
 // ── Discord icon (not in lucide) ─────────────────────────────────────────────
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -193,6 +194,7 @@ const ContactPage = () => {
 
       {/* ── Header ── */}
       <section className="relative overflow-hidden px-sky px-sky-high">
+      <SkySparkles />
         <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative">
           <h1 className="mb-5" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
             We'd love to hear from you.

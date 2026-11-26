@@ -4,6 +4,23 @@ import { selectNextEvent } from '@/components/ProofStrip';
 import EventDateTile from '@/components/EventDateTile';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { PAST_EVENTS, formatEventDay } from '@/data/pastEvents';
+import PixelIcon from '@/components/PixelIcon';
+import { buildIcs, countdownLabel, icsFileName, type CalendarEvent } from '@/lib/eventCalendar';
+
+/** Save an all-day .ics for the event; the visitor's calendar app opens it. */
+function downloadIcs(event: CalendarEvent) {
+  const ics = buildIcs(event);
+  if (!ics) return;
+  const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar;charset=utf-8' }));
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = icsFileName(event.title);
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  // Give the browser a moment to start the download before freeing the blob.
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
 
 /**
  * "Next up" on the homepage, the one raised pixel panel on the page. Never an
@@ -17,6 +34,7 @@ const NextEvent = () => {
   const { data: events, isLoading, isError } = useEvents();
   const next = selectNextEvent(events);
   const lastEvent = PAST_EVENTS[0];
+  const countdown = next?.rawDate ? countdownLabel(next.rawDate) : null;
 
   return (
     <section aria-labelledby="next-event-heading" className="px-panel px-window max-w-2xl">
@@ -40,6 +58,9 @@ const NextEvent = () => {
           <div className="flex gap-4 items-start">
             <EventDateTile rawDate={next.rawDate} />
             <div>
+              {countdown && (
+                <p className="px-chip px-countdown mb-2" data-testid="event-countdown">{countdown}</p>
+              )}
               <p className="font-bold text-lg text-foreground leading-snug">{next.title}</p>
               <p className="text-sm text-muted-foreground mt-1">{next.date}</p>
             </div>
@@ -54,6 +75,17 @@ const NextEvent = () => {
             >
               RSVP on Meetup
             </a>
+            {next.rawDate && (
+              <button
+                type="button"
+                className="px-link inline-flex items-center gap-2"
+                onClick={() => downloadIcs({ id: next.id, title: next.title, rawDate: next.rawDate as string, link: next.link })}
+                aria-label={`Add ${next.title} to your calendar`}
+              >
+                <PixelIcon name="calendar" size={16} />
+                Add to calendar
+              </button>
+            )}
             <Link to="/events" className="px-link">All events</Link>
           </div>
         </div>
