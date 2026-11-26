@@ -1,4 +1,4 @@
-import { screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import CommunityPage from "@/pages/Community";
 import { JOIN_CHANNELS } from "@/data/joinChannels";
@@ -39,6 +39,30 @@ describe("Community page", () => {
             expect(link).toHaveAttribute("href", linkedinUrl);
             expect(link).toHaveAttribute("rel", "noopener noreferrer");
         });
+    });
+
+    it("flips an officer card to player stats and back", () => {
+        renderWithRouter(<CommunityPage />);
+        const flip = screen.getByRole("button", { name: "Perry's player stats" });
+        expect(flip).toHaveAttribute("aria-expanded", "false");
+        fireEvent.click(flip);
+
+        expect(screen.getByText("Favorite AWS service")).toBeInTheDocument();
+        expect(screen.getByText("CodePipeline and CodeDeploy")).toBeInTheDocument();
+        // The front face (and its LinkedIn link) is gone while flipped.
+        expect(screen.queryByRole("link", { name: "Visit Perry Takyi's LinkedIn profile" })).not.toBeInTheDocument();
+
+        const back = screen.getByRole("button", { name: "Back to profile" });
+        expect(back).toHaveAttribute("aria-expanded", "true");
+        fireEvent.click(back);
+        expect(screen.getByRole("link", { name: "Visit Perry Takyi's LinkedIn profile" })).toBeInTheDocument();
+    });
+
+    it("hides the favorite-service row when an officer has not shared one", () => {
+        renderWithRouter(<CommunityPage />);
+        fireEvent.click(screen.getByRole("button", { name: "Hiab's player stats" }));
+        expect(screen.getByText(/comedy movies/)).toBeInTheDocument();
+        expect(screen.queryByText("Favorite AWS service")).not.toBeInTheDocument();
     });
 
     it("lists both faculty advisors with headshot, email and phone", () => {

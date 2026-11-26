@@ -5,7 +5,8 @@ import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import ProofStrip from '@/components/ProofStrip';
 import NextEvent from '@/components/NextEvent';
 import WaysToJoin from '@/components/WaysToJoin';
-import Mascot from '@/components/Mascot';
+import MascotBuddy from '@/components/MascotBuddy';
+import SkySparkles from '@/components/SkySparkles';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { getCommunityPhotos } from '@/data/communityPhotos';
 
@@ -46,6 +47,7 @@ const HomePage = () => (
 
     {/* ── Hero + Next up ── */}
     <section className="relative overflow-hidden px-sky">
+      <SkySparkles />
       <div className="container mx-auto px-6 pt-24 sm:pt-32 pb-12 relative">
         <div className="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-6 max-w-5xl">
           <div className="max-w-2xl">
@@ -74,7 +76,7 @@ const HomePage = () => (
             </div>
           </div>
           {/* Small above the heading on phones, large beside it from md up. */}
-          <Mascot size={176} className="px-float w-16 h-auto md:w-44 md:mt-2 md:mr-4 lg:mr-16 shrink-0" />
+          <MascotBuddy className="self-start md:mt-2 md:mr-4 lg:mr-16" />
         </div>
 
         <div className="mt-10 md:mt-12">

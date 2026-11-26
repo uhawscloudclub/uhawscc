@@ -97,7 +97,9 @@ describe("Learn page (Cloud Practitioner path + free resources)", () => {
         expect(boxes).toHaveLength(expectedResourceOrder.length);
         boxes.forEach((box) => expect(box.tagName).toBe("INPUT"));
         expect(screen.getByRole("checkbox", { name: /AWS Cloud Practitioner Essentials/ })).not.toBeChecked();
-        expect(screen.queryByRole("button", { pressed: false })).not.toBeInTheDocument();
+        // Checklist rows are checkboxes, not toggle buttons (the path quiz and the nav sound toggle aside).
+        const toggles = screen.queryAllByRole("button", { pressed: false }).filter((b) => !b.closest("#path-quiz, nav"));
+        expect(toggles).toHaveLength(0);
     });
 
     it("gives every Open link a distinct accessible name", () => {
@@ -192,5 +194,23 @@ describe("Learn page (Cloud Practitioner path + free resources)", () => {
             "href",
             "https://builder.aws.com/learn/students",
         );
+    });
+
+    it("shows a level-up toast and the First Step badge when a level is cleared by the visitor", () => {
+        renderWithRouter(<LearningPathsPage />);
+        expect(screen.queryByTestId("pixel-toast")).not.toBeInTheDocument();
+        fireEvent.click(screen.getByRole("checkbox", { name: /Builder Center account/ }));
+        fireEvent.click(screen.getByRole("checkbox", { name: /Student Rewards/ }));
+        // First Step (from the first check) shows first; the level-up is queued behind it.
+        expect(screen.getByTestId("pixel-toast")).toHaveTextContent("First Step");
+        fireEvent.click(screen.getByRole("button", { name: "Dismiss" }));
+        expect(screen.getByTestId("pixel-toast")).toHaveTextContent("1 of 5 levels cleared");
+        expect(screen.getByTestId("pixel-toast")).toHaveTextContent("Cleared: Get Set Up");
+    });
+
+    it("does not toast for progress loaded from storage", () => {
+        localStorage.setItem(COMPLETE_PROGRESS_KEY, JSON.stringify([8, 9, 0, 1]));
+        renderWithRouter(<LearningPathsPage />);
+        expect(screen.queryByTestId("pixel-toast")).not.toBeInTheDocument();
     });
 });

@@ -6,6 +6,7 @@ import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { useEvents } from '@/hooks/useEvents';
 import { PAST_EVENTS, formatEventDay, semesterOf } from '@/data/pastEvents';
 import { hasValidEventDate, isUpcomingEvent } from '../../server/eventDates.js';
+import SkySparkles from '@/components/SkySparkles';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 const EventSkeleton = () => (
@@ -189,6 +190,7 @@ const EventsPage = () => {
 
       {/* ── Header ── */}
       <section className="relative overflow-hidden px-sky px-sky-high">
+      <SkySparkles />
         <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative max-w-4xl">
           <h1 className="text-foreground mb-4" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
             Events

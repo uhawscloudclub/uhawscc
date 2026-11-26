@@ -378,6 +378,7 @@ html {
 .theme-pixel .px-option {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0.5rem 0.875rem;
   margin: 2px;
@@ -404,7 +405,8 @@ html {
     -2px 0 0 0 var(--beacon-ink),
     2px 0 0 0 var(--beacon-ink);
 }
-.theme-pixel .px-option:has(:focus-visible) {
+.theme-pixel .px-option:has(:focus-visible),
+.theme-pixel button.px-option:focus-visible {
   outline: 3px solid var(--beacon);
   outline-offset: 4px;
 }
@@ -631,6 +633,324 @@ html {
   }
   .theme-pixel .px-float {
     animation: px-float 3.2s steps(6, jump-none) infinite;
+  }
+}
+
+/* ── Interactive bits ── */
+
+/* Countdown chip on "Next up": Beacon yellow so it reads as live. */
+.theme-pixel .px-chip.px-countdown {
+  margin: 2px;
+  color: var(--beacon-ink);
+  background: var(--beacon);
+  font-weight: 700;
+}
+
+/* Tappable mascot: no button chrome, a pixel focus ring. */
+.theme-pixel .px-buddy {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-pixel .px-buddy:focus-visible {
+  outline: 3px solid var(--beacon, #ffd34d);
+  outline-offset: 4px;
+}
+
+/* Speech bubble: Starlight panel with a stepped tail. Beside the small
+   mascot on phones, to its left on wider screens. */
+.theme-pixel .px-bubble {
+  position: absolute;
+  z-index: 10;
+  top: 0;
+  left: calc(100% + 12px);
+  width: min(15rem, calc(100vw - 7rem));
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #1a1440;
+  background: #f6f3ff;
+  text-shadow: none;
+  box-shadow:
+    0 -3px 0 0 #1a1440,
+    0 3px 0 0 #1a1440,
+    -3px 0 0 0 #1a1440,
+    3px 0 0 0 #1a1440;
+}
+.theme-pixel .px-bubble::before {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: -9px;
+  width: 6px;
+  height: 6px;
+  background: #f6f3ff;
+  box-shadow: -3px 0 0 0 #1a1440, 0 -3px 0 0 #1a1440, 0 3px 0 0 #1a1440;
+}
+@media (min-width: 768px) {
+  .theme-pixel .px-bubble {
+    left: auto;
+    right: calc(100% + 12px);
+    top: 1.5rem;
+  }
+  .theme-pixel .px-bubble::before {
+    left: auto;
+    right: -9px;
+    box-shadow: 3px 0 0 0 #1a1440, 0 -3px 0 0 #1a1440, 0 3px 0 0 #1a1440;
+  }
+}
+
+/* .px-sky p adds a text shadow; not inside the bubble. */
+.theme-pixel .px-sky .px-bubble {
+  text-shadow: none;
+}
+
+/* Pixel toast ("LEVEL UP!", "Badge unlocked"): bottom centre, above content. */
+.theme-pixel .px-toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 70;
+  width: min(26rem, calc(100vw - 32px));
+  pointer-events: none;
+}
+.theme-pixel .px-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem 2.5rem 0.875rem 0.875rem;
+  color: var(--beacon-ink);
+  background: var(--beacon);
+  pointer-events: auto;
+  box-shadow:
+    0 -3px 0 0 var(--beacon-ink),
+    0 3px 0 0 var(--beacon-ink),
+    -3px 0 0 0 var(--beacon-ink),
+    3px 0 0 0 var(--beacon-ink),
+    0 9px 0 0 var(--hull-shadow);
+}
+.theme-pixel .px-toast-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  color: var(--beacon);
+  background: var(--beacon-ink);
+}
+.theme-pixel .px-toast-kicker {
+  display: block;
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-size: 1.375rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.theme-pixel .px-toast-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--beacon-ink);
+}
+.theme-pixel .px-toast-close:focus-visible {
+  outline: 3px solid var(--beacon-ink);
+  outline-offset: -3px;
+}
+.theme-pixel .px-toast-burst {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-toast-in {
+    0% { transform: translateY(24px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .theme-pixel .px-toast {
+    animation: px-toast-in 0.25s steps(4, jump-end);
+  }
+  /* Eight pixels fly out from the icon, once. */
+  @keyframes px-burst {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+  }
+  .theme-pixel .px-toast-burst {
+    display: block;
+    position: absolute;
+    left: 2.25rem;
+    top: 2.25rem;
+  }
+  .theme-pixel .px-toast-burst span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--chip);
+    opacity: 0;
+    animation: px-burst 0.6s steps(6, jump-end) 0.15s;
+  }
+  .theme-pixel .px-toast-burst span:nth-child(1) { --dx: 0px; --dy: -48px; }
+  .theme-pixel .px-toast-burst span:nth-child(2) { --dx: 34px; --dy: -34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(3) { --dx: 48px; --dy: 0px; }
+  .theme-pixel .px-toast-burst span:nth-child(4) { --dx: 34px; --dy: 34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(5) { --dx: 0px; --dy: 48px; }
+  .theme-pixel .px-toast-burst span:nth-child(6) { --dx: -34px; --dy: 34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(7) { --dx: -48px; --dy: 0px; }
+  .theme-pixel .px-toast-burst span:nth-child(8) { --dx: -34px; --dy: -34px; background: var(--starlight, #f6f3ff); }
+}
+
+/* Badge tiles on /learn: dim and "???" until earned, then Beacon. */
+.theme-pixel .px-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  margin: 2px;
+  color: var(--muted-foreground);
+  background: var(--hull-dark);
+  box-shadow:
+    0 -2px 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    -2px 0 0 0 var(--border),
+    2px 0 0 0 var(--border);
+}
+.theme-pixel .px-badge-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  background: var(--hull);
+}
+.theme-pixel .px-badge.is-earned {
+  color: var(--beacon-ink);
+  background: var(--beacon);
+  box-shadow:
+    0 -2px 0 0 var(--beacon-ink),
+    0 2px 0 0 var(--beacon-ink),
+    -2px 0 0 0 var(--beacon-ink),
+    2px 0 0 0 var(--beacon-ink);
+}
+.theme-pixel .px-badge.is-earned .px-badge-icon {
+  color: var(--beacon);
+  background: var(--beacon-ink);
+}
+
+/* 404 mini-game canvas: tiny logical size, scaled up with hard pixels. */
+.theme-pixel .px-game-canvas {
+  image-rendering: pixelated;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 0 0 3px var(--hull-shadow);
+}
+.theme-pixel .px-game-canvas:focus-visible {
+  outline: 3px solid var(--beacon);
+  outline-offset: 3px;
+}
+
+/* Quiz progress: one block per question, the current one outlined. */
+.theme-pixel .px-quiz-steps {
+  display: flex;
+  gap: 4px;
+}
+.theme-pixel .px-quiz-steps span {
+  width: 20px;
+  height: 8px;
+  background: var(--hull-dark);
+}
+.theme-pixel .px-quiz-steps span.is-on {
+  background: var(--beacon);
+}
+.theme-pixel .px-quiz-steps span.is-now {
+  background: var(--chip, #ad5cff);
+}
+
+/* Officer flip cards: the face swaps with a quick horizontal squash. */
+.theme-pixel .px-officer {
+  display: flex;
+  min-height: 12rem;
+}
+.theme-pixel .px-officer > div {
+  width: 100%;
+}
+.theme-pixel .px-stat-label {
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.1;
+  color: var(--beacon);
+  letter-spacing: 0.02em;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-flip-in {
+    0% { transform: scaleX(0.05); }
+    100% { transform: scaleX(1); }
+  }
+  .theme-pixel .px-flip-in {
+    animation: px-flip-in 0.24s steps(4, jump-end);
+  }
+}
+
+/* Sky sparkles: a layer over the hero sky, under the content. */
+.theme-pixel .px-sparkles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.theme-pixel .px-star {
+  position: absolute;
+  background: #fff8d6;
+  opacity: 0.85;
+}
+.theme-pixel .px-shooting-star {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-twinkle {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 0.15; }
+  }
+  .theme-pixel .px-star {
+    animation: px-twinkle 2.8s steps(3, jump-none) infinite;
+  }
+
+  /* One streak every 11s, crossing the top band left to right. */
+  @keyframes px-shoot {
+    0% { transform: translate(0, 0); opacity: 0; }
+    2% { opacity: 1; }
+    10% { transform: translate(55vw, 18vh); opacity: 0; }
+    100% { transform: translate(55vw, 18vh); opacity: 0; }
+  }
+  .theme-pixel .px-shooting-star {
+    display: block;
+    position: absolute;
+    top: 4%;
+    left: 12%;
+    width: 24px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent 0 33%, #fff8d6 33% 66%, #ffffff 66%);
+    transform-origin: right center;
+    rotate: 18deg;
+    opacity: 0;
+    animation: px-shoot 11s steps(24, jump-none) 3s infinite;
+  }
+
+  /* Mascot hop on tap, then back to the idle float. */
+  @keyframes px-hop {
+    0%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-18px); }
+    70% { transform: translateY(-6px); }
+  }
+  .theme-pixel .px-hop {
+    animation:
+      px-hop 0.5s steps(5, jump-none),
+      px-float 3.2s steps(6, jump-none) 0.5s infinite;
   }
 }
 

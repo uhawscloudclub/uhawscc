@@ -4,6 +4,11 @@ import PixelIcon from '@/components/PixelIcon';
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
 import { LINKS } from '@/config/externalLinks';
 import { FREE_RESOURCES } from '@/data/learnResources';
+import SkySparkles from '@/components/SkySparkles';
+import PathQuiz from '@/components/PathQuiz';
+import LearnRewards from '@/components/LearnRewards';
+import { unlockBadge } from '@/lib/badges';
+import { showPixelToast } from '@/lib/pixelToast';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -414,12 +419,14 @@ export default function Learn() {
     const prefersReducedMotion = usePrefersReducedMotion();
     const previousProgressRef = useRef(0);
     const didMountRef = useRef(false);
+    const userActedRef = useRef(false);
 
     useEffect(() => {
         setChecked(loadProgress());
     }, []);
 
     const toggleResource = useCallback((id: number) => {
+        userActedRef.current = true;
         setChecked((prev) => {
             const next = prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id];
             saveProgress(next);
@@ -459,11 +466,38 @@ export default function Learn() {
     // Levels cleared: steps whose resources are all checked off.
     const levelsDone = MILESTONES.filter((m) => m.resources.every((id) => checked.includes(id))).length;
 
+    // Level-up toast and badges, only for changes the visitor makes (not for
+    // progress loaded from storage): userActedRef flips on the first toggle.
+    const prevLevelsRef = useRef(0);
+    useEffect(() => {
+        if (!userActedRef.current) {
+            prevLevelsRef.current = levelsDone;
+            return;
+        }
+        if (levelsDone > prevLevelsRef.current) {
+            const cleared = MILESTONES.filter((m) => m.resources.every((id) => checked.includes(id)));
+            const latest = cleared[cleared.length - 1];
+            showPixelToast({
+                kicker: 'Level up!',
+                title: `${levelsDone} of ${MILESTONES.length} levels cleared`,
+                body: latest ? `Cleared: ${latest.title}` : undefined,
+                icon: 'star',
+            });
+        }
+        prevLevelsRef.current = levelsDone;
+    }, [levelsDone, checked]);
+    useEffect(() => {
+        if (!userActedRef.current) return;
+        if (checked.length > 0) unlockBadge('first-step');
+        if (isComplete) unlockBadge('path-complete');
+    }, [checked.length, isComplete]);
+
     return (
         <PageLayout>
 
             {/* ── Header ── */}
             <section className="relative overflow-hidden px-sky px-sky-high">
+              <SkySparkles />
                 <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative max-w-3xl">
                     <h1 className="mb-5" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
                         Your path to certification.
@@ -480,8 +514,10 @@ export default function Learn() {
             <section className="relative py-12">
                 <div className="container mx-auto px-6 max-w-3xl">
 
+                    <PathQuiz />
+
                     {/* HUD: level and a segmented bar, one block per resource */}
-                    <div className="mb-12">
+                    <div id="path" className="mb-12 scroll-mt-24">
                         <div className="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 mb-3">
                             <p className="font-pixel text-3xl text-foreground leading-none">
                                 {isComplete ? 'Path complete' : `Level ${Math.min(levelsDone + 1, MILESTONES.length)} of ${MILESTONES.length}`}
@@ -567,6 +603,17 @@ export default function Learn() {
                                 </li>
                             ))}
                         </ul>
+                    </div>
+
+                    <div className="mt-16">
+                        <LearnRewards
+                            card={{
+                                levelLabel: isComplete ? 'Path complete' : `Level ${Math.min(levelsDone + 1, MILESTONES.length)} of ${MILESTONES.length}`,
+                                levelTitle: isComplete ? 'Ready to book the exam' : MILESTONES[Math.min(levelsDone, MILESTONES.length - 1)].title,
+                                done: checked.length,
+                                total: CCP_RESOURCES.length,
+                            }}
+                        />
                     </div>
 
                     {/* ── Bottom CTAs ── */}

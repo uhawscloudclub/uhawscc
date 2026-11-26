@@ -49,6 +49,8 @@ describe("NextEvent (homepage)", () => {
         expect(screen.getByText("Wednesday, December 9, 2026")).toBeInTheDocument();
         expect(screen.getByRole("link", { name: /All events/i })).toHaveAttribute("href", "/events");
         expect(screen.queryByText("Later Event")).not.toBeInTheDocument();
+        expect(screen.getByTestId("event-countdown")).toHaveTextContent("In 7 days");
+        expect(screen.getByRole("button", { name: "Add Intro to Lambda to your calendar" })).toBeInTheDocument();
     });
 
     it("keeps an event that is happening today in Houston", async () => {
@@ -57,6 +59,7 @@ describe("NextEvent (homepage)", () => {
         renderWithRouter(<NextEvent />);
 
         expect(await screen.findByRole("link", { name: "RSVP on Meetup for Intro to Lambda" })).toBeInTheDocument();
+        expect(screen.getByTestId("event-countdown")).toHaveTextContent("Today");
     });
 
     it("with nothing scheduled, points to the latest past event and Meetup notifications", async () => {

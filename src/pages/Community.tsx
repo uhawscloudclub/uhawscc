@@ -1,6 +1,7 @@
 import PageLayout from '@/components/PageLayout';
 import WaysToJoin from '@/components/WaysToJoin';
 import TeamSection from '@/components/TeamSection';
+import SkySparkles from '@/components/SkySparkles';
 
 // Formerly /about (who we are, what we do) and /team (the people). Both old
 // URLs redirect here; /team lands on #team.
@@ -34,6 +35,7 @@ const CommunityPage = () => (
 
     {/* ── Header ── */}
     <section className="relative overflow-hidden px-sky px-sky-high">
+      <SkySparkles />
       <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative">
         <h1 className="mb-5" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
           Built by students, for students.

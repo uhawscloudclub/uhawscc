@@ -7,39 +7,7 @@
  * where the mascot itself carries meaning.
  */
 
-const PALETTE: Record<string, string> = {
-  O: '#0a0f22', // outline
-  W: '#eeebfa', // suit
-  S: '#b9b4d6', // suit shade
-  D: '#5b2da8', // visor rim
-  V: '#ad5cff', // visor (logo violet)
-  H: '#ffffff', // visor glint
-  C: '#ad5cff', // chest chip
-  P: '#ffd34d', // chip pins (Beacon)
-  B: '#8c88ae', // backpack
-};
-
-// 16 × 18. '.' is transparent.
-const SPRITE = [
-  '.....OOOOOO.....',
-  '....OWWWWWWO....',
-  '...OWWWWWWWWO...',
-  '..OWWDDDDDDWWO..',
-  '..OWDVVVVVHDWO..',
-  '..OWDVVVVHVDWO..',
-  '..OWDVVVVVVDWO..',
-  '..OWWDDDDDDWWO..',
-  '.OBOWWWWWWWWOBO.',
-  'OWOSWWPWPWWWSOWO',
-  'OWOWWPCCCPWWWOWO',
-  'OWOWWWCCCWWWWOWO',
-  'OSOWWPWPWPWWWOSO',
-  '.O.OWWWWWWWWO.O.',
-  '...OWWWOOWWWO...',
-  '...OWWO..OWWO...',
-  '...OSSO..OSSO...',
-  '...OOOO..OOOO...',
-];
+import { MASCOT_PALETTE as PALETTE, MASCOT_SPRITE as SPRITE } from '@/lib/sprites';
 
 const Mascot = ({
   size = 128,
