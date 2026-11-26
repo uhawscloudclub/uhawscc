@@ -25,7 +25,7 @@ interface Officer {
 // Bios condensed from each officer's own intro post.
 const team: Officer[] = [
   {
-    name: 'Perry Takyi', role: 'Captain & Founding Member', image: perryHeadshot, linkedinUrl: 'https://www.linkedin.com/in/perry-takyi/',
+    name: 'Perry Takyi', role: 'President', image: perryHeadshot, linkedinUrl: 'https://www.linkedin.com/in/perry-takyi/',
     does: 'Leads the club, building a community around cloud, AI, cybersecurity, and other emerging tech.',
     offTheClock: 'In the gym, out running, or grinding Marvel Rivals and Rainbow Six Siege.',
     favoriteService: 'CodePipeline and CodeDeploy',
@@ -53,7 +53,7 @@ const team: Officer[] = [
   {
     name: 'Abdul Ayinde Alao', role: 'Director of Content & Media', image: abdulHeadshot, linkedinUrl: 'https://www.linkedin.com/in/abdul-azeez-ayinde/',
     does: 'Creates the club’s content, documents events, and supports marketing.',
-    offTheClock: 'Arts and crafts, watching anime, and playing a bunch of sports.',
+    offTheClock: 'Arts and crafts, watching anime, and indulging in sports a bunch.',
   },
 ];
 
