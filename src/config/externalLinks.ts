@@ -11,7 +11,6 @@ export const EXTERNAL_LINKS = {
   instagram: 'https://www.instagram.com/awssbg_uh/',
   emailContact: 'sbguh@cougarnet.uh.edu',
   memberInterestForm: 'https://forms.cloud.microsoft/r/XiLmEDbKSw',
-  awsAcademySignupForm: 'https://docs.google.com/forms/d/1S6LrqVlFaMWfUPcBpOxkijHLidYz4kdxmElk2VGyqPI/viewform',
   ccpEssentials: 'https://skillbuilder.aws/learn/94T2BEN85A/aws-cloud-practitioner-essentials/8D79F3AVR7',
   ccpExamPrepPlan: 'https://skillbuilder.aws/learning-plan/8UUCEZGNX4/exam-prep-plan-aws-certified-cloud-practitioner-clfc02--english/1J2VTQSGU2',
   ccpCloudQuest: 'https://explore.skillbuilder.aws/learn/course/external/view/elearning/11458/aws-cloud-quest-cloud-practitioner',

@@ -7,6 +7,7 @@ import NextEvent from '@/components/NextEvent';
 import WaysToJoin from '@/components/WaysToJoin';
 import MascotBuddy from '@/components/MascotBuddy';
 import SkySparkles from '@/components/SkySparkles';
+import PixelIcon, { type PixelIconName } from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { getCommunityPhotos } from '@/data/communityPhotos';
 
@@ -21,24 +22,30 @@ const CommunityCarousel = lazy(() => import('@/components/CommunityCarousel'));
 const communitySlides = getCommunityPhotos();
 
 // Three places to go next. Not a numbered list: they aren't steps.
-const destinations = [
+const destinations: Array<{ title: string; desc: string; to: string; action: string; icon: PixelIconName; tone: string }> = [
   {
     title: 'Come to an event',
     desc: 'Hands-on workshops, career nights, and study sessions on campus and online. Free, and no experience needed.',
     to: '/events',
     action: 'See events',
+    icon: 'calendar',
+    tone: 'tone-beacon',
   },
   {
     title: 'Work toward a certification',
     desc: 'Set up your free AWS accounts, then follow the Cloud Practitioner path and track your progress as you go.',
     to: '/learn',
     action: 'Start learning',
+    icon: 'gradcap',
+    tone: 'tone-mint',
   },
   {
     title: 'Meet the crew',
-    desc: 'The students who run the club, our faculty advisor, and every place to find us between events.',
+    desc: 'The students who run the club, our faculty advisors, and every place to find us between events.',
     to: '/community',
     action: 'Meet the community',
+    icon: 'crew',
+    tone: 'tone-pink',
   },
 ];
 
@@ -121,12 +128,20 @@ const HomePage = () => (
         <h2 id="what-you-can-do-heading" className="text-foreground mb-10">
           What you can do here
         </h2>
-        <ul className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-5">
           {destinations.map((d) => (
-            <li key={d.to}>
-              <h3 className="text-lg text-foreground mb-2">{d.title}</h3>
-              <p className="text-base text-muted-foreground leading-relaxed mb-2">{d.desc}</p>
-              <Link to={d.to} className="px-link">{d.action}</Link>
+            <li key={d.to} className="px-panel px-join-card">
+              <span className={`px-tile ${d.tone}`} aria-hidden="true">
+                <PixelIcon name={d.icon} size={27} />
+              </span>
+              <h3 className="font-bold text-foreground text-lg leading-snug mt-4">{d.title}</h3>
+              <p className="text-base text-muted-foreground leading-relaxed mt-2">{d.desc}</p>
+              <div className="mt-auto pt-4">
+                <Link to={d.to} className="px-link">
+                  {d.action}
+                  <PixelIcon name="arrowRight" size={14} />
+                </Link>
+              </div>
             </li>
           ))}
         </ul>

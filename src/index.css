@@ -880,6 +880,28 @@ html {
   background: var(--hull-dark);
 }
 
+/* Big icon tile for resource / destination cards, in four accent tones so a
+   row of cards is not one flat colour. Dark ink on the bright tiles. */
+.theme-pixel .px-tile {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  flex-shrink: 0;
+  color: var(--beacon-ink);
+  box-shadow:
+    inset 0 3px 0 rgb(255 255 255 / 0.45),
+    inset 0 -4px 0 rgb(0 0 0 / 0.22),
+    0 -3px 0 0 var(--beacon-ink),
+    0 3px 0 0 var(--beacon-ink),
+    -3px 0 0 0 var(--beacon-ink),
+    3px 0 0 0 var(--beacon-ink);
+}
+.theme-pixel .px-tile.tone-beacon { background: var(--beacon); }
+.theme-pixel .px-tile.tone-chip { background: var(--chip); color: #ffffff; }
+.theme-pixel .px-tile.tone-mint { background: #6ee7b7; }
+.theme-pixel .px-tile.tone-pink { background: #ff8fc8; }
+
 /* Past-event cards: flyer on top, details below. */
 .theme-pixel .px-event-card {
   display: flex;

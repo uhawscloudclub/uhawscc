@@ -98,7 +98,7 @@ export const RESULTS: Record<CertId, CertResult> = {
     links: [
       { label: 'Start the path on this page', href: '#path', internal: true },
       { label: 'Find the next Cloud Cup on Events', href: '/events', internal: true },
-      { label: 'Request a free exam voucher', href: EXTERNAL_LINKS.awsAcademySignupForm },
+      { label: 'Get student access in Builder Center', href: EXTERNAL_LINKS.builderCenterStudents },
     ],
   },
   aip: {
@@ -109,7 +109,7 @@ export const RESULTS: Record<CertId, CertResult> = {
     links: [
       { label: 'Find AI courses on Skill Builder', href: EXTERNAL_LINKS.skillBuilderHome },
       { label: 'Get student access in Builder Center', href: EXTERNAL_LINKS.builderCenterStudents },
-      { label: 'Request a free exam voucher', href: EXTERNAL_LINKS.awsAcademySignupForm },
+      { label: 'Practice on the AWS Free Tier', href: EXTERNAL_LINKS.awsFreeTier },
     ],
   },
   saa: {
@@ -120,7 +120,7 @@ export const RESULTS: Record<CertId, CertResult> = {
     links: [
       { label: 'Practice on the AWS Free Tier', href: EXTERNAL_LINKS.awsFreeTier },
       { label: 'Prep on Skill Builder', href: EXTERNAL_LINKS.skillBuilderHome },
-      { label: 'Request a free exam voucher', href: EXTERNAL_LINKS.awsAcademySignupForm },
+      { label: 'Study with others in the AWS Cloud Cup', href: '/events', internal: true },
     ],
   },
 };

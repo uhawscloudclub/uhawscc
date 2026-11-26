@@ -1,4 +1,5 @@
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import type { PixelIconName } from '@/lib/sprites';
 
 /**
  * Free resources listed on /learn, below the Cloud Practitioner path.
@@ -13,11 +14,14 @@ export interface LearnResource {
   /** Visible link text; starts with a verb. */
   cta: string;
   href: string;
+  /** Pixel icon on the card (generic art, not a product logo). */
+  icon: PixelIconName;
 }
 
 export const FREE_RESOURCES: readonly LearnResource[] = [
   {
     title: 'Create Your First AWS Account',
+    icon: 'user',
     tag: 'Start here',
     desc: 'Get started with AWS by creating a free account and accessing the AWS Free Tier. Takes about 10 minutes.',
     cta: 'Create AWS Account',
@@ -25,6 +29,7 @@ export const FREE_RESOURCES: readonly LearnResource[] = [
   },
   {
     title: 'AWS Skill Builder',
+    icon: 'book',
     tag: 'Free training',
     desc: 'Free cloud training courses on AWS Skill Builder, including foundational, associate, and specialty paths.',
     cta: 'Explore Skill Builder',
@@ -32,6 +37,7 @@ export const FREE_RESOURCES: readonly LearnResource[] = [
   },
   {
     title: 'AWS Builder Center for students',
+    icon: 'gradcap',
     tag: 'Free · From AWS',
     desc: "AWS's own student hub: self-paced courses, hands-on workshops, and student verification for a year of full Skill Builder access.",
     cta: 'Open the student hub',
@@ -39,20 +45,15 @@ export const FREE_RESOURCES: readonly LearnResource[] = [
   },
   {
     title: 'AWS Free Tier',
+    icon: 'cloud',
     tag: 'Hands-on practice',
     desc: 'Practice building on real AWS infrastructure with the AWS Free Tier at no cost for eligible services within limits.',
     cta: 'Get started free',
     href: EXTERNAL_LINKS.awsFreeTier,
   },
   {
-    title: 'Free Exam Vouchers via AWS Academy',
-    tag: 'UH students only',
-    desc: "UH students can receive up to 4 fully discounted certification exam vouchers and a free 1-year Skill Builder subscription through AWS Academy. Fill out the form and we'll get you access via the CIS department.",
-    cta: 'Request Access',
-    href: EXTERNAL_LINKS.awsAcademySignupForm,
-  },
-  {
     title: 'Skill Builder Setup Guide',
+    icon: 'clipboard',
     tag: 'AWS Academy holders',
     desc: 'Already have AWS Academy access? Step-by-step guide to activate your free Skill Builder subscription through Canvas and claim certification vouchers via Pearson Vue.',
     cta: 'View Guide',
