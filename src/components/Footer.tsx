@@ -11,26 +11,23 @@ import { EXTERNAL_LINKS } from '@/config/externalLinks';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-  <footer className="relative z-10 border-t border-border/30 bg-background/80 backdrop-blur-sm">
+  <footer className="relative border-t-2 border-[var(--hull-shadow)] bg-[var(--hull-dark)]">
     <div className="container mx-auto px-6 py-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         {/* Left */}
         <div>
-          <p className="font-heading font-bold text-foreground">AWS Student Builder Group at University of Houston</p>
+          <p className="font-heading font-bold text-foreground">AWS Student Builder Group (SBG) at the University of Houston</p>
           <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
-            Get in touch →
+            Get in touch
           </Link>
         </div>
 
         {/* Center */}
         <div className="flex flex-wrap gap-6 md:justify-center">
           {[
-            { label: 'About', to: '/about' },
             { label: 'Events', to: '/events' },
-            { label: 'Learning Paths', to: '/learning-paths' },
-            { label: 'Resources', to: '/resources' },
-            { label: 'News', to: '/news' },
-            { label: 'Team', to: '/team' },
+            { label: 'Learn', to: '/learn' },
+            { label: 'Community', to: '/community' },
             { label: 'Contact', to: '/contact' },
           ].map((l) => (
             <Link key={l.to} to={l.to} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -57,7 +54,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-8 pt-6 border-t border-border/20 text-left md:text-center text-xs text-muted-foreground leading-relaxed">
-        © {currentYear} AWS Student Builder Group at UH. Not an official AWS or Amazon employee organization.
+        © {currentYear} AWS SBG at UH. Not an official AWS or Amazon employee organization.
         <br className="hidden sm:inline" /> AWS Student Builder Groups is a program by Amazon Web Services.
       </div>
     </div>

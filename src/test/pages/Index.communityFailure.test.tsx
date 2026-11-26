@@ -62,8 +62,8 @@ describe("Home page — community section failure", () => {
     renderWithRouter(<HomePage />);
 
     // The section, including its heading, is gone — not an empty labelled band.
-    // Exact match: /our community/i would also match the hero's
-    // "Join our community" CTA, which must survive and does.
+    // Exact match, so it can't collide with other text that mentions
+    // "community" elsewhere on the page.
     await waitFor(() => {
       expect(screen.queryByText("Our community")).not.toBeInTheDocument();
     });
@@ -74,12 +74,12 @@ describe("Home page — community section failure", () => {
     ).toBeInTheDocument();
     expect(
       screen
-        .getAllByRole("link", { name: /Join our community/i })
+        .getAllByRole("link", { name: /Join on Meetup/i })
         .some((l) => l.getAttribute("href") === EXTERNAL_LINKS.meetup),
     ).toBe(true);
     expect(screen.getByText(/members on Meetup/i)).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /Three things/i }),
+      screen.getByRole("heading", { name: /What you can do here/i }),
     ).toBeInTheDocument();
 
     // The app-level boundary must not have taken over the page.

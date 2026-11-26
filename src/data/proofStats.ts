@@ -33,21 +33,21 @@ export interface ProofStats {
 }
 
 export const proofStats: ProofStats = {
-  asOf: "2026-09-16",
+  asOf: "2026-11-26",
   // Reuse the single client-side Meetup URL rather than duplicating it here.
   source: EXTERNAL_LINKS.meetup,
   sourceNote: "Verified on the club's public Meetup group page.",
   stats: [
     {
       id: "members",
-      value: "133",
+      value: "154",
       label: "members on Meetup",
     },
     {
       id: "rating",
       value: "4.9",
-      label: "from 10 Meetup ratings",
-      accessibleLabel: "Rated 4.9 out of 5 from 10 Meetup ratings",
+      label: "from 16 Meetup ratings",
+      accessibleLabel: "Rated 4.9 out of 5 from 16 Meetup ratings",
     },
   ],
 };

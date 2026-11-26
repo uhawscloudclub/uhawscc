@@ -1,9 +1,11 @@
 import { lazy, Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
-import ScrollReveal from '@/components/ScrollReveal';
 import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import ProofStrip from '@/components/ProofStrip';
-import { ArrowRight } from 'lucide-react';
+import NextEvent from '@/components/NextEvent';
+import WaysToJoin from '@/components/WaysToJoin';
+import Mascot from '@/components/Mascot';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { getCommunityPhotos } from '@/data/communityPhotos';
 
@@ -17,79 +19,74 @@ const CommunityCarousel = lazy(() => import('@/components/CommunityCarousel'));
 // Read at module scope so a zero-photo set never even requests the chunk.
 const communitySlides = getCommunityPhotos();
 
-const features = [
+// Three places to go next. Not a numbered list: they aren't steps.
+const destinations = [
   {
-    title: 'Build Projects for Your Resume',
-    desc: 'Hands-on workshops led by AWS Developer Advocates and cloud professionals. Deploy real infrastructure every session and walk away with portfolio-ready projects.',
+    title: 'Come to an event',
+    desc: 'Hands-on workshops, career nights, and study sessions on campus and online. Free, and no experience needed.',
+    to: '/events',
+    action: 'See events',
   },
   {
-    title: 'Certifications + Free Exam Vouchers',
-    desc: 'We prep you for AWS certifications with structured guidance and resources, and members get access to free exam vouchers to make it happen.',
+    title: 'Work toward a certification',
+    desc: 'Set up your free AWS accounts, then follow the Cloud Practitioner path and track your progress as you go.',
+    to: '/learn',
+    action: 'Start learning',
   },
   {
-    title: 'Community & Careers',
-    desc: 'Connect with peers, alumni, and cloud professionals. Build your network while you build in the cloud.',
+    title: 'Meet the crew',
+    desc: 'The students who run the club, our faculty advisor, and every place to find us between events.',
+    to: '/community',
+    action: 'Meet the community',
   },
 ];
 
 const HomePage = () => (
   <PageLayout>
 
-    {/* ── Hero ── */}
-    <section className="relative min-h-screen flex flex-col justify-center overflow-hidden">
-      <div className="container mx-auto px-6 pt-28 pb-20 relative z-10">
-        <div className="max-w-3xl">
-
-          {/* Eyebrow */}
-          <p className="hero-item hero-item-1 text-xs uppercase tracking-[0.18em] text-muted-foreground mb-10">
-            AWS Student Builder Group &middot; University of Houston
-          </p>
-
-          {/* Headline */}
-          <h1
-            className="hero-item hero-item-2 font-heading font-extrabold leading-[0.88] tracking-tight mb-8 text-foreground"
-            style={{ fontSize: 'clamp(3rem, 8.5vw, 6.5rem)' }}
-          >
-            Build cloud skills.<br />
-            Find your <span style={{ color: 'var(--primary)' }}>people.</span>
-          </h1>
-
-          {/* Body */}
-          <p className="hero-item hero-item-3 text-muted-foreground text-lg leading-relaxed max-w-[55ch] mb-12">
-            UH students building real AWS skills, earning certifications, and
-            supporting each other through the journey, for free.
-          </p>
-
-          {/* CTAs */}
-          <div className="hero-item hero-item-4 flex items-center gap-8">
-            <a
-              href={EXTERNAL_LINKS.meetup}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
+    {/* ── Hero + Next up ── */}
+    <section className="relative overflow-hidden px-sky">
+      <div className="container mx-auto px-6 pt-24 sm:pt-32 pb-12 relative">
+        <div className="flex flex-col-reverse md:flex-row md:items-start md:justify-between gap-6 max-w-5xl">
+          <div className="max-w-2xl">
+            <h1
+              className="text-foreground mb-5"
+              style={{ fontSize: 'clamp(3rem, 10vw, 5.75rem)' }}
             >
-              Join our community
-              <ArrowRight className="w-4 h-4" />
-            </a>
-            <a
-              href="/events"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150"
-            >
-              Upcoming events
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+              Build cloud skills with UH students.
+            </h1>
+            <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-[48ch] mb-7">
+              Free AWS workshops, certification study groups, and people to build
+              with, run by students at the University of Houston.
+            </p>
+            <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
+              <a
+                href={EXTERNAL_LINKS.meetup}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-button"
+              >
+                Join on Meetup
+              </a>
+              <Link to="/events" className="px-link">
+                See upcoming events
+              </Link>
+            </div>
           </div>
+          {/* Small above the heading on phones, large beside it from md up. */}
+          <Mascot size={176} className="px-float w-16 h-auto md:w-44 md:mt-2 md:mr-4 lg:mr-16 shrink-0" />
+        </div>
 
+        <div className="mt-10 md:mt-12">
+          <NextEvent />
         </div>
       </div>
     </section>
 
     {/* ── Proof strip ── */}
-    <section className="relative z-10 border-t border-border py-12">
+    <section className="relative border-t border-border py-10">
       <div className="container mx-auto px-6">
-        <ScrollReveal>
-          <ProofStrip />
-        </ScrollReveal>
+        <ProofStrip />
       </div>
     </section>
 
@@ -101,84 +98,50 @@ const HomePage = () => (
       // chunk fails, the heading, border and spacing must go with it rather
       // than leaving a labelled empty band on the page.
       <SectionErrorBoundary>
-        <section className="relative z-10 border-t border-border py-16">
+        <section className="relative border-t border-border py-14">
           <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-8">
-                Our community
-              </p>
-              <Suspense
-                fallback={
-                  <div className="aspect-[16/10] w-full animate-pulse motion-reduce:animate-none rounded border border-border bg-muted" />
-                }
-              >
-                <CommunityCarousel photos={communitySlides} />
-              </Suspense>
-            </ScrollReveal>
+            <h2 className="text-foreground mb-6">Our community</h2>
+            <Suspense
+              fallback={
+                <div className="aspect-[16/10] w-full animate-pulse motion-reduce:animate-none border border-border bg-muted" />
+              }
+            >
+              <CommunityCarousel photos={communitySlides} />
+            </Suspense>
           </div>
         </section>
       </SectionErrorBoundary>
     )}
 
-    {/* ── What We Do ── */}
-    <section className="relative z-10 border-t border-border py-24">
+    {/* ── Where to go next ── */}
+    <section aria-labelledby="what-you-can-do-heading" className="relative border-t border-border py-16">
       <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-16 items-start">
-
-          {/* Left — section label + heading */}
-          <ScrollReveal>
-            <div>
-              <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-                What we do
-              </p>
-              <h2 className="font-heading font-bold text-2xl leading-snug text-foreground">
-                Three things<br />we focus on
-              </h2>
-              <a
-                href="/events"
-                className="inline-flex items-center gap-1.5 text-sm text-primary mt-5 hover:gap-2.5 transition-all duration-150"
-              >
-                See upcoming events
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </ScrollReveal>
-
-          {/* Right — numbered list, no cards */}
-          <div className="divide-y divide-border">
-            {features.map((f, i) => (
-              <ScrollReveal key={f.title} delay={i * 70}>
-                <div className="py-7 grid grid-cols-[2rem_1fr] gap-5 items-start">
-                  <span className="text-xs font-mono text-primary/70 pt-0.5">
-                    0{i + 1}
-                  </span>
-                  <div>
-                    <h3 className="font-heading font-semibold text-foreground mb-2">
-                      {f.title}
-                    </h3>
-                    <p className="text-base text-muted-foreground leading-relaxed max-w-[55ch]">
-                      {f.desc}
-                    </p>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
-
-        </div>
+        <h2 id="what-you-can-do-heading" className="text-foreground mb-10">
+          What you can do here
+        </h2>
+        <ul className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-12">
+          {destinations.map((d) => (
+            <li key={d.to}>
+              <h3 className="text-lg text-foreground mb-2">{d.title}</h3>
+              <p className="text-base text-muted-foreground leading-relaxed mb-2">{d.desc}</p>
+              <Link to={d.to} className="px-link">{d.action}</Link>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
 
+    {/* ── Ways to join ── */}
+    <WaysToJoin />
+
     {/* ── Network note ── */}
-    <section className="relative z-10 border-t border-border py-16">
+    <section className="relative border-t border-border py-12">
       <div className="container mx-auto px-6">
-        <ScrollReveal>
-          <p className="text-base text-muted-foreground max-w-[60ch]">
-            AWS Student Builder Group at UH is part of the AWS Student Builder Groups program, a
-            global network of student communities supported directly by Amazon
-            Web Services.
-          </p>
-        </ScrollReveal>
+        <p className="text-sm text-muted-foreground max-w-[60ch]">
+          The AWS Student Builder Group (SBG) at UH is part of the AWS Student Builder Groups program, a
+          global network of student communities supported directly by Amazon
+          Web Services.
+        </p>
       </div>
     </section>
 

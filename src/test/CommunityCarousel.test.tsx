@@ -82,7 +82,7 @@ describe("CommunityCarousel", () => {
     render(<CommunityCarousel photos={makePhotos(3)} />);
 
     const region = screen.getByRole("region", {
-      name: /photos from cloudhub uh events/i,
+      name: /photos from AWS SBG at UH events/i,
     });
     // Without tabIndex the primitive's arrow-key handler never fires for a
     // keyboard user who has not already focused something inside it.

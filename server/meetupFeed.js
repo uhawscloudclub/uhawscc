@@ -9,6 +9,7 @@
  */
 
 import { XMLValidator, XMLParser } from "fast-xml-parser";
+import { buildEventDate } from "./eventDates.js";
 
 const xmlParser = new XMLParser();
 
@@ -117,8 +118,11 @@ export function isMeetupEventUrl(candidate) {
   return true;
 }
 
-/** Parse Meetup RSS XML into a structured array of events. */
-export function parseRSS(xml) {
+/**
+ * Parse Meetup RSS XML into a structured array of events. `now` anchors the
+ * year for descriptions that omit one (injectable for deterministic tests).
+ */
+export function parseRSS(xml, now = new Date()) {
   const items = [];
   const itemRe = /<item>([\s\S]*?)<\/item>/g;
   let m;
@@ -137,7 +141,9 @@ export function parseRSS(xml) {
 
     if (!title || !link) continue;
 
-    // Meetup's /events/rss/ only surfaces upcoming events — trust the feed.
+    // Meetup's /events/rss/ only surfaces upcoming events, so items start as
+    // "upcoming". /api/events recomputes status from the date on every response
+    // (withComputedStatus), so a cached item drops to "past" once its day ends.
     // pubDate is the *publication* date (when it was posted), NOT the event date,
     // so we do NOT use it to filter upcoming vs past, or to derive the date shown.
     const status = "upcoming";
@@ -151,11 +157,11 @@ export function parseRSS(xml) {
     let date = "See Meetup for date & time";
     let rawDate = null;
     if (dateMatch) {
-      const year = dateMatch[3] || new Date().getFullYear();
-      // Parse at noon Central time to avoid midnight-UTC shifting the date by one day
-      // when toLocaleDateString is called with America/Chicago timezone.
-      const parsed = new Date(`${dateMatch[1]} ${dateMatch[2]}, ${year} 12:00:00 GMT-0500`);
-      if (!isNaN(parsed.getTime())) {
+      // Pinned to noon Central so the Houston calendar day never shifts; a
+      // year-less date is read forward (see buildEventDate) so "January 15"
+      // in a December feed means next January, not ten months ago.
+      const parsed = buildEventDate(dateMatch[1], dateMatch[2], dateMatch[3], now);
+      if (parsed) {
         rawDate = parsed.toISOString();
         date = parsed.toLocaleDateString("en-US", {
           weekday: "long",
@@ -193,7 +199,7 @@ export function parseRSS(xml) {
 }
 
 /** Fetch and validate the Meetup RSS feed, returning parsed events or throwing. */
-export async function fetchMeetupEvents({ url, fetchImpl = fetch, timeoutMs = 8000 }) {
+export async function fetchMeetupEvents({ url, fetchImpl = fetch, timeoutMs = 8000, now }) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -215,7 +221,7 @@ export async function fetchMeetupEvents({ url, fetchImpl = fetch, timeoutMs = 80
       throw new Error(`Invalid Meetup feed response: ${validation.reason}`);
     }
 
-    return parseRSS(body);
+    return parseRSS(body, now ?? new Date());
   } finally {
     clearTimeout(timeout);
   }

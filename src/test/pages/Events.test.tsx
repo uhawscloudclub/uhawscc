@@ -1,7 +1,8 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import EventsPage from "@/pages/Events";
 import { EXTERNAL_LINKS } from "@/config/externalLinks";
+import { PAST_EVENTS } from "@/data/pastEvents";
 import { renderWithRouter } from "../test-utils";
 
 function mockFetchResponses(...responses: Array<{ ok: boolean; status: number; body: unknown }>) {
@@ -23,8 +24,21 @@ const sampleEvent = {
     status: "upcoming" as const,
 };
 
+// Only Date is faked: the page filters events by the Houston calendar day, so
+// "now" must be pinned for deterministic results. Timers stay real so React
+// Query and findBy* polling behave normally.
+function setNow(iso: string) {
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(new Date(iso));
+}
+
 describe("Events page", () => {
+    beforeEach(() => {
+        setNow("2026-09-01T15:00:00Z"); // before sampleEvent (Sep 23)
+    });
+
     afterEach(() => {
+        vi.useRealTimers();
         vi.unstubAllGlobals();
     });
 
@@ -90,7 +104,7 @@ describe("Events page", () => {
         fireEvent.click(screen.getByRole("button", { name: /Try again/i }));
 
         expect(
-            await screen.findByRole("link", { name: /View time, location, and RSVP on Meetup/i }),
+            await screen.findByRole("link", { name: /RSVP on Meetup/i }),
         ).toBeInTheDocument();
         expect(fetchMock).toHaveBeenCalledTimes(3);
         expect(screen.queryByText(/Couldn't load events right now/i)).not.toBeInTheDocument();
@@ -101,7 +115,7 @@ describe("Events page", () => {
         renderWithRouter(<EventsPage />);
 
         const rsvpLink = await screen.findByRole("link", {
-            name: /View time, location, and RSVP on Meetup/i,
+            name: /RSVP on Meetup/i,
         });
         expect(rsvpLink).toHaveAttribute("href", sampleEvent.link);
         expect(rsvpLink).toHaveAttribute("target", "_blank");
@@ -116,7 +130,7 @@ describe("Events page", () => {
         vi.stubGlobal("fetch", fetchMock);
 
         renderWithRouter(<EventsPage />);
-        await screen.findByRole("link", { name: /View time, location, and RSVP on Meetup/i });
+        await screen.findByRole("link", { name: /RSVP on Meetup/i });
 
         fireEvent.click(screen.getByRole("button", { name: /Refresh/i }));
 
@@ -146,7 +160,7 @@ describe("Events page", () => {
             { ok: false, status: 503, body: [] },
         );
         renderWithRouter(<EventsPage />);
-        await screen.findByRole("link", { name: /View time, location, and RSVP on Meetup/i });
+        await screen.findByRole("link", { name: /RSVP on Meetup/i });
 
         fireEvent.click(screen.getByRole("button", { name: /Refresh/i }));
 
@@ -170,5 +184,105 @@ describe("Events page", () => {
 
         const refreshButton = await screen.findByRole("button", { name: /Refresh/i });
         expect(refreshButton.tagName).toBe("BUTTON");
+    });
+
+    describe("date rules (Houston calendar day)", () => {
+        const at = (rawDate: string | null, extra: Partial<typeof sampleEvent> = {}) => ({
+            ...sampleEvent,
+            id: `${sampleEvent.id}?${rawDate}`,
+            rawDate,
+            ...extra,
+        });
+
+        it("keeps an event happening today in Houston, even after UTC has rolled to tomorrow", async () => {
+            // 11:30 PM Sep 23 in Houston (CDT) = 04:30 UTC Sep 24.
+            setNow("2026-09-24T04:30:00Z");
+            mockFetchResponses({ ok: true, status: 200, body: [sampleEvent] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByRole("link", { name: /RSVP on Meetup/i })).toHaveAttribute("href", sampleEvent.link);
+        });
+
+        it("hides an expired event still marked upcoming (e.g. from a stale cache) and shows the empty state", async () => {
+            // Houston is now Sep 24 (00:30 CDT); the Sep 23 event has ended.
+            setNow("2026-09-24T05:30:00Z");
+            mockFetchResponses({ ok: true, status: 200, body: [sampleEvent] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByText(/No upcoming events yet/i)).toBeInTheDocument();
+            expect(screen.queryByRole("link", { name: /RSVP on Meetup/i })).not.toBeInTheDocument();
+        });
+
+        it("hides an event the server already marked past", async () => {
+            mockFetchResponses({ ok: true, status: 200, body: [{ ...sampleEvent, status: "past" }] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByText(/No upcoming events yet/i)).toBeInTheDocument();
+        });
+
+        it("shows an event with a missing date, with a pointer to Meetup for the date", async () => {
+            const undated = at(null, { title: "Undated Workshop", date: "See Meetup for date & time" });
+            mockFetchResponses({ ok: true, status: 200, body: [undated] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByText("Undated Workshop")).toBeInTheDocument();
+            expect(screen.getByText("Date and time on Meetup")).toBeInTheDocument();
+            expect(screen.getByRole("link", { name: /RSVP on Meetup for Undated Workshop/i })).toHaveAttribute("href", undated.link);
+        });
+
+        it("shows an event with an invalid date instead of hiding it, without the bad date text", async () => {
+            const invalid = at("not-a-date", { title: "Invalid Date Workshop", date: "Invalid Date" });
+            mockFetchResponses({ ok: true, status: 200, body: [invalid] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByText("Invalid Date Workshop")).toBeInTheDocument();
+            expect(screen.getByText("Date and time on Meetup")).toBeInTheDocument();
+            expect(screen.queryByText("Invalid Date")).not.toBeInTheDocument();
+        });
+
+        it("gives every upcoming event its own RSVP link with a distinct accessible name", async () => {
+            const first = at("2026-09-10T17:00:00.000Z", { title: "First Workshop", link: "https://www.meetup.com/aws-sbg-at-univ-of-houston/events/111/" });
+            const second = at("2026-09-17T17:00:00.000Z", { title: "Second Workshop", link: "https://www.meetup.com/aws-sbg-at-univ-of-houston/events/222/" });
+            mockFetchResponses({ ok: true, status: 200, body: [first, second] });
+            renderWithRouter(<EventsPage />);
+
+            expect(await screen.findByRole("link", { name: /RSVP on Meetup for First Workshop/i })).toHaveAttribute("href", first.link);
+            expect(screen.getByRole("link", { name: /RSVP on Meetup for Second Workshop/i })).toHaveAttribute("href", second.link);
+        });
+    });
+
+    it("announces a failed first load as 'couldn't load', not 'couldn't refresh'", async () => {
+        mockFetchResponses(
+            { ok: false, status: 503, body: [] },
+            { ok: false, status: 503, body: [] },
+        );
+        renderWithRouter(<EventsPage />);
+
+        await waitFor(() => {
+            expect(screen.getByRole("status")).toHaveTextContent(/Couldn't load events\./i);
+        });
+    });
+
+    it("keeps past events and a way to reach the club visible when the feed is down", async () => {
+        mockFetchResponses(
+            { ok: false, status: 503, body: [] },
+            { ok: false, status: 503, body: [] },
+        );
+        renderWithRouter(<EventsPage />);
+
+        await screen.findByText(/Couldn't load events right now/i);
+        expect(screen.getByRole("heading", { name: /Past events/i })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: EXTERNAL_LINKS.emailContact })).toHaveAttribute(
+            "href",
+            `mailto:${EXTERNAL_LINKS.emailContact}`,
+        );
+    });
+
+    it("lists every past event with a link to its own Meetup page", () => {
+        renderWithRouter(<EventsPage />);
+        for (const ev of PAST_EVENTS) {
+            const link = screen.getByRole("link", { name: `Event page on Meetup for ${ev.title}` });
+            expect(link).toHaveAttribute("href", ev.meetupUrl);
+        }
     });
 });

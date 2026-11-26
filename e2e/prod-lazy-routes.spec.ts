@@ -5,13 +5,13 @@ import { test, expect } from "@playwright/test";
 // e2e/navigation.spec.ts which points at the unbundled Vite dev server and so
 // can never catch a chunk-loading/chunk-init-order regression.
 const routes: [name: string, path: string, heading: RegExp][] = [
-  ["About", "/about", /Built by students/i],
   ["Events", "/events", /Upcoming/i],
-  ["Learning Paths", "/learning-paths", /Learning Paths|certification/i],
-  ["Resources", "/resources", /need to start|Resources/i],
-  ["News", "/news", /curated for/i],
-  ["Team", "/team", /people.*behind the club|Leadership/i],
+  ["Learn", "/learn", /certification/i],
+  ["Community", "/community", /Built by students/i],
   ["Contact", "/contact", /hear from/i],
+  // Old URLs redirect client-side here (vite preview has no Express).
+  ["Old /about (redirect)", "/about", /Built by students/i],
+  ["Old /learning-paths (redirect)", "/learning-paths", /certification/i],
   ["Not Found (catch-all)", "/this-route-does-not-exist", /not.*found/i],
 ];
 
@@ -42,8 +42,8 @@ test("clicking through every nav link in one session hits no runtime error", asy
     await page.getByRole("button", { name: /open navigation/i }).click();
   }
 
-  for (const link of ["About", "Events", "Learning Paths", "Resources", "News", "Team"]) {
-    await page.getByRole("link", { name: link }).first().click();
+  for (const link of ["Events", "Learn", "Community", "Contact"]) {
+    await page.getByRole("navigation").getByRole("link", { name: link, exact: true }).first().click();
     if (isMobile) {
       await page.getByRole("button", { name: /open navigation/i }).click();
     }

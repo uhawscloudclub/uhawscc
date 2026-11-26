@@ -58,10 +58,10 @@ describe("parseRSS", () => {
 
     it("resolves the event date from the description (Sep 23), not the pubDate (Sep 14)", () => {
         // The fixture's description doesn't state a year, so parseRSS falls back to
-        // the current year — pin "now" so the assertion is deterministic regardless
+        // the current Houston year — pin "now" so the assertion is deterministic regardless
         // of the date this test actually runs on.
         vi.useFakeTimers();
-        vi.setSystemTime(new Date("2026-01-01T00:00:00Z"));
+        vi.setSystemTime(new Date("2026-01-01T18:00:00Z")); // Jan 1 in Houston
         try {
             const [event] = parseRSS(validFeed);
             // The fixture's <pubDate> is Mon, 14 Sep 2026 — the publication date.
@@ -557,5 +557,18 @@ describe("fetchMeetupEvents composed with getEventsWithCache (integration)", () 
         expect(result.status).toBe(200);
         expect(result.body).toHaveLength(1);
         expect((result.body as Array<{ title: string }>)[0].title).toBe("CDATA edge case");
+    });
+});
+
+describe("parseRSS year inference", () => {
+    it("reads a year-less date as next year when it would otherwise be months in the past", () => {
+        const xml = `<rss><channel><item>
+            <title>New Year Kickoff</title>
+            <link>https://www.meetup.com/aws-sbg-at-univ-of-houston/events/999/</link>
+            <description>Join us Thursday, January 14 for the spring kickoff.</description>
+        </item></channel></rss>`;
+        const [event] = parseRSS(xml, new Date("2026-11-26T18:00:00Z"));
+        expect(event.rawDate).toBe("2027-01-14T17:00:00.000Z");
+        expect(event.date).toBe("Thursday, January 14, 2027");
     });
 });

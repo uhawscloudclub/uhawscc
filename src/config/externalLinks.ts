@@ -9,7 +9,8 @@ export const EXTERNAL_LINKS = {
   discord: 'https://discord.gg/8eABTmM8mT',
   linkedin: 'https://www.linkedin.com/company/aws-student-builder-group-uh',
   instagram: 'https://www.instagram.com/awssbg_uh/',
-  emailContact: 'uhawscloudclub@gmail.com',
+  emailContact: 'sbguh@cougarnet.uh.edu',
+  memberInterestForm: 'https://forms.cloud.microsoft/r/XiLmEDbKSw',
   awsAcademySignupForm: 'https://docs.google.com/forms/d/1S6LrqVlFaMWfUPcBpOxkijHLidYz4kdxmElk2VGyqPI/viewform',
   ccpEssentials: 'https://skillbuilder.aws/learn/94T2BEN85A/aws-cloud-practitioner-essentials/8D79F3AVR7',
   ccpExamPrepPlan: 'https://skillbuilder.aws/learning-plan/8UUCEZGNX4/exam-prep-plan-aws-certified-cloud-practitioner-clfc02--english/1J2VTQSGU2',
@@ -20,8 +21,12 @@ export const EXTERNAL_LINKS = {
   ccpCertPage: 'https://aws.amazon.com/certification/certified-cloud-practitioner/',
   ccpTrainingHub: 'https://aws.amazon.com/training/learn-about/cloud-practitioner/',
   skillBuilderHome: 'https://skillbuilder.aws/',
+  builderCenterStudents: 'https://builder.aws.com/learn/students',
+  // The club's own AWS Builder Center sign-up link (supplied by the officers;
+  // a bit.ly short link, so it can be re-pointed without a code change).
+  builderCenterSignup: 'https://bit.ly/4pN9Aqs',
+  studentRewards: 'https://builder.aws.com/student-rewards',
   skillBuilderSetupGuide: '/docs/skill-builder-guide.pdf',
-  cloudNews: 'https://agentpierre.github.io/awscloudclub-uh-cloud-news/',
 } as const;
 
 export const LINKS = EXTERNAL_LINKS;

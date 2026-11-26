@@ -38,17 +38,17 @@ test.describe("External link attributes", () => {
         }
     });
 
-    test("Join our community CTA points to the Meetup URL", async ({ page }) => {
+    test("Join on Meetup CTA points to the Meetup URL", async ({ page }) => {
         await page.goto("/");
         // .first() rather than a strict locator: the homepage may legitimately
         // carry more than one join affordance.
-        const link = page.getByRole("link", { name: /Join our community/i }).first();
+        const link = page.getByRole("link", { name: /Join on Meetup/i }).first();
         await expect(link).toHaveAttribute("href", EXTERNAL_LINKS.meetup);
     });
 
-    test("Join the Club nav CTA points to the Meetup URL", async ({ page }) => {
+    test("Join on Meetup nav CTA points to the Meetup URL", async ({ page }) => {
         await page.goto("/");
-        const links = page.getByRole("link", { name: /Join the Club/i });
+        const links = page.getByRole("navigation").getByRole("link", { name: /Join on Meetup/i });
         await expect(links.first()).toHaveAttribute("href", EXTERNAL_LINKS.meetup);
     });
 
@@ -69,17 +69,17 @@ test.describe("External link attributes", () => {
 
         // Each RSVP CTA links to the specific event, not the group page.
         const rsvp = page.getByRole("link", {
-            name: /View time, location, and RSVP on Meetup/i,
+            name: /^RSVP on Meetup for /i,
         });
         await expect(rsvp.first()).toHaveAttribute("href", FIXTURE_EVENT.link);
         await expect(rsvp.first()).toHaveAttribute("target", "_blank");
     });
 
-    test("Join our community CTA on Team page points to the Meetup URL", async ({
+    test("Join on Meetup in Ways to join on /community points to the Meetup URL", async ({
         page,
     }) => {
-        await page.goto("/team");
-        const joinLinks = page.getByRole("link", { name: /Join our community/i });
+        await page.goto("/community");
+        const joinLinks = page.getByRole("region", { name: "Ways to join" }).getByRole("link", { name: /Join on Meetup/i });
         await expect(joinLinks.first()).toHaveAttribute(
             "href",
             EXTERNAL_LINKS.meetup,

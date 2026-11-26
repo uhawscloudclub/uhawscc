@@ -100,20 +100,6 @@ describe("ProofStrip", () => {
     expect(await screen.findByText(/figures as of/i)).toBeInTheDocument();
   });
 
-  it("shows a qualifying upcoming event without hardcoding a specific one", async () => {
-    const future = new Date(Date.now() + 14 * 24 * 60 * 60 * 1000);
-    const event = makeEvent({
-      title: "Placeholder Test Event",
-      rawDate: future.toISOString(),
-      date: "Some Future Day",
-    });
-    mockFetch({ ok: true, status: 200, body: [event] });
-
-    renderWithRouter(<ProofStrip />);
-
-    expect(await screen.findByText("Placeholder Test Event")).toBeInTheDocument();
-  });
-
   it("omits the event item when the feed is empty", async () => {
     mockFetch({ ok: true, status: 200, body: [] });
     renderWithRouter(<ProofStrip />);

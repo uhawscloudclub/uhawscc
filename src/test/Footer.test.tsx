@@ -5,13 +5,13 @@ import { EXTERNAL_LINKS } from "@/config/externalLinks";
 import { renderWithRouter } from "./test-utils";
 
 describe("Footer", () => {
-    it("renders all five internal navigation links", () => {
+    it("renders the sitemap links", () => {
         renderWithRouter(<Footer />);
-        expect(screen.getByRole("link", { name: "About" })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Events" })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Learning Paths" })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Resources" })).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "Team" })).toBeInTheDocument();
+        expect(screen.getByRole("link", { name: "Events" })).toHaveAttribute("href", "/events");
+        expect(screen.getByRole("link", { name: "Learn" })).toHaveAttribute("href", "/learn");
+        expect(screen.getByRole("link", { name: "Community" })).toHaveAttribute("href", "/community");
+        expect(screen.getByRole("link", { name: "Contact" })).toHaveAttribute("href", "/contact");
+        expect(screen.queryByRole("link", { name: "News" })).not.toBeInTheDocument();
     });
 
     it("renders a Get in touch link pointing to /contact", () => {
@@ -48,7 +48,7 @@ describe("Footer", () => {
         renderWithRouter(<Footer />);
         const currentYear = new Date().getFullYear();
         expect(
-            screen.getByText(new RegExp(`© ${currentYear} AWS Student Builder Group at UH`, 'i')),
+            screen.getByText(new RegExp(`© ${currentYear} AWS SBG at UH`, 'i')),
         ).toBeInTheDocument();
     });
 

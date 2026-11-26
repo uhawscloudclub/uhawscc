@@ -2,13 +2,11 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import About from "@/pages/About";
+import Community from "@/pages/Community";
 import Events from "@/pages/Events";
 import HomePage from "@/pages/Index";
-import LearningPaths from "@/pages/LearningPaths";
+import Learn from "@/pages/Learn";
 import NotFound from "@/pages/NotFound";
-import Resources from "@/pages/Resources";
-import Team from "@/pages/Team";
 
 // The home and events routes both fetch /api/events (via ProofStrip and
 // useEvents). Left unstubbed, jsdom falls through to Node's fetch with a
@@ -34,11 +32,9 @@ const renderRoute = (route: string) => {
             <MemoryRouter initialEntries={[route]}>
                 <Routes>
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/about" element={<About />} />
                     <Route path="/events" element={<Events />} />
-                    <Route path="/learning-paths" element={<LearningPaths />} />
-                    <Route path="/resources" element={<Resources />} />
-                    <Route path="/team" element={<Team />} />
+                    <Route path="/learn" element={<Learn />} />
+                    <Route path="/community" element={<Community />} />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </MemoryRouter>
@@ -52,8 +48,8 @@ describe("route smoke tests", () => {
         expect(screen.getByRole("heading", { name: /Build cloud skills/i })).toBeInTheDocument();
     });
 
-    it("renders about route", () => {
-        renderRoute("/about");
+    it("renders community route", () => {
+        renderRoute("/community");
         expect(screen.getByRole("heading", { name: /Built by students/i })).toBeInTheDocument();
     });
 
@@ -62,19 +58,9 @@ describe("route smoke tests", () => {
         expect(screen.getByRole("heading", { name: /Upcoming/i })).toBeInTheDocument();
     });
 
-    it("renders resources route", () => {
-        renderRoute("/resources");
-        expect(screen.getByRole("heading", { name: /Everything you/i })).toBeInTheDocument();
-    });
-
-    it("renders learning paths route", () => {
-        renderRoute("/learning-paths");
+    it("renders learn route", () => {
+        renderRoute("/learn");
         expect(screen.getByRole("heading", { name: /Your path to/i })).toBeInTheDocument();
-    });
-
-    it("renders team route", () => {
-        renderRoute("/team");
-        expect(screen.getByRole("heading", { name: /The people/i })).toBeInTheDocument();
     });
 
     it("renders not found fallback", () => {

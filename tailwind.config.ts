@@ -15,8 +15,12 @@ export default {
     },
     extend: {
       fontFamily: {
-        heading: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],
+        // h1/h2 use Jersey 10 via .theme-pixel (index.css); font-heading is
+        // Figtree for h3 and other bold UI text.
+        heading: ['"Figtree"', 'system-ui', 'sans-serif'],
         body: ['"Figtree"', 'system-ui', 'sans-serif'],
+        // Stage 3 display face: headings and the mascot only, never body text.
+        pixel: ['"Jersey 10"', '"Figtree"', 'system-ui', 'sans-serif'],
       },
       colors: {
         border: "var(--border)",

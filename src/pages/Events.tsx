@@ -1,83 +1,139 @@
 import { useEffect, useRef, useState } from 'react';
 import PageLayout from '@/components/PageLayout';
-import ScrollReveal from '@/components/ScrollReveal';
-import { Calendar, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
+import Mascot from '@/components/Mascot';
+import EventDateTile from '@/components/EventDateTile';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { useEvents } from '@/hooks/useEvents';
+import { PAST_EVENTS, formatEventDay, semesterOf } from '@/data/pastEvents';
+import { hasValidEventDate, isUpcomingEvent } from '../../server/eventDates.js';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
-const EventSkeleton = ({ index }: { index: number }) => (
-  <div className="py-8 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start animate-pulse">
-    <div className="grid grid-cols-[2rem_1fr] gap-5 items-start">
-      <div className="h-3 w-5 bg-muted rounded mt-1" />
-      <div className="space-y-3">
-        <div className="h-5 w-20 bg-muted rounded-full" />
-        <div className={`h-5 bg-muted rounded ${index === 0 ? 'w-4/5' : 'w-3/5'}`} />
-        <div className="h-4 w-2/5 bg-muted rounded" />
-        <div className="h-4 w-full bg-muted rounded" />
-        <div className="h-4 w-3/4 bg-muted rounded" />
-      </div>
-    </div>
-    <div className="lg:pt-1 pl-9 lg:pl-0">
-      <div className="h-9 w-32 bg-muted rounded" />
+const EventSkeleton = () => (
+  <div className="px-panel p-5 flex gap-4 animate-pulse motion-reduce:animate-none" aria-hidden="true">
+    <div className="w-16 h-[4.25rem] bg-muted shrink-0" />
+    <div className="flex-1 space-y-3 pt-1">
+      <div className="h-5 w-4/5 bg-muted" />
+      <div className="h-4 w-2/5 bg-muted" />
+      <div className="h-4 w-full bg-muted" />
     </div>
   </div>
 );
 
 // ── Error / fallback state ────────────────────────────────────────────────────
 const EventsError = ({ onRetry }: { onRetry: () => void }) => (
-  <div className="py-12 flex flex-col items-start gap-6">
-    <div>
-      <p className="font-heading font-semibold text-foreground mb-1">
-        Couldn't load events right now
+  <div className="flex flex-col sm:flex-row gap-6 items-start">
+    <Mascot size={72} className="shrink-0" />
+    <div className="flex flex-col items-start gap-4">
+      <div>
+        <p className="font-bold text-lg text-foreground mb-1">
+          Couldn't load events right now
+        </p>
+        <p className="text-base text-muted-foreground max-w-[50ch]">
+          Meetup didn't answer. Try again, or see every event on Meetup directly.
+        </p>
+      </div>
+      <div className="flex items-center gap-x-6 gap-y-3 flex-wrap">
+        <button type="button" onClick={onRetry} className="px-button">
+          Try again
+        </button>
+        <a href={EXTERNAL_LINKS.meetup} target="_blank" rel="noopener noreferrer" className="px-link">
+          View on Meetup
+        </a>
+      </div>
+      <p className="text-sm text-muted-foreground">
+        Still stuck? Email us at{' '}
+        <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="text-primary underline underline-offset-4">
+          {EXTERNAL_LINKS.emailContact}
+        </a>
+        .
       </p>
-      <p className="text-sm text-muted-foreground max-w-[45ch]">
-        The live feed is temporarily unavailable. You can view all events directly
-        on Meetup, or try again below.
-      </p>
-    </div>
-    <div className="flex items-center gap-3 flex-wrap">
-      <button
-        onClick={onRetry}
-        className="inline-flex items-center gap-2 px-4 py-2 rounded border border-border text-sm text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors duration-150"
-      >
-        <RefreshCw className="w-3.5 h-3.5" />
-        Try again
-      </button>
-      <a
-        href={EXTERNAL_LINKS.meetup}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-sm text-primary hover:gap-2.5 transition-all duration-150"
-      >
-        View on Meetup
-        <ExternalLink className="w-3.5 h-3.5" />
-      </a>
     </div>
   </div>
 );
 
 // ── No upcoming events state ──────────────────────────────────────────────────
+// The mascot's one job outside the homepage: making an empty list feel like
+// "between missions", with a clear next step.
 const NoUpcomingEvents = () => (
-  <div className="py-12 flex flex-col items-start gap-4">
-    <p className="font-heading font-semibold text-foreground">
-      No upcoming events yet
-    </p>
-    <p className="text-sm text-muted-foreground max-w-[45ch]">
-      We're planning the next one. Follow the group on Meetup to get notified
-      the moment it drops.
-    </p>
-    <a
-      href={EXTERNAL_LINKS.meetup}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-    >
-      Follow on Meetup
-      <ArrowRight className="w-4 h-4" />
-    </a>
+  <div className="flex flex-col sm:flex-row gap-6 items-start">
+    <Mascot size={72} className="shrink-0" />
+    <div className="flex flex-col items-start gap-4">
+      <div>
+        <p className="font-bold text-lg text-foreground mb-1">
+          No upcoming events yet
+        </p>
+        <p className="text-base text-muted-foreground max-w-[50ch]">
+          We're planning the next one. Follow the group on Meetup to get notified
+          the moment it's posted, and look through what we've done below.
+        </p>
+      </div>
+      <a href={EXTERNAL_LINKS.meetup} target="_blank" rel="noopener noreferrer" className="px-button">
+        Follow on Meetup
+      </a>
+    </div>
   </div>
 );
+
+// ── Past events ───────────────────────────────────────────────────────────────
+// A timeline (it really is a chronological sequence), grouped by semester,
+// newest first. Stays visible when the live feed is empty or down, so a
+// first-time visitor can still see the club is active.
+const PastEvents = () => {
+  const groups: { semester: string; events: typeof PAST_EVENTS[number][] }[] = [];
+  for (const ev of PAST_EVENTS) {
+    const semester = semesterOf(ev.date);
+    const last = groups[groups.length - 1];
+    if (last?.semester === semester) last.events.push(ev);
+    else groups.push({ semester, events: [ev] });
+  }
+
+  return (
+    <section aria-labelledby="past-events-heading" className="relative border-t border-border py-16">
+      <div className="container mx-auto px-6 max-w-4xl">
+        <h2 id="past-events-heading" className="text-foreground mb-3">
+          Past events
+        </h2>
+        <p className="text-base text-muted-foreground max-w-[55ch] mb-12">
+          Workshops, career nights, and study cohorts from the last two semesters.
+        </p>
+        <div className="space-y-14">
+          {groups.map((group) => (
+            <div key={group.semester}>
+              <h3 className="text-lg text-foreground mb-6">{group.semester}</h3>
+              {/* Timeline: a 2px rail with a square node per event. */}
+              <ol className="relative border-l-2 border-border ml-1.5 space-y-10">
+                {group.events.map((ev) => (
+                  <li key={ev.meetupUrl} className="relative pl-7">
+                    <span className="absolute -left-[7px] top-1.5 w-3 h-3 bg-[var(--chip)]" aria-hidden="true" />
+                    <p className="text-sm text-muted-foreground">
+                      <time dateTime={ev.date}>{formatEventDay(ev.date)}</time>
+                      <span className="sr-only">:</span>
+                    </p>
+                    <p className="font-bold text-foreground leading-snug mt-1 mb-1">{ev.title}</p>
+                    <p className="text-sm text-muted-foreground mb-2 flex flex-wrap items-center gap-x-2">
+                      <span className="px-chip ml-0">{ev.format}</span>
+                      {ev.place && <span>{ev.place}</span>}
+                    </p>
+                    <p className="text-base text-muted-foreground leading-relaxed max-w-[62ch]">{ev.summary}</p>
+                    <a
+                      href={ev.meetupUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Event page on Meetup for ${ev.title}`}
+                      className="px-link text-sm"
+                    >
+                      Event page on Meetup
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 const EventsPage = () => {
@@ -89,24 +145,38 @@ const EventsPage = () => {
   // which wouldn't otherwise produce any visible DOM change to announce.
   const [statusMessage, setStatusMessage] = useState('');
   const wasFetching = useRef(false);
+  // True while the very first load is in flight, so a failure there is
+  // announced as "couldn't load", not "couldn't refresh" (nothing was shown yet).
+  const wasInitialLoad = useRef(false);
 
   useEffect(() => {
     if (isFetching) {
-      if (!isLoading) {
+      if (isLoading) {
+        wasInitialLoad.current = true;
+      } else {
         setStatusMessage('Checking for updated events…');
       }
       wasFetching.current = true;
     } else if (wasFetching.current) {
-      setStatusMessage(isError ? "Couldn't refresh events." : 'Events refreshed.');
+      if (wasInitialLoad.current) {
+        setStatusMessage(isError ? "Couldn't load events." : 'Events loaded.');
+      } else {
+        setStatusMessage(isError ? "Couldn't refresh events." : 'Events refreshed.');
+      }
       wasFetching.current = false;
+      wasInitialLoad.current = false;
     }
   }, [isFetching, isLoading, isError]);
 
-  const upcoming = events?.filter((e) => e.status === 'upcoming') ?? [];
+  // Re-check dates in the browser too: a tab left open overnight, or a
+  // response cached by React Query, must not keep showing yesterday's event.
+  // Same rule as the server (server/eventDates.js), Houston calendar day.
+  const now = new Date();
+  const upcoming = events?.filter((e) => e.status === 'upcoming' && isUpcomingEvent(e, now)) ?? [];
   const hasUpcoming = upcoming.length > 0;
 
   return (
-    <PageLayout intensity="low">
+    <PageLayout>
 
       {/* Persistent status announcer, deliberately OUTSIDE the aria-busy
           content region below: a message nested inside that region can
@@ -118,37 +188,30 @@ const EventsPage = () => {
       <p role="status" aria-atomic="true" className="sr-only">{statusMessage}</p>
 
       {/* ── Header ── */}
-      <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-              Events
-            </p>
-            <h1
-              className="font-heading font-extrabold leading-[0.88] tracking-tight text-foreground mb-6"
-              style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}
-            >
-              Upcoming<br />
-              <span style={{ color: 'var(--primary)' }}>meetups.</span>
-            </h1>
-            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-              <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-                All events are published on Meetup. RSVP to save your spot;
-                seats go fast.
-              </p>
-            </div>
-          </ScrollReveal>
+      <section className="relative overflow-hidden px-sky px-sky-high">
+        <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative max-w-4xl">
+          <h1 className="text-foreground mb-4" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
+            Events
+          </h1>
+          <p className="text-muted-foreground text-lg leading-relaxed max-w-[52ch]">
+            Workshops, career nights, and study sessions. Free for UH students.
+            RSVP on Meetup to save a seat; that's also where the time and room are.
+          </p>
+          <a href={EXTERNAL_LINKS.meetup} target="_blank" rel="noopener noreferrer" className="px-link mt-2">
+            See all events on Meetup
+          </a>
         </div>
       </section>
 
-      {/* ── Event list ── */}
-      <section className="relative z-10 py-16">
-        <div className="container mx-auto px-6" aria-live="polite" aria-busy={isFetching}>
+      {/* ── Upcoming ── */}
+      <section aria-labelledby="upcoming-heading" className="relative pb-16">
+        <div className="container mx-auto px-6 max-w-4xl" aria-live="polite" aria-busy={isFetching}>
+          <h2 id="upcoming-heading" className="text-foreground mb-6">Upcoming</h2>
 
           {/* Loading */}
           {isLoading && (
-            <div className="divide-y divide-border">
-              {[0, 1].map((i) => <EventSkeleton key={i} index={i} />)}
+            <div className="space-y-5">
+              {[0, 1].map((i) => <EventSkeleton key={i} />)}
             </div>
           )}
 
@@ -158,56 +221,38 @@ const EventsPage = () => {
           {/* Loaded — no upcoming */}
           {!isLoading && !isError && !hasUpcoming && <NoUpcomingEvents />}
 
-          {/* Loaded — has upcoming events */}
+          {/* Loaded — has upcoming events: the raised panels on this page */}
           {!isLoading && !isError && hasUpcoming && (
-            <div className="divide-y divide-border">
-              {upcoming.map((ev, i) => (
-                <ScrollReveal key={ev.id} delay={i * 80}>
-                  <div className="py-8 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-6 items-start">
-
-                    {/* Left */}
-                    <div className="grid grid-cols-[2rem_1fr] gap-5 items-start">
-                      <span className="text-xs font-mono text-primary/70 pt-1">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <div>
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-[10px] uppercase tracking-[0.12em] font-medium px-2 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30">
-                            Upcoming
-                          </span>
-                        </div>
-                        <h2 className="font-heading font-semibold text-foreground text-lg leading-snug mb-4 max-w-[55ch]">
-                          {ev.title}
-                        </h2>
-                        <div className="flex flex-col gap-2 mb-4">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="w-3.5 h-3.5 shrink-0" />
-                            {ev.date}
-                          </div>
-                        </div>
-                        <p className="text-base text-muted-foreground leading-relaxed max-w-[55ch]">
-                          {ev.description}
-                        </p>
-                      </div>
+            <ul className="space-y-6">
+              {upcoming.map((ev) => (
+                <li key={ev.id} className="px-panel p-5 sm:p-6">
+                  <div className="flex gap-4 sm:gap-5 items-start">
+                    <EventDateTile rawDate={ev.rawDate} />
+                    <div className="min-w-0">
+                      <h3 className="text-lg text-foreground leading-snug">{ev.title}</h3>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {hasValidEventDate(ev.rawDate) ? ev.date : 'Date and time on Meetup'}
+                      </p>
                     </div>
-
-                    {/* Right — CTA */}
-                    <div className="lg:pt-1 pl-9 lg:pl-0">
-                      <a
-                        href={ev.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
-                      >
-                        View time, location, and RSVP on Meetup
-                        <ArrowRight className="w-4 h-4 shrink-0" />
-                      </a>
-                    </div>
-
                   </div>
-                </ScrollReveal>
+                  <p className="text-base text-muted-foreground leading-relaxed max-w-[62ch] mt-4">
+                    {ev.description}
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+                    <a
+                      href={ev.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`RSVP on Meetup for ${ev.title}`}
+                      className="px-button"
+                    >
+                      RSVP on Meetup
+                    </a>
+                    <p className="text-sm text-muted-foreground">Time and room are on the Meetup page.</p>
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
 
           {/* Manual refresh — deliberately makes no freshness/liveness claim:
@@ -217,11 +262,8 @@ const EventsPage = () => {
               state's own Try Again is already showing, to avoid a duplicate
               control. */}
           {!isLoading && !isError && (
-            <p className="mt-8 text-xs text-muted-foreground/50">
-              <button
-                onClick={() => refetch()}
-                className="hover:text-muted-foreground transition-colors duration-150 underline underline-offset-2"
-              >
+            <p className="mt-8 text-sm text-muted-foreground">
+              <button type="button" onClick={() => refetch()} className="underline underline-offset-4 py-2">
                 Refresh
               </button>
             </p>
@@ -230,28 +272,7 @@ const EventsPage = () => {
         </div>
       </section>
 
-      {/* ── Meetup note ── */}
-      <section className="relative z-10 border-t border-border py-16">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <div className="flex items-center justify-between gap-8 flex-wrap">
-              <p className="text-base text-muted-foreground max-w-[50ch]">
-                New events are announced on Meetup first. Follow the group to
-                get notified when the next event drops.
-              </p>
-              <a
-                href={EXTERNAL_LINKS.meetup}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 whitespace-nowrap"
-              >
-                See all events on Meetup
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
-            </div>
-          </ScrollReveal>
-        </div>
-      </section>
+      <PastEvents />
 
     </PageLayout>
   );
