@@ -5,18 +5,27 @@ import TeamSection from '@/components/TeamSection';
 // Formerly /about (who we are, what we do) and /team (the people). Both old
 // URLs redirect here; /team lands on #team.
 
+// What the club runs, each with real recent examples from PAST_EVENTS.
 const pillars = [
   {
-    title: 'Hands-On Learning',
-    desc: 'Workshops, labs, and live cloud demos built around real AWS services. From EC2 to Lambda, we learn by building, not watching slides.',
+    title: 'Hands-on workshops',
+    desc: 'Workshops, labs, projects, and team-based competitions built around real AWS services, so members learn together and build together.',
+    recently: 'Intro to DevOps & CI/CD on AWS, Git and GitHub Foundations, AI penetration testing with Amazon Bedrock.',
   },
   {
-    title: 'AWS Badge Progression',
-    desc: 'Club events count toward official AWS Student Builder Groups recognition milestones. Track your progress and earn badges along the way.',
+    title: 'Industry networking',
+    desc: 'Networking events and information sessions where students meet people working in cloud and ask them questions directly.',
+    recently: 'Day in the Life of a Cloud Support Engineer, the Zero to Certified panel, AWS Community on Tour at the Amazon Houston office.',
   },
   {
-    title: 'A Global Builder Network',
-    desc: 'UH is part of the worldwide AWS Student Builder Groups program. Connect with Student Builder Campus Leaders, ambassadors, and nearby groups across Texas and beyond.',
+    title: 'Certification prep',
+    desc: 'Study cohorts like the AWS Cloud Cup, where members prepare for an AWS certification alongside study partners and work toward an exam voucher.',
+    recently: 'AWS Cloud Cup practice exam day, the Certification Prep Capstone & Voucher Kickoff.',
+  },
+  {
+    title: 'Professional development',
+    desc: 'Practice for the skills around the tech: technical presentations, soft skills, and interview prep with the STAR method.',
+    recently: 'Career Fair Prep: resume triage, mock interviews, and 30-second introductions.',
   },
 ];
 
@@ -47,7 +56,10 @@ const CommunityPage = () => (
             {pillars.map((p) => (
               <li key={p.title} className="py-6 first:pt-0">
                 <h3 className="text-lg text-foreground mb-2">{p.title}</h3>
-                <p className="text-base text-muted-foreground leading-relaxed max-w-[55ch]">{p.desc}</p>
+                <p className="text-base text-muted-foreground leading-relaxed max-w-[60ch]">{p.desc}</p>
+                <p className="text-sm text-muted-foreground mt-2 max-w-[60ch]">
+                  <span className="font-semibold text-foreground">Recently:</span> {p.recently}
+                </p>
               </li>
             ))}
           </ul>
