@@ -1,3 +1,5 @@
+import { CLOUD_SPRITE } from '@/lib/sprites';
+
 /**
  * Twinkling pixel stars and an occasional shooting star over the hero sky.
  * Purely decorative (aria-hidden, no pointer events). The motion lives in CSS
@@ -17,8 +19,35 @@ const STARS: Array<{ top: string; left: string; size: 2 | 3; delay: string }> = 
   { top: '18%', left: '56%', size: 2, delay: '3.4s' },
 ];
 
-const SkySparkles = () => (
+const CLOUD_COLORS: Record<string, string> = { '#': '#c9bff7', S: '#9d8fe8' };
+
+/** One drifting pixel cloud, drawn from CLOUD_SPRITE. */
+const PixelCloud = ({ className }: { className: string }) => (
+  <svg
+    viewBox={`0 0 ${CLOUD_SPRITE[0].length} ${CLOUD_SPRITE.length}`}
+    shapeRendering="crispEdges"
+    className={`px-cloud ${className}`}
+  >
+    {CLOUD_SPRITE.flatMap((row, y) =>
+      [...row].map((ch, x) =>
+        CLOUD_COLORS[ch] ? <rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={CLOUD_COLORS[ch]} /> : null,
+      ),
+    )}
+  </svg>
+);
+
+/**
+ * `clouds` adds two pixel clouds drifting slowly across the top band of the
+ * sky (homepage hero only): CSS-animated, and absent for reduced motion.
+ */
+const SkySparkles = ({ clouds = false }: { clouds?: boolean }) => (
   <div className="px-sparkles" aria-hidden="true">
+    {clouds && (
+      <>
+        <PixelCloud className="px-cloud-a" />
+        <PixelCloud className="px-cloud-b" />
+      </>
+    )}
     {STARS.map((s) => (
       <span
         key={`${s.top}-${s.left}`}

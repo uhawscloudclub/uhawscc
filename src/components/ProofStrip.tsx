@@ -1,5 +1,6 @@
 import { type MeetupEvent } from "@/hooks/useEvents";
 import { proofStats } from "@/data/proofStats";
+import CountUp from "@/components/CountUp";
 import { hasValidEventDate, isUpcomingEvent } from "../../server/eventDates.js";
 
 /**
@@ -57,9 +58,7 @@ const ProofStrip = () => {
                 {/* "4.9 from 10 Meetup ratings" does not read well aloud, so
                     the visual shorthand is hidden and replaced for AT. */}
                 <span aria-hidden="true" className="flex items-baseline gap-2">
-                  <span className="font-heading text-2xl font-semibold text-foreground">
-                    {stat.value}
-                  </span>
+                  <CountUp value={stat.value} className="font-heading text-2xl font-semibold text-foreground" />
                   <span className="text-sm text-muted-foreground">
                     {stat.label}
                   </span>
@@ -68,9 +67,7 @@ const ProofStrip = () => {
               </>
             ) : (
               <>
-                <span className="font-heading text-2xl font-semibold text-foreground">
-                  {stat.value}
-                </span>
+                <CountUp value={stat.value} className="font-heading text-2xl font-semibold text-foreground" />
                 <span className="text-sm text-muted-foreground">
                   {stat.label}
                 </span>

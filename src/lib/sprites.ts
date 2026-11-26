@@ -285,3 +285,13 @@ export const MASCOT_SPRITE = [
   '...OSSO..OSSO...',
   '...OOOO..OOOO...',
 ];
+
+/** A small sky cloud: '#' lit top, 'S' shaded underside. */
+export const CLOUD_SPRITE = [
+  '........####........',
+  '......##########....',
+  '..####.#########....',
+  '.##################.',
+  '####################',
+  '.SSSSSSSSSSSSSSSSSS.',
+];

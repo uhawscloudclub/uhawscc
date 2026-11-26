@@ -24,7 +24,9 @@ const Mascot = ({
   SPRITE.forEach((row, y) => {
     [...row].forEach((cell, x) => {
       const fill = PALETTE[cell];
-      if (fill) rects.push(<rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={fill} />);
+      // Classes let CSS blink the visor glint and twinkle the chip pins.
+      const cls = cell === 'H' ? 'm-glint' : cell === 'P' ? 'm-pin' : undefined;
+      if (fill) rects.push(<rect key={`${x}-${y}`} x={x} y={y} width={1} height={1} fill={fill} className={cls} />);
     });
   });
   return (

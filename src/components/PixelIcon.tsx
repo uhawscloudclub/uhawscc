@@ -39,6 +39,7 @@ const PixelIcon = ({
       fill="currentColor"
       shapeRendering="crispEdges"
       className={`shrink-0 ${className}`}
+      data-icon={name}
       {...(label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': true, focusable: false })}
     >
       {rects}
