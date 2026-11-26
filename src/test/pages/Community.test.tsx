@@ -20,6 +20,15 @@ describe("Community page", () => {
         expect(screen.queryByText(/badge progression/i)).not.toBeInTheDocument();
     });
 
+    it("shows each What-we-do card with a recent event's flyer and a link to past events", () => {
+        renderWithRouter(<CommunityPage />);
+        const section = screen.getByRole("region", { name: "What we do" });
+        const cards = within(section).getAllByRole("listitem");
+        expect(cards).toHaveLength(4);
+        cards.forEach((card) => expect(card.querySelector("img")?.getAttribute("src")).toMatch(/\.webp/));
+        expect(within(section).getByRole("link", { name: /See all past events/ })).toHaveAttribute("href", "/events");
+    });
+
     it("includes Ways to join with every channel", () => {
         renderWithRouter(<CommunityPage />);
         const section = screen.getByRole("region", { name: "Ways to join" });
