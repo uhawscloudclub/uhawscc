@@ -60,7 +60,7 @@ for (const [label, use] of [
             await expect(page.getByText("Couldn't load events right now")).toBeVisible();
             await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
             await expect(page.getByRole("link", { name: "View on Meetup" })).toBeVisible();
-            await expect(page.getByRole("link", { name: "uhawscloudclub@gmail.com" })).toHaveAttribute("href", "mailto:uhawscloudclub@gmail.com");
+            await expect(page.getByRole("link", { name: "sbguh@cougarnet.uh.edu" })).toHaveAttribute("href", "mailto:sbguh@cougarnet.uh.edu");
             await expect(page.getByRole("heading", { name: "Past events" })).toBeVisible();
         });
     });

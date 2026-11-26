@@ -198,6 +198,14 @@
     linear-gradient(135deg, var(--primary), var(--secondary)) border-box;
 }
 
+/* ── Fixed navbar offset ──
+   The navbar is fixed and 4rem (h-16) tall. Without this, anything the
+   browser scrolls into view for focus or a #fragment (error fields, the
+   contact confirmation, /community#team) lands underneath it. */
+html {
+  scroll-padding-top: 5rem;
+}
+
 /* ── Focus-visible — keyboard navigation ── */
 :focus-visible {
   outline: 2px solid var(--ring);

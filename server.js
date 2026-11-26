@@ -274,7 +274,7 @@ app.post("/api/contact", contactLimiter, async (req, res) => {
   const safeSubject = (subject || "").trim().replace(/[\r\n]/g, " ") || "New message from website";
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const CONTACT_TO    = process.env.CONTACT_EMAIL_TO || "uhawscloudclub@gmail.com";
+  const CONTACT_TO    = process.env.CONTACT_EMAIL_TO || "sbguh@cougarnet.uh.edu";
 
   if (!RESEND_API_KEY) {
     if (isDev) {

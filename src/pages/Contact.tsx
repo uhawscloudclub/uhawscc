@@ -1,13 +1,15 @@
-import { useState, useRef } from 'react';
-import { useForm } from 'react-hook-form';
+import { useEffect, useRef, useState } from 'react';
+import { useForm, useWatch } from 'react-hook-form';
 import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
+import { Link } from 'react-router-dom';
 import { ArrowRight, Mail, MessageSquare, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Linkedin, Instagram } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import { INTENTS, LIMITS, buildSubject, type IntentId } from '@/lib/contactForm';
 
 // ── Discord icon (not in lucide) ─────────────────────────────────────────────
 const DiscordIcon = ({ className }: { className?: string }) => (
@@ -17,11 +19,20 @@ const DiscordIcon = ({ className }: { className?: string }) => (
 );
 
 // ── Form schema ───────────────────────────────────────────────────────────────
+// Limits come from LIMITS (src/lib/contactForm.ts), which mirror server.js.
 const schema = z.object({
-  name:    z.string().min(2,  'Name must be at least 2 characters'),
-  email:   z.string().email('Please enter a valid email address'),
-  subject: z.string().optional(),
-  message: z.string().min(10, 'Message must be at least 10 characters'),
+  name: z.string().trim()
+    .min(2, 'Enter your name (at least 2 characters).')
+    .max(LIMITS.name, `Name must be ${LIMITS.name} characters or fewer.`),
+  email: z.string().trim()
+    .max(LIMITS.email, `Email must be ${LIMITS.email} characters or fewer.`)
+    .email('Enter an email address like name@cougarnet.uh.edu.'),
+  subject: z.string().trim()
+    .max(LIMITS.subject, `Subject must be ${LIMITS.subject} characters or fewer.`)
+    .optional(),
+  message: z.string().trim()
+    .min(10, 'Write at least 10 characters so we can help.')
+    .max(LIMITS.message, `Message must be ${LIMITS.message.toLocaleString('en-US')} characters or fewer.`),
 });
 
 type FormValues = z.infer<typeof schema>;
@@ -55,6 +66,9 @@ const channels = [
 ];
 
 // ── Field component ───────────────────────────────────────────────────────────
+// The error message gets an id that the input references via
+// aria-describedby, so a screen reader reads it when the field gets focus
+// (react-hook-form focuses the first invalid field on submit).
 const Field = ({
   label, id, required, error, children,
 }: {
@@ -74,13 +88,22 @@ const Field = ({
     </label>
     {children}
     {error && (
-      <p role="alert" className="text-xs text-destructive flex items-center gap-1 mt-0.5">
+      <p id={`${id}-error`} className="text-xs text-destructive flex items-center gap-1 mt-0.5">
         <AlertCircle className="w-3 h-3 shrink-0" aria-hidden="true" />
         {error}
       </p>
     )}
   </div>
 );
+
+/** aria props for an input: invalid state plus error/hint descriptions. */
+function describe(id: string, hasError: boolean, hintId?: string) {
+  const ids = [hasError ? `${id}-error` : '', hintId ?? ''].filter(Boolean).join(' ');
+  return {
+    'aria-invalid': hasError || undefined,
+    'aria-describedby': ids || undefined,
+  } as const;
+}
 
 // focus:border-primary — color change for all input methods
 // focus-visible:ring-1 — visible ring for keyboard navigation (does not fire on mouse click)
@@ -93,17 +116,34 @@ const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | u
 const ContactPage = () => {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [serverError, setServerError] = useState('');
+  const [sentTo, setSentTo] = useState('');
+  const [intent, setIntent] = useState<IntentId | ''>('');
   const [cfToken, setCfToken] = useState('');
   const honeypotRef = useRef<HTMLInputElement>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const successHeadingRef = useRef<HTMLHeadingElement>(null);
 
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<FormValues>({
+  const { register, handleSubmit, reset, control, formState: { errors } } = useForm<FormValues>({
     resolver: zodResolver(schema),
   });
+  const messageLength = (useWatch({ control, name: 'message' }) ?? '').length;
+
+  // Move focus to the confirmation so keyboard and screen-reader users know
+  // the message went through (the form they were in has just disappeared).
+  useEffect(() => {
+    if (status === 'success') successHeadingRef.current?.focus();
+  }, [status]);
 
   const onSubmit = async (data: FormValues) => {
-    setStatus('loading');
     setServerError('');
+    // Submit stays enabled while the bot check runs, so say why instead of
+    // silently ignoring the click.
+    if (TURNSTILE_SITE_KEY && !cfToken) {
+      setServerError('The spam check is still running. Wait a moment for it to finish, then send again.');
+      setStatus('error');
+      return;
+    }
+    setStatus('loading');
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 20_000); // 20 s hard cap
     try {
@@ -111,22 +151,37 @@ const ContactPage = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          ...data,
+          name: data.name,
+          email: data.email,
+          subject: buildSubject(intent, data.subject),
+          message: data.message,
           _hp: honeypotRef.current?.value ?? '',
           cfToken,
         }),
         signal: controller.signal,
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Something went wrong.');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        // Our own wording per status; the fallback sentence ("Try again, or
+        // email us at …") is added where the error is shown.
+        throw new Error(
+          res.status === 400 && json.error
+            ? json.error
+            : res.status === 429
+              ? "You've sent several messages in the last hour, so the form is paused for now."
+              : "We couldn't send your message right now.",
+        );
+      }
+      setSentTo(data.email);
       setStatus('success');
       reset();
+      setIntent('');
       setCfToken('');
       turnstileRef.current?.reset();
     } catch (err: unknown) {
       const msg = err instanceof Error
-        ? (err.name === 'AbortError' ? 'Request timed out. Please try again.' : err.message)
-        : 'Something went wrong. Please try again.';
+        ? (err.name === 'AbortError' ? 'The request timed out.' : err.message)
+        : "We couldn't send your message right now.";
       setServerError(msg);
       setStatus('error');
       turnstileRef.current?.reset();
@@ -154,7 +209,7 @@ const ContactPage = () => {
             </h1>
             <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
               Questions about membership, events, partnerships, or anything else?
-              Send us a message and we'll get back to you.
+              Send us a message and an officer will reply within 24 hours.
             </p>
           </ScrollReveal>
         </div>
@@ -202,26 +257,39 @@ const ContactPage = () => {
               {status === 'success' ? (
                 <div className="flex flex-col items-start gap-5 py-6">
                   <div className="w-10 h-10 rounded-full bg-[var(--success)]/10 border border-[var(--success)]/30 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5" style={{ color: 'var(--success)' }} />
+                    <CheckCircle2 className="w-5 h-5" style={{ color: 'var(--success)' }} aria-hidden="true" />
                   </div>
                   <div>
-                    <p className="font-heading font-semibold text-foreground text-lg mb-1">
-                      Message sent!
+                    <h2
+                      ref={successHeadingRef}
+                      tabIndex={-1}
+                      className="font-heading font-semibold text-foreground text-lg mb-1 focus:outline-none"
+                    >
+                      Message sent
+                    </h2>
+                    <p className="text-sm text-muted-foreground max-w-[45ch]">
+                      Thanks for reaching out. An officer will reply to{' '}
+                      <span className="text-foreground">{sentTo}</span> within 24 hours.
                     </p>
-                    <p className="text-sm text-muted-foreground max-w-[40ch]">
-                      Thanks for reaching out. We'll get back to you within a day or two.
+                    <p className="text-sm text-muted-foreground max-w-[45ch] mt-2">
+                      No reply after a day? Check your spam folder, or email{' '}
+                      <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="text-primary underline underline-offset-2">
+                        {EXTERNAL_LINKS.emailContact}
+                      </a>.
                     </p>
                   </div>
                   <button
+                    type="button"
                     onClick={() => setStatus('idle')}
-                    className="inline-flex items-center gap-1.5 text-sm text-primary hover:gap-2.5 transition-all duration-150"
+                    className="inline-flex items-center gap-1.5 text-sm text-primary py-2 hover:gap-2.5 transition-all duration-150"
                   >
                     Send another message
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8">
+                <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-8" aria-labelledby="contact-form-heading">
+                  <h2 id="contact-form-heading" className="sr-only">Send us a message</h2>
 
                   {/* Honeypot — hidden from real users, bots fill it in */}
                   <div aria-hidden="true" style={{ display: 'none' }}>
@@ -234,6 +302,50 @@ const ContactPage = () => {
                     />
                   </div>
 
+                  {/* Why are you writing? (optional) */}
+                  <fieldset>
+                    <legend className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-medium mb-3">
+                      What brings you here? <span className="normal-case tracking-normal">(optional)</span>
+                    </legend>
+                    <div className="flex flex-wrap gap-2">
+                      {INTENTS.map((option) => (
+                        <label
+                          key={option.id}
+                          className={`inline-flex items-center gap-2 px-3 py-2.5 rounded border text-sm cursor-pointer transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${
+                            intent === option.id
+                              ? 'border-primary bg-primary/10 text-foreground'
+                              : 'border-border text-muted-foreground hover:border-primary/50'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name="intent"
+                            value={option.id}
+                            checked={intent === option.id}
+                            onChange={() => setIntent(option.id)}
+                            className="sr-only"
+                          />
+                          {option.label}
+                        </label>
+                      ))}
+                    </div>
+                    {intent === 'joining' && (
+                      <p className="text-sm text-muted-foreground mt-3 max-w-[55ch]">
+                        Quickest way in: join the group on{' '}
+                        <a href={EXTERNAL_LINKS.meetup} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+                          Meetup<span className="sr-only"> (opens in a new tab)</span>
+                        </a>{' '}
+                        and fill out the{' '}
+                        <a href={EXTERNAL_LINKS.memberInterestForm} target="_blank" rel="noopener noreferrer" className="text-primary underline underline-offset-2">
+                          member interest form<span className="sr-only"> (opens in a new tab)</span>
+                        </a>
+                        . See every option on the{' '}
+                        <Link to="/community" className="text-primary underline underline-offset-2">Community page</Link>.
+                        You can still send a message below.
+                      </p>
+                    )}
+                  </fieldset>
+
                   {/* Row: name + email */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                     <Field id="contact-name" label="Name" required error={errors.name?.message}>
@@ -243,6 +355,9 @@ const ContactPage = () => {
                         placeholder="Your name"
                         className={inputClass}
                         autoComplete="name"
+                        aria-required="true"
+                        maxLength={LIMITS.name}
+                        {...describe('contact-name', !!errors.name)}
                       />
                     </Field>
                     <Field id="contact-email" label="Email" required error={errors.email?.message}>
@@ -250,20 +365,26 @@ const ContactPage = () => {
                         {...register('email')}
                         id="contact-email"
                         type="email"
+                        inputMode="email"
                         placeholder="you@example.com"
                         className={inputClass}
                         autoComplete="email"
+                        aria-required="true"
+                        maxLength={LIMITS.email}
+                        {...describe('contact-email', !!errors.email)}
                       />
                     </Field>
                   </div>
 
                   {/* Subject */}
-                  <Field id="contact-subject" label="Subject" error={errors.subject?.message}>
+                  <Field id="contact-subject" label="Subject (optional)" error={errors.subject?.message}>
                     <input
                       {...register('subject')}
                       id="contact-subject"
-                      placeholder="What's this about? (optional)"
+                      placeholder="What's this about?"
                       className={inputClass}
+                      maxLength={LIMITS.subject}
+                      {...describe('contact-subject', !!errors.subject)}
                     />
                   </Field>
 
@@ -274,51 +395,66 @@ const ContactPage = () => {
                       id="contact-message"
                       rows={5}
                       placeholder="Your message…"
-                      className={`${inputClass} resize-none`}
+                      className={`${inputClass} resize-y`}
+                      aria-required="true"
+                      maxLength={LIMITS.message}
+                      {...describe('contact-message', !!errors.message, 'contact-message-hint')}
                     />
+                    <p id="contact-message-hint" className="text-xs text-muted-foreground tabular-nums">
+                      {messageLength.toLocaleString('en-US')} / {LIMITS.message.toLocaleString('en-US')} characters
+                    </p>
                   </Field>
 
                   {/* Cloudflare Turnstile — only rendered when site key is configured */}
                   {TURNSTILE_SITE_KEY && (
-                    <Turnstile
-                      ref={turnstileRef}
-                      siteKey={TURNSTILE_SITE_KEY}
-                      onSuccess={setCfToken}
-                      onExpire={() => setCfToken('')}
-                      onError={() => setCfToken('')}
-                      options={{ theme: 'dark' }}
-                    />
+                    <div>
+                      <Turnstile
+                        ref={turnstileRef}
+                        siteKey={TURNSTILE_SITE_KEY}
+                        onSuccess={setCfToken}
+                        onExpire={() => setCfToken('')}
+                        onError={() => setCfToken('')}
+                        options={{ theme: 'dark' }}
+                      />
+                      <p className="text-xs text-muted-foreground mt-2">A quick automatic check that keeps spam out.</p>
+                    </div>
                   )}
 
-                  {/* Server error */}
+                  {/* Server error: announced, with a way to reach us anyway */}
                   {status === 'error' && serverError && (
-                    <p className="text-sm text-destructive flex items-center gap-2">
-                      <AlertCircle className="w-4 h-4 shrink-0" />
-                      {serverError}
-                    </p>
+                    <div role="alert" className="text-sm text-destructive flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+                      <p>
+                        {serverError} Try again, or email us at{' '}
+                        <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="underline underline-offset-2">
+                          {EXTERNAL_LINKS.emailContact}
+                        </a>.
+                      </p>
+                    </div>
                   )}
 
                   {/* Submit */}
-                  <div className="flex items-center gap-4 pt-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 pt-2">
                     <button
                       type="submit"
-                      disabled={status === 'loading' || (!!TURNSTILE_SITE_KEY && !cfToken)}
-                      className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                      disabled={status === 'loading'}
+                      aria-busy={status === 'loading' || undefined}
+                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed self-start"
                     >
                       {status === 'loading' ? (
                         <>
-                          <span className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" />
+                          <span className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" aria-hidden="true" />
                           Sending…
                         </>
                       ) : (
                         <>
                           Send message
-                          <MessageSquare className="w-4 h-4" />
+                          <MessageSquare className="w-4 h-4" aria-hidden="true" />
                         </>
                       )}
                     </button>
-                    <p className="text-xs text-muted-foreground/60">
-                      We typically reply within 24–48 hours.
+                    <p className="text-xs text-muted-foreground">
+                      An officer replies within 24 hours. We only use your email to reply to you.
                     </p>
                   </div>
 
