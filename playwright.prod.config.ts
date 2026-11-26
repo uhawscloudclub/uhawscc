@@ -8,7 +8,7 @@ import baseConfig from "./playwright.config";
 export default defineConfig({
   ...baseConfig,
   testDir: "./e2e",
-  testMatch: /prod-lazy-routes\.spec\.ts/,
+  testMatch: /(prod-lazy-routes|events)\.spec\.ts/,
   use: { ...baseConfig.use, baseURL: "http://localhost:4173" },
   webServer: {
     command: "npm run build && npm run preview -- --port 4173",

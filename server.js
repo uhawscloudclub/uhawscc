@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import rateLimit from "express-rate-limit";
 import { Resend } from "resend";
 import { fetchMeetupEvents, getEventsWithCache } from "./server/meetupFeed.js";
+import { withComputedStatus } from "./server/eventDates.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -170,9 +171,10 @@ function escapeHtml(str) {
 }
 
 app.get("/api/events", async (req, res) => {
+  const now = Date.now();
   const result = await getEventsWithCache({
     cacheStore: eventsCacheStore,
-    now: Date.now(),
+    now,
     ttlMs: EVENTS_CACHE_TTL,
     fetchEvents: () => fetchMeetupEvents({ url: MEETUP_RSS }),
   });
@@ -185,7 +187,11 @@ app.get("/api/events", async (req, res) => {
     );
   }
 
-  res.status(result.status).json(result.body);
+  // Status is recomputed from each event's date on every response, not taken
+  // from the cache, so an expired event never shows as upcoming — including
+  // when a stale cache is served after an upstream failure. Response shape is
+  // unchanged ({ id, title, date, rawDate, link, description, status }[]).
+  res.status(result.status).json(withComputedStatus(result.body, new Date(now)));
 });
 
 // ── Contact form API ───────────────────────────────────────────────────────

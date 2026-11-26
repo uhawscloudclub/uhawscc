@@ -4,6 +4,8 @@ import ScrollReveal from '@/components/ScrollReveal';
 import { Calendar, ArrowRight, RefreshCw, ExternalLink } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { useEvents } from '@/hooks/useEvents';
+import { PAST_EVENTS, formatEventDay, semesterOf } from '@/data/pastEvents';
+import { hasValidEventDate, isUpcomingEvent } from '../../server/eventDates.js';
 
 // ── Loading skeleton ──────────────────────────────────────────────────────────
 const EventSkeleton = ({ index }: { index: number }) => (
@@ -51,9 +53,16 @@ const EventsError = ({ onRetry }: { onRetry: () => void }) => (
         className="inline-flex items-center gap-1.5 text-sm text-primary hover:gap-2.5 transition-all duration-150"
       >
         View on Meetup
-        <ExternalLink className="w-3.5 h-3.5" />
+        <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
       </a>
     </div>
+    <p className="text-sm text-muted-foreground">
+      Still stuck? Email us at{' '}
+      <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="text-primary underline underline-offset-2">
+        {EXTERNAL_LINKS.emailContact}
+      </a>
+      .
+    </p>
   </div>
 );
 
@@ -79,6 +88,65 @@ const NoUpcomingEvents = () => (
   </div>
 );
 
+// ── Past events ───────────────────────────────────────────────────────────────
+// Grouped by semester, newest first. Stays visible when the live feed is empty
+// or down, so a first-time visitor can still see the club is active.
+const PastEvents = () => {
+  const groups: { semester: string; events: typeof PAST_EVENTS[number][] }[] = [];
+  for (const ev of PAST_EVENTS) {
+    const semester = semesterOf(ev.date);
+    const last = groups[groups.length - 1];
+    if (last?.semester === semester) last.events.push(ev);
+    else groups.push({ semester, events: [ev] });
+  }
+
+  return (
+    <section aria-labelledby="past-events-heading" className="relative z-10 border-t border-border py-16">
+      <div className="container mx-auto px-6">
+        <h2 id="past-events-heading" className="font-heading font-bold text-2xl text-foreground mb-2">
+          Past events
+        </h2>
+        <p className="text-base text-muted-foreground max-w-[55ch] mb-10">
+          What we've done so far: workshops, career sessions, and study cohorts.
+        </p>
+        <div className="space-y-12">
+          {groups.map((group) => (
+            <div key={group.semester}>
+              <h3 className="font-heading font-semibold text-foreground mb-2">{group.semester}</h3>
+              <ul className="divide-y divide-border">
+                {group.events.map((ev) => (
+                  <li key={ev.meetupUrl} className="py-6 grid grid-cols-1 sm:grid-cols-[9rem_1fr] gap-2 sm:gap-6">
+                    <p className="text-sm text-muted-foreground">
+                      <time dateTime={ev.date}>{formatEventDay(ev.date)}</time>
+                    </p>
+                    <div>
+                      <p className="font-heading font-semibold text-foreground leading-snug mb-1">{ev.title}</p>
+                      <p className="text-sm text-muted-foreground mb-2">
+                        {ev.format}{ev.place ? `, ${ev.place}` : ''}
+                      </p>
+                      <p className="text-base text-muted-foreground leading-relaxed max-w-[60ch] mb-3">{ev.summary}</p>
+                      <a
+                        href={ev.meetupUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Event page on Meetup for ${ev.title}`}
+                        className="inline-flex items-center gap-1.5 text-sm text-primary py-2"
+                      >
+                        Event page on Meetup
+                        <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                      </a>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+};
+
 // ── Main page ─────────────────────────────────────────────────────────────────
 const EventsPage = () => {
   const { data: events, isLoading, isFetching, isError, refetch } = useEvents();
@@ -89,20 +157,34 @@ const EventsPage = () => {
   // which wouldn't otherwise produce any visible DOM change to announce.
   const [statusMessage, setStatusMessage] = useState('');
   const wasFetching = useRef(false);
+  // True while the very first load is in flight, so a failure there is
+  // announced as "couldn't load", not "couldn't refresh" (nothing was shown yet).
+  const wasInitialLoad = useRef(false);
 
   useEffect(() => {
     if (isFetching) {
-      if (!isLoading) {
+      if (isLoading) {
+        wasInitialLoad.current = true;
+      } else {
         setStatusMessage('Checking for updated events…');
       }
       wasFetching.current = true;
     } else if (wasFetching.current) {
-      setStatusMessage(isError ? "Couldn't refresh events." : 'Events refreshed.');
+      if (wasInitialLoad.current) {
+        setStatusMessage(isError ? "Couldn't load events." : 'Events loaded.');
+      } else {
+        setStatusMessage(isError ? "Couldn't refresh events." : 'Events refreshed.');
+      }
       wasFetching.current = false;
+      wasInitialLoad.current = false;
     }
   }, [isFetching, isLoading, isError]);
 
-  const upcoming = events?.filter((e) => e.status === 'upcoming') ?? [];
+  // Re-check dates in the browser too: a tab left open overnight, or a
+  // response cached by React Query, must not keep showing yesterday's event.
+  // Same rule as the server (server/eventDates.js), Houston calendar day.
+  const now = new Date();
+  const upcoming = events?.filter((e) => e.status === 'upcoming' && isUpcomingEvent(e, now)) ?? [];
   const hasUpcoming = upcoming.length > 0;
 
   return (
@@ -181,8 +263,8 @@ const EventsPage = () => {
                         </h2>
                         <div className="flex flex-col gap-2 mb-4">
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Calendar className="w-3.5 h-3.5 shrink-0" />
-                            {ev.date}
+                            <Calendar className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+                            {hasValidEventDate(ev.rawDate) ? ev.date : 'Date and time on Meetup'}
                           </div>
                         </div>
                         <p className="text-base text-muted-foreground leading-relaxed max-w-[55ch]">
@@ -197,11 +279,13 @@ const EventsPage = () => {
                         href={ev.link}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label={`RSVP on Meetup for ${ev.title}`}
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
                       >
-                        View time, location, and RSVP on Meetup
-                        <ArrowRight className="w-4 h-4 shrink-0" />
+                        RSVP on Meetup
+                        <ArrowRight className="w-4 h-4 shrink-0" aria-hidden="true" />
                       </a>
+                      <p className="text-xs text-muted-foreground mt-2">Time and room are on the Meetup page.</p>
                     </div>
 
                   </div>
@@ -229,6 +313,8 @@ const EventsPage = () => {
 
         </div>
       </section>
+
+      <PastEvents />
 
       {/* ── Meetup note ── */}
       <section className="relative z-10 border-t border-border py-16">
