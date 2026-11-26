@@ -14,9 +14,10 @@ describe("Community page", () => {
 
     it("explains what the club does", () => {
         renderWithRouter(<CommunityPage />);
-        for (const title of ["Hands-On Learning", "AWS Badge Progression", "A Global Builder Network"]) {
+        for (const title of ["Hands-on workshops", "Industry networking", "Certification prep", "Professional development"]) {
             expect(screen.getByRole("heading", { name: title })).toBeInTheDocument();
         }
+        expect(screen.queryByText(/badge progression/i)).not.toBeInTheDocument();
     });
 
     it("includes Ways to join with every channel", () => {
