@@ -97,8 +97,8 @@ describe("Learn page (Cloud Practitioner path + free resources)", () => {
         expect(boxes).toHaveLength(expectedResourceOrder.length);
         boxes.forEach((box) => expect(box.tagName).toBe("INPUT"));
         expect(screen.getByRole("checkbox", { name: /AWS Cloud Practitioner Essentials/ })).not.toBeChecked();
-        // Checklist rows are checkboxes, not toggle buttons (the path quiz's answer buttons aside).
-        const toggles = screen.queryAllByRole("button", { pressed: false }).filter((b) => !b.closest("#path-quiz"));
+        // Checklist rows are checkboxes, not toggle buttons (the path quiz and the nav sound toggle aside).
+        const toggles = screen.queryAllByRole("button", { pressed: false }).filter((b) => !b.closest("#path-quiz, nav"));
         expect(toggles).toHaveLength(0);
     });
 

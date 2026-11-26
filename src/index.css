@@ -842,6 +842,17 @@ html {
   background: var(--beacon-ink);
 }
 
+/* 404 mini-game canvas: tiny logical size, scaled up with hard pixels. */
+.theme-pixel .px-game-canvas {
+  image-rendering: pixelated;
+  aspect-ratio: 4 / 3;
+  box-shadow: 0 0 0 3px var(--hull-shadow);
+}
+.theme-pixel .px-game-canvas:focus-visible {
+  outline: 3px solid var(--beacon);
+  outline-offset: 3px;
+}
+
 /* Quiz progress: one block per question, the current one outlined. */
 .theme-pixel .px-quiz-steps {
   display: flex;

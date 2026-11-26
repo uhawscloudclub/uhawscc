@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import PixelIcon from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import { setSoundEnabled, useSoundEnabled } from '@/lib/sound';
 import clubLogo from '@/images/aws-student-builder-group-logo.png';
 
 // Mirrors the sitemap: four destinations plus the Meetup CTA.
@@ -11,6 +12,23 @@ const navLinks = [
   { label: 'Community', to: '/community' },
   { label: 'Contact', to: '/contact' },
 ];
+
+/** 8-bit sound effects on/off; off by default. */
+const SoundToggle = () => {
+  const on = useSoundEnabled();
+  return (
+    <button
+      type="button"
+      onClick={() => setSoundEnabled(!on)}
+      aria-pressed={on}
+      aria-label="Sound effects"
+      title={on ? 'Sound effects on' : 'Sound effects off'}
+      className={`p-3 ${on ? 'text-[var(--beacon)]' : 'text-muted-foreground hover:text-foreground'}`}
+    >
+      <PixelIcon name={on ? 'soundOn' : 'soundOff'} size={18} />
+    </button>
+  );
+};
 
 const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -45,6 +63,7 @@ const Navbar = () => {
 
         {/* Desktop — lg breakpoint keeps the logo, 4 links and CTA on one line */}
         <div className="hidden lg:flex items-center gap-6">
+          <SoundToggle />
           {navLinks.map((link) => (
             <Link
               key={link.to}
@@ -69,7 +88,9 @@ const Navbar = () => {
           </a>
         </div>
 
-        {/* Mobile/tablet toggle — visible below lg */}
+        {/* Mobile/tablet: sound toggle + menu toggle — visible below lg */}
+        <div className="lg:hidden flex items-center">
+        <SoundToggle />
         <button
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close navigation' : 'Open navigation'}
@@ -78,6 +99,7 @@ const Navbar = () => {
         >
           <PixelIcon name={open ? 'close' : 'menu'} size={18} />
         </button>
+        </div>
       </div>
 
       {/* Mobile/tablet menu */}

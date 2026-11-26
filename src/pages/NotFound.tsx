@@ -4,6 +4,7 @@ import PageLayout from '@/components/PageLayout';
 import Mascot from '@/components/Mascot';
 import SkySparkles from '@/components/SkySparkles';
 import { unlockBadge } from '@/lib/badges';
+import StarCatcher from '@/components/StarCatcher';
 
 const NotFound = () => {
   const location = useLocation();
@@ -36,6 +37,9 @@ const NotFound = () => {
           <Link to="/" className="px-button">
             Back to home
           </Link>
+          <div className="mt-14">
+            <StarCatcher />
+          </div>
         </div>
       </section>
     </PageLayout>

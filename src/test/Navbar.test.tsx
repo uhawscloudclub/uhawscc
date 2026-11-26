@@ -37,7 +37,7 @@ describe("Navbar", () => {
 
     it("clicking the hamburger button opens the mobile menu", () => {
         renderWithRouter(<Navbar />);
-        const toggle = screen.getByRole("button");
+        const toggle = screen.getByRole("button", { name: /navigation/ });
         fireEvent.click(toggle);
         // Desktop + mobile menu both render the four links
         expect(screen.getAllByRole("link", { name: "Community" })).toHaveLength(2);
@@ -45,7 +45,7 @@ describe("Navbar", () => {
 
     it("clicking the hamburger button twice closes the mobile menu", () => {
         renderWithRouter(<Navbar />);
-        const toggle = screen.getByRole("button");
+        const toggle = screen.getByRole("button", { name: /navigation/ });
         fireEvent.click(toggle);
         fireEvent.click(toggle);
         expect(screen.queryAllByRole("link", { name: "Community" })).toHaveLength(1);

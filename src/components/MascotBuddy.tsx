@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Mascot from '@/components/Mascot';
 import { unlockBadge } from '@/lib/badges';
+import { playSfx } from '@/lib/sound';
 
 /**
  * The homepage mascot as a tappable buddy: each tap makes it hop and say the
@@ -43,6 +44,7 @@ const MascotBuddy = ({ className = '' }: { className?: string }) => {
     const nextTip = tip === null ? 0 : (tip + 1) % MASCOT_TIPS.length;
     setTip(nextTip);
     setHop((h) => h + 1);
+    playSfx('blip');
     seenRef.current.add(nextTip);
     if (seenRef.current.size === MASCOT_TIPS.length) unlockBadge('mascot-friend');
   };

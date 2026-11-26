@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import PixelIcon from '@/components/PixelIcon';
 import { onPixelToast, type PixelToastMessage } from '@/lib/pixelToast';
+import { playSfx } from '@/lib/sound';
 
 const SHOW_MS = 4500;
 
@@ -14,7 +15,10 @@ const PixelToaster = () => {
 
   useEffect(() => {
     let n = 0;
-    return onPixelToast((msg) => setQueue((q) => [...q, { ...msg, key: ++n }]));
+    return onPixelToast((msg) => {
+      playSfx(msg.kicker.toLowerCase().startsWith('level') ? 'levelup' : 'coin');
+      setQueue((q) => [...q, { ...msg, key: ++n }]);
+    });
   }, []);
 
   const current = queue[0];
