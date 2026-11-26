@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import EventsPage from "@/pages/Events";
 import { EXTERNAL_LINKS } from "@/config/externalLinks";
@@ -278,8 +278,26 @@ describe("Events page", () => {
         );
     });
 
+    it("shows the six newest past events as flyer cards, then all of them on request", () => {
+        renderWithRouter(<EventsPage />);
+        const section = screen.getByRole("region", { name: "Past events" });
+        expect(within(section).getAllByRole("listitem")).toHaveLength(6);
+        // Every card has its self-hosted flyer (decorative: the card repeats its text).
+        within(section).getAllByRole("listitem").forEach((card) => {
+            const img = card.querySelector("img");
+            expect(img).not.toBeNull();
+            expect(img).toHaveAttribute("alt", "");
+            expect(img?.getAttribute("src")).toMatch(/\.webp/);
+        });
+
+        fireEvent.click(screen.getByRole("button", { name: `Show all ${PAST_EVENTS.length} past events` }));
+        expect(within(section).getAllByRole("listitem")).toHaveLength(PAST_EVENTS.length);
+        expect(screen.queryByRole("button", { name: /Show all/ })).not.toBeInTheDocument();
+    });
+
     it("lists every past event with a link to its own Meetup page", () => {
         renderWithRouter(<EventsPage />);
+        fireEvent.click(screen.getByRole("button", { name: /Show all/ }));
         for (const ev of PAST_EVENTS) {
             const link = screen.getByRole("link", { name: `Event page on Meetup for ${ev.title}` });
             expect(link).toHaveAttribute("href", ev.meetupUrl);

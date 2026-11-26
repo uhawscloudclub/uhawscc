@@ -1,4 +1,5 @@
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
+import type { PixelIconName } from '@/lib/sprites';
 
 /**
  * Ways to get involved, in the order a new student should try them.
@@ -14,11 +15,14 @@ export interface JoinChannel {
   href: string;
   /** In-site route (rendered with the router) vs. an external site. */
   internal?: boolean;
+  /** Pixel icon on the card (generic art, not the brand's logo). */
+  icon: PixelIconName;
 }
 
 export const JOIN_CHANNELS: readonly JoinChannel[] = [
   {
     id: 'meetup',
+    icon: 'calendar',
     name: 'Meetup',
     purpose: 'Every event is posted here first. Join the group to get notified and RSVP.',
     action: 'Join on Meetup',
@@ -26,6 +30,7 @@ export const JOIN_CHANNELS: readonly JoinChannel[] = [
   },
   {
     id: 'interest-form',
+    icon: 'clipboard',
     name: 'Member interest form',
     purpose: 'Tell the officers who you are and what you want to learn, so we can keep you in the loop.',
     action: 'Fill out the form',
@@ -33,6 +38,7 @@ export const JOIN_CHANNELS: readonly JoinChannel[] = [
   },
   {
     id: 'discord',
+    icon: 'chat',
     name: 'Discord',
     purpose: 'Ask questions, find study partners, and chat between events.',
     action: 'Join the Discord',
@@ -40,6 +46,7 @@ export const JOIN_CHANNELS: readonly JoinChannel[] = [
   },
   {
     id: 'instagram',
+    icon: 'camera',
     name: 'Instagram',
     purpose: 'Event photos and quick announcements.',
     action: 'Follow on Instagram',
@@ -47,6 +54,7 @@ export const JOIN_CHANNELS: readonly JoinChannel[] = [
   },
   {
     id: 'linkedin',
+    icon: 'briefcase',
     name: 'LinkedIn',
     purpose: 'Club updates you can share with your professional network.',
     action: 'Follow on LinkedIn',
@@ -54,6 +62,7 @@ export const JOIN_CHANNELS: readonly JoinChannel[] = [
   },
   {
     id: 'contact',
+    icon: 'mail',
     name: 'Contact',
     purpose: "Something else, or a link above isn't working? Message the officers directly.",
     action: 'Contact us',
