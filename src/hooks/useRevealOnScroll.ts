@@ -57,12 +57,21 @@ export function useRevealOnScroll(routeKey: string): void {
     const scan = () => document.querySelectorAll(REVEAL_SELECTOR).forEach(track);
     scan();
     // Cards that mount later (lazy routes, "Show all", flips) get tracked too.
-    const mo = new MutationObserver(scan);
+    // Batched to one scan per frame: a page can fire many mutations at once.
+    let pending = 0;
+    const mo = new MutationObserver(() => {
+      if (pending) return;
+      pending = requestAnimationFrame(() => {
+        pending = 0;
+        scan();
+      });
+    });
     mo.observe(document.body, { childList: true, subtree: true });
 
     return () => {
       io.disconnect();
       mo.disconnect();
+      cancelAnimationFrame(pending);
       // Leave nothing hidden behind if this page unmounts.
       document.querySelectorAll(REVEAL_SELECTOR).forEach((el) => el.classList.add('is-in'));
     };

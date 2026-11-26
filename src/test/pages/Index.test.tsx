@@ -91,8 +91,10 @@ describe("Home page (Index)", () => {
         renderWithRouter(<HomePage />);
 
         expect(screen.getByText("Our community")).toBeInTheDocument();
+        // The carousel is a lazy chunk: the first dynamic import of embla in a
+        // cold CI worker has taken >1s (findBy's default timeout), so allow more.
         expect(
-            await screen.findByRole("region", { name: /photos from AWS SBG at UH events/i }),
+            await screen.findByRole("region", { name: /photos from AWS SBG at UH events/i }, { timeout: 5000 }),
         ).toBeInTheDocument();
     });
 
