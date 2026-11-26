@@ -4,6 +4,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import PixelToaster from './PixelToaster';
 import { recordPageVisit } from '@/lib/badges';
+import { useRevealOnScroll } from '@/hooks/useRevealOnScroll';
 
 /**
  * Shared page shell. Every page uses the pixel theme (src/index.css,
@@ -17,6 +18,7 @@ const PageLayout = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     recordPageVisit(pathname);
   }, [pathname]);
+  useRevealOnScroll(pathname);
   return (
   <div className="min-h-screen flex flex-col relative theme-pixel">
     {/* Skip link: first thing a keyboard user reaches; visible only on focus. */}

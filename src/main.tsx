@@ -9,4 +9,8 @@ import App from "./App.tsx";
 import "sonner/dist/styles.css";
 import "./index.css";
 
+// iOS Safari only applies :active styles (the pixel buttons' pressed state)
+// when the page has a touchstart listener; an empty passive one is enough.
+document.addEventListener("touchstart", () => {}, { passive: true });
+
 createRoot(document.getElementById("root")!).render(<App />);

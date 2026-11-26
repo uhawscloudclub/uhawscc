@@ -1047,3 +1047,87 @@ html {
   line-height: 1;
   flex-shrink: 0;
 }
+
+/* ── Animations ──────────────────────────────────────────────────────────
+   All stepped (frame-by-frame, like pixel art) and all inside
+   prefers-reduced-motion: no-preference; hover effects only where a real
+   pointer can hover. */
+
+/* Pressed state for the other pixel controls (the yellow .px-button
+   already presses in on :active). */
+.theme-pixel .px-option:active,
+.theme-pixel .nav-cta:active,
+.theme-pixel .px-carousel-btn:active {
+  transform: translateY(2px);
+}
+
+/* Scroll reveal: hidden only while the reveal script runs (html.px-reveal-on). */
+.px-reveal-on .theme-pixel :is(.px-join-card, .px-event-card, .px-officer, .px-badge):not(.is-in) {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Cards boot up: a bright flash, a small drop, then settle. */
+  @keyframes px-boot {
+    0% { opacity: 0; transform: translateY(10px); filter: brightness(2.2) saturate(0.4); }
+    40% { opacity: 1; transform: translateY(4px); filter: brightness(1.6); }
+    100% { opacity: 1; transform: none; filter: none; }
+  }
+  .theme-pixel .px-boot {
+    animation: px-boot 0.42s steps(5, jump-end) both;
+  }
+
+  /* Yellow buttons lift a pixel on hover, ready to be pressed. */
+  @media (hover: hover) {
+    .theme-pixel .px-button:hover:not(:active) {
+      transform: translateY(calc(var(--px) * -1));
+      box-shadow:
+        inset 0 var(--px) 0 var(--beacon-light),
+        inset 0 calc(var(--px) * -1) 0 var(--beacon-dark),
+        0 calc(var(--px) * -1) 0 0 var(--beacon-ink),
+        0 var(--px) 0 0 var(--beacon-ink),
+        calc(var(--px) * -1) 0 0 0 var(--beacon-ink),
+        var(--px) 0 0 0 var(--beacon-ink),
+        0 calc(var(--px) * 4) 0 0 var(--hull-shadow);
+    }
+
+    /* Cards lift; their icon tile bounces once. */
+    .theme-pixel :is(.px-join-card, .px-event-card, .px-officer) {
+      transition: transform 0.12s steps(2, jump-end);
+    }
+    .theme-pixel :is(.px-join-card, .px-event-card, .px-officer):hover {
+      transform: translateY(-4px);
+    }
+    @keyframes px-tile-bounce {
+      0%, 100% { transform: translateY(0); }
+      35% { transform: translateY(-6px); }
+      65% { transform: translateY(-2px); }
+    }
+    .theme-pixel :is(.px-join-card, .px-event-card):hover :is(.px-tile, .px-join-icon) {
+      animation: px-tile-bounce 0.36s steps(4, jump-none);
+    }
+
+    /* Link arrows nudge toward where they go. */
+    @keyframes px-nudge-right {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(4px); }
+    }
+    @keyframes px-nudge-out {
+      0%, 100% { transform: translate(0, 0); }
+      50% { transform: translate(2px, -2px); }
+    }
+    .theme-pixel .px-link:hover svg[data-icon="arrowRight"] {
+      animation: px-nudge-right 0.5s steps(2, jump-none) infinite;
+    }
+    @keyframes px-nudge-left {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(-4px); }
+    }
+    .theme-pixel .px-link:hover svg[data-icon="arrowLeft"] {
+      animation: px-nudge-left 0.5s steps(2, jump-none) infinite;
+    }
+    .theme-pixel :is(.px-link, .px-button):hover svg[data-icon="external"] {
+      animation: px-nudge-out 0.5s steps(2, jump-none) infinite;
+    }
+  }
+}
