@@ -19,10 +19,16 @@ const team = [
   { name: 'Abdul Ayinde Alao', role: 'Director of Content & Media', image: abdulHeadshot, linkedinUrl: 'https://www.linkedin.com/in/abdul-azeez-ayinde/' },
 ];
 
-const steps = [
-  'Fill out our membership interest form',
-  'RSVP to an upcoming event on Meetup',
-  'Show up and start building',
+const steps: { text: string; link?: { label: string; href: string } }[] = [
+  {
+    text: 'Fill out our membership interest form',
+    link: { label: 'Open the interest form', href: EXTERNAL_LINKS.memberInterestForm },
+  },
+  {
+    text: 'RSVP to an upcoming event on Meetup',
+    link: { label: 'Find an event on Meetup', href: EXTERNAL_LINKS.meetup },
+  },
+  { text: 'Show up and start building' },
 ];
 
 const TeamPage = () => (
@@ -162,14 +168,27 @@ const TeamPage = () => (
           <div>
             <div className="divide-y divide-border mb-10">
               {steps.map((step, i) => (
-                <ScrollReveal key={i} delay={i * 70}>
+                <ScrollReveal key={step.text} delay={i * 70}>
                   <div className="py-6 grid grid-cols-[2rem_1fr] gap-5 items-start">
                     <span className="text-xs font-mono text-primary/70 pt-0.5">
                       0{i + 1}
                     </span>
-                    <p className="text-base text-muted-foreground leading-relaxed">
-                      {step}
-                    </p>
+                    <div>
+                      <p className="text-base text-muted-foreground leading-relaxed">
+                        {step.text}
+                      </p>
+                      {step.link && (
+                        <a
+                          href={step.link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-sm text-primary py-2"
+                        >
+                          {step.link.label}
+                          <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                        </a>
+                      )}
+                    </div>
                   </div>
                 </ScrollReveal>
               ))}

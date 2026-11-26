@@ -35,10 +35,10 @@ describe("Home page (Index)", () => {
         ).toBeGreaterThan(0);
     });
 
-    it("Join Our Community CTA links to the Meetup URL", () => {
+    it("Join on Meetup CTA links to the Meetup group URL", () => {
         renderWithRouter(<HomePage />);
         const links = screen
-            .getAllByRole("link", { name: /Join our community/i })
+            .getAllByRole("link", { name: /Join on Meetup/i })
             .filter((l) => l.getAttribute("href") === EXTERNAL_LINKS.meetup);
         expect(links.length).toBeGreaterThan(0);
     });
@@ -108,5 +108,16 @@ describe("Home page (Index)", () => {
             screen.getByRole("heading", { name: /Build cloud skills/i }),
         ).toBeInTheDocument();
         expect(await screen.findByText(/members on Meetup/i)).toBeInTheDocument();
+    });
+
+    it("shows the Next up and Ways to join sections", async () => {
+        renderWithRouter(<HomePage />);
+        expect(screen.getByRole("heading", { name: "Next up" })).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Ways to join" })).toBeInTheDocument();
+        // Empty feed (default stub): falls back to Meetup notifications.
+        expect(await screen.findByRole("link", { name: /Get notified on Meetup/i })).toHaveAttribute(
+            "href",
+            EXTERNAL_LINKS.meetup,
+        );
     });
 });

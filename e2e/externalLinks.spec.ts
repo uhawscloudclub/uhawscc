@@ -38,11 +38,11 @@ test.describe("External link attributes", () => {
         }
     });
 
-    test("Join our community CTA points to the Meetup URL", async ({ page }) => {
+    test("Join on Meetup CTA points to the Meetup URL", async ({ page }) => {
         await page.goto("/");
         // .first() rather than a strict locator: the homepage may legitimately
         // carry more than one join affordance.
-        const link = page.getByRole("link", { name: /Join our community/i }).first();
+        const link = page.getByRole("link", { name: /Join on Meetup/i }).first();
         await expect(link).toHaveAttribute("href", EXTERNAL_LINKS.meetup);
     });
 
@@ -69,7 +69,7 @@ test.describe("External link attributes", () => {
 
         // Each RSVP CTA links to the specific event, not the group page.
         const rsvp = page.getByRole("link", {
-            name: /View time, location, and RSVP on Meetup/i,
+            name: /^RSVP on Meetup for /i,
         });
         await expect(rsvp.first()).toHaveAttribute("href", FIXTURE_EVENT.link);
         await expect(rsvp.first()).toHaveAttribute("target", "_blank");

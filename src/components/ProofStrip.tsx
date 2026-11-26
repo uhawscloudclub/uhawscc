@@ -1,5 +1,4 @@
-import { Calendar } from "lucide-react";
-import { useEvents, type MeetupEvent } from "@/hooks/useEvents";
+import { type MeetupEvent } from "@/hooks/useEvents";
 import { proofStats } from "@/data/proofStats";
 import { hasValidEventDate, isUpcomingEvent } from "../../server/eventDates.js";
 
@@ -46,9 +45,8 @@ function formatAsOf(isoDate: string): string {
 }
 
 const ProofStrip = () => {
-  const { data: events } = useEvents();
-  const nextEvent = selectNextEvent(events);
-
+  // The next event itself is shown by <NextEvent /> right above this strip;
+  // selectNextEvent stays exported from here for it.
   return (
     <div className="flex flex-col gap-6">
       <ul className="flex flex-wrap items-baseline gap-x-10 gap-y-4">
@@ -81,15 +79,6 @@ const ProofStrip = () => {
           </li>
         ))}
 
-        {/* Omitted entirely when the feed fails, is empty, lacks dates, or
-            holds only past events — never a stale or placeholder claim. */}
-        {nextEvent && (
-          <li className="flex items-center gap-2 text-sm">
-            <Calendar className="h-3.5 w-3.5 shrink-0 text-primary" aria-hidden="true" />
-            <span className="text-foreground">{nextEvent.title}</span>
-            <span className="text-muted-foreground">{nextEvent.date}</span>
-          </li>
-        )}
       </ul>
 
       <p className="text-xs text-muted-foreground/60">

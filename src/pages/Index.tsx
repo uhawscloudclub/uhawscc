@@ -1,8 +1,11 @@
 import { lazy, Suspense } from 'react';
+import { Link } from 'react-router-dom';
 import PageLayout from '@/components/PageLayout';
 import ScrollReveal from '@/components/ScrollReveal';
 import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import ProofStrip from '@/components/ProofStrip';
+import NextEvent from '@/components/NextEvent';
+import WaysToJoin from '@/components/WaysToJoin';
 import { ArrowRight } from 'lucide-react';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { getCommunityPhotos } from '@/data/communityPhotos';
@@ -61,28 +64,31 @@ const HomePage = () => (
           </p>
 
           {/* CTAs */}
-          <div className="hero-item hero-item-4 flex items-center gap-8">
+          <div className="hero-item hero-item-4 flex flex-wrap items-center gap-x-8 gap-y-4">
             <a
               href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98]"
             >
-              Join our community
-              <ArrowRight className="w-4 h-4" />
+              Join on Meetup
+              <ArrowRight className="w-4 h-4" aria-hidden="true" />
             </a>
-            <a
-              href="/events"
-              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150"
+            <Link
+              to="/events"
+              className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors duration-150 py-2"
             >
-              Upcoming events
-              <ArrowRight className="w-3.5 h-3.5" />
-            </a>
+              See upcoming events
+              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            </Link>
           </div>
 
         </div>
       </div>
     </section>
+
+    {/* ── Next event (or the latest past one) ── */}
+    <NextEvent />
 
     {/* ── Proof strip ── */}
     <section className="relative z-10 border-t border-border py-12">
@@ -134,13 +140,13 @@ const HomePage = () => (
               <h2 className="font-heading font-bold text-2xl leading-snug text-foreground">
                 Three things<br />we focus on
               </h2>
-              <a
-                href="/events"
+              <Link
+                to="/events"
                 className="inline-flex items-center gap-1.5 text-sm text-primary mt-5 hover:gap-2.5 transition-all duration-150"
               >
                 See upcoming events
-                <ArrowRight className="w-3.5 h-3.5" />
-              </a>
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </Link>
             </div>
           </ScrollReveal>
 
@@ -168,6 +174,9 @@ const HomePage = () => (
         </div>
       </div>
     </section>
+
+    {/* ── Ways to join ── */}
+    <WaysToJoin />
 
     {/* ── Network note ── */}
     <section className="relative z-10 border-t border-border py-16">
