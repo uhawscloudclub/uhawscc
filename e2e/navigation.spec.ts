@@ -23,7 +23,7 @@ test.describe("Navigation flow", () => {
 
     test("clicking the logo returns to the home page", async ({ page }) => {
         await page.goto("/community");
-        await page.getByRole("link", { name: /AWS Student Builder Group/i }).first().click();
+        await page.getByRole("link", { name: /AWS SBG at UH/i }).first().click();
         await expect(page.getByRole("heading", { name: /Build cloud skills/i })).toBeVisible();
     });
 

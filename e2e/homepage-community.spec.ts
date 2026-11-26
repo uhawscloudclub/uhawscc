@@ -11,7 +11,7 @@ import { getCommunityPhotos } from "../src/data/communityPhotos";
  * as soon as real records land in src/data/communityPhotos.ts.
  */
 const photos = getCommunityPhotos();
-const REGION = /Photos from CloudHub UH events/i;
+const REGION = /Photos from AWS SBG at UH events/i;
 
 test.describe("Homepage community carousel", () => {
     test.skip(

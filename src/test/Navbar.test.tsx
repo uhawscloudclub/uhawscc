@@ -7,7 +7,7 @@ import { renderWithRouter } from "./test-utils";
 describe("Navbar", () => {
     it("renders the club name link pointing to home", () => {
         renderWithRouter(<Navbar />);
-        const homeLogo = screen.getByRole("link", { name: /AWS Student Builder Group/i });
+        const homeLogo = screen.getByRole("link", { name: /AWS SBG at UH/i });
         expect(homeLogo).toBeInTheDocument();
     });
 

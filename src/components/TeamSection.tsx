@@ -20,18 +20,18 @@ const team = [
 // Faculty advisors, from their UH Computer Information Systems faculty pages.
 const advisors = [
   {
-    name: 'Dr. Suresh Peddoju',
-    title: 'Instructional Assistant Professor, Computer Information Systems',
-    image: peddojuHeadshot,
-    email: 'speddoju@central.uh.edu',
-    phone: '713-743-3898',
-  },
-  {
     name: 'Dr. José C. Martínez',
     title: 'Instructional Associate Professor, Computer Information Systems',
     image: martinezHeadshot,
     email: 'jcmartinez34@uh.edu',
     phone: '713-743-6756',
+  },
+  {
+    name: 'Dr. Suresh Peddoju',
+    title: 'Instructional Assistant Professor, Computer Information Systems',
+    image: peddojuHeadshot,
+    email: 'speddoju@central.uh.edu',
+    phone: '713-743-3898',
   },
 ];
 

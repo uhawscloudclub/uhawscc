@@ -53,6 +53,13 @@ describe("Community page", () => {
         }
     });
 
+    it("lists Dr. Martínez first, then Dr. Peddoju", () => {
+        renderWithRouter(<CommunityPage />);
+        const martinez = screen.getByText("Dr. José C. Martínez");
+        const peddoju = screen.getByText("Dr. Suresh Peddoju");
+        expect(martinez.compareDocumentPosition(peddoju) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    });
+
     it("keeps the program note and disclaimer", () => {
         renderWithRouter(<CommunityPage />);
         expect(screen.getByText("AWS Student Builder Groups program")).toBeInTheDocument();

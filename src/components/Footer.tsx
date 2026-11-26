@@ -16,7 +16,7 @@ const Footer = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         {/* Left */}
         <div>
-          <p className="font-heading font-bold text-foreground">AWS Student Builder Group at University of Houston</p>
+          <p className="font-heading font-bold text-foreground">AWS Student Builder Group (SBG) at the University of Houston</p>
           <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
             Get in touch
           </Link>
@@ -54,7 +54,7 @@ const Footer = () => {
       </div>
 
       <div className="mt-8 pt-6 border-t border-border/20 text-left md:text-center text-xs text-muted-foreground leading-relaxed">
-        © {currentYear} AWS Student Builder Group at UH. Not an official AWS or Amazon employee organization.
+        © {currentYear} AWS SBG at UH. Not an official AWS or Amazon employee organization.
         <br className="hidden sm:inline" /> AWS Student Builder Groups is a program by Amazon Web Services.
       </div>
     </div>

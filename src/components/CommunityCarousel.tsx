@@ -12,7 +12,7 @@ import {
   type CommunityPhoto,
 } from "@/data/communityPhotos";
 
-const REGION_LABEL = "Photos from CloudHub UH events";
+const REGION_LABEL = "Photos from AWS SBG at UH events";
 
 /**
  * Matches ScrollReveal's synchronous check rather than a useEffect: reading it

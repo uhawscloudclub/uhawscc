@@ -63,7 +63,7 @@ const CommunityPage = () => (
     <section className="relative border-t border-border py-12">
       <div className="container mx-auto px-6">
         <p className="text-sm text-muted-foreground max-w-[60ch]">
-          AWS Student Builder Group at UH is part of the{' '}
+          The AWS Student Builder Group (SBG) at UH is part of the{' '}
           <strong className="text-foreground font-medium">AWS Student Builder Groups program</strong>, a
           global network of student communities supported by Amazon Web Services.
           We are not an Amazon employee organization; we are students building

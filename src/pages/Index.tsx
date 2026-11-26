@@ -138,7 +138,7 @@ const HomePage = () => (
     <section className="relative border-t border-border py-12">
       <div className="container mx-auto px-6">
         <p className="text-sm text-muted-foreground max-w-[60ch]">
-          AWS Student Builder Group at UH is part of the AWS Student Builder Groups program, a
+          The AWS Student Builder Group (SBG) at UH is part of the AWS Student Builder Groups program, a
           global network of student communities supported directly by Amazon
           Web Services.
         </p>

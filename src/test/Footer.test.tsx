@@ -48,7 +48,7 @@ describe("Footer", () => {
         renderWithRouter(<Footer />);
         const currentYear = new Date().getFullYear();
         expect(
-            screen.getByText(new RegExp(`© ${currentYear} AWS Student Builder Group at UH`, 'i')),
+            screen.getByText(new RegExp(`© ${currentYear} AWS SBG at UH`, 'i')),
         ).toBeInTheDocument();
     });
 

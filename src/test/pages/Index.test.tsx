@@ -84,7 +84,7 @@ describe("Home page (Index)", () => {
 
         expect(screen.getByText("Our community")).toBeInTheDocument();
         expect(
-            await screen.findByRole("region", { name: /photos from cloudhub uh events/i }),
+            await screen.findByRole("region", { name: /photos from AWS SBG at UH events/i }),
         ).toBeInTheDocument();
     });
 

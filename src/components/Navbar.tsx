@@ -31,15 +31,15 @@ const Navbar = () => {
       className={`site-nav fixed top-0 left-0 right-0 z-50 ${scrolled ? 'scrolled-nav' : ''}`}
     >
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2.5 group">
+        <Link to="/" aria-label="AWS SBG at UH, home" className="flex items-center gap-2.5 group">
           <img
             src={clubLogo}
-            alt="AWS Student Builder Group at UH"
+            alt=""
             className="w-7 h-7 object-contain transition-transform duration-200 group-hover:scale-105"
           />
           <span className="font-heading font-bold text-sm text-foreground">
-            AWS Student Builder Group{' '}
-            <span className="text-muted-foreground font-normal hidden sm:inline">at UH</span>
+            AWS SBG{' '}
+            <span className="text-muted-foreground font-normal">at UH</span>
           </span>
         </Link>
 
