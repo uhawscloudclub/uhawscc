@@ -29,7 +29,7 @@ function prefersReducedMotion(): boolean {
 /** Shared frame so every slide reserves identical space before images load. */
 function PhotoFrame({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative aspect-[16/10] w-full overflow-hidden rounded border border-border bg-muted">
+    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted">
       {children}
     </div>
   );
@@ -130,8 +130,8 @@ const CommunityCarousel = ({ photos }: CommunityCarouselProps) => {
           defaults to h-8 w-8 at -left-12/-right-12, which is both under the
           minimum touch size and positioned outside the box (clipping on a
           full-width section). */}
-      <CarouselPrevious className="left-3 top-[calc(50%-1.75rem)] h-11 w-11" />
-      <CarouselNext className="right-3 top-[calc(50%-1.75rem)] h-11 w-11" />
+      <CarouselPrevious className="px-carousel-btn left-3 top-[calc(50%-1.75rem)] h-11 w-11" />
+      <CarouselNext className="px-carousel-btn right-3 top-[calc(50%-1.75rem)] h-11 w-11" />
 
       <p aria-live="polite" aria-atomic="true" className="sr-only">
         {`Slide ${selected + 1} of ${slides.length}: ${slides[selected]?.caption ?? ""}`}

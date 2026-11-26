@@ -1,7 +1,6 @@
-import { act, render, renderHook } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { act, renderHook } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 import { usePrefersReducedMotion } from "@/hooks/usePrefersReducedMotion";
-import ScrollReveal from "@/components/ScrollReveal";
 
 /** A controllable matchMedia for "(prefers-reduced-motion: reduce)". */
 function mockReducedMotion(initial: boolean) {
@@ -47,20 +46,5 @@ describe("usePrefersReducedMotion", () => {
         expect(result.current).toBe(false);
         act(() => media!.set(true));
         expect(result.current).toBe(true);
-    });
-});
-
-describe("ScrollReveal with reduced motion", () => {
-    let media: ReturnType<typeof mockReducedMotion> | undefined;
-    afterEach(() => {
-        media?.restore();
-        vi.restoreAllMocks();
-    });
-
-    it("renders content visible with no hidden/transition classes", () => {
-        media = mockReducedMotion(true);
-        const { getByText } = render(<ScrollReveal>Hello</ScrollReveal>);
-        const wrapper = getByText("Hello");
-        expect(wrapper.className).not.toMatch(/opacity-0/);
     });
 });

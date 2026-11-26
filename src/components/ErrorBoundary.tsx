@@ -59,16 +59,18 @@ class ErrorBoundary extends Component<Props, State> {
 
         if (this.state.hasError) {
             return (
-                <div className="min-h-screen flex items-center justify-center px-6 bg-background text-foreground">
-                    <div className="max-w-md text-center space-y-4">
-                        <h1 className="font-heading text-2xl font-bold">Something went wrong</h1>
-                        <p className="text-sm text-muted-foreground">
-                            Please refresh the page. If this keeps happening, contact the website team.
+                // Rendered outside PageLayout, so it opts into the theme itself.
+                <div className="theme-pixel min-h-screen flex items-center justify-center px-6">
+                    <div className="max-w-md space-y-5">
+                        <h1 style={{ fontSize: '3rem' }}>Something went wrong</h1>
+                        <p className="text-base text-muted-foreground">
+                            Please refresh the page. If this keeps happening, email
+                            sbguh@cougarnet.uh.edu.
                         </p>
                         <button
                             type="button"
                             onClick={() => window.location.reload()}
-                            className="inline-flex items-center justify-center rounded-full px-5 py-2 bg-primary text-primary-foreground font-semibold"
+                            className="px-button"
                         >
                             Refresh
                         </button>

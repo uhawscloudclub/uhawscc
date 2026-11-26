@@ -80,9 +80,9 @@ test("keyboard only: pick a reason, fill in, send", async ({ page }) => {
     await page.keyboard.press("ArrowRight"); // radios move with arrow keys
     const events = page.getByRole("radio", { name: "Events or learning" });
     await expect(events).toBeChecked();
-    // The visible pill (label) shows a focus ring while its hidden radio has focus.
-    const ring = await events.evaluate((el) => getComputedStyle(el.closest("label")!).boxShadow);
-    expect(ring).not.toBe("none");
+    // The visible capsule (label) shows an outline while its hidden radio has focus.
+    const ring = await events.evaluate((el) => getComputedStyle(el.closest("label")!).outlineStyle);
+    expect(ring).toBe("solid");
 
     await page.keyboard.press("Tab");
     await page.keyboard.type("Ada Lovelace");

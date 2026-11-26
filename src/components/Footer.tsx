@@ -11,14 +11,14 @@ import { EXTERNAL_LINKS } from '@/config/externalLinks';
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return (
-  <footer className="relative z-10 border-t border-border/30 bg-background/80 backdrop-blur-sm">
+  <footer className="relative border-t-2 border-[var(--hull-shadow)] bg-[var(--hull-dark)]">
     <div className="container mx-auto px-6 py-12">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
         {/* Left */}
         <div>
           <p className="font-heading font-bold text-foreground">AWS Student Builder Group at University of Houston</p>
           <Link to="/contact" className="text-sm text-muted-foreground hover:text-primary transition-colors mt-1 inline-block">
-            Get in touch →
+            Get in touch
           </Link>
         </div>
 

@@ -42,7 +42,7 @@ const destinations = [
 ];
 
 const HomePage = () => (
-  <PageLayout theme="pixel">
+  <PageLayout>
 
     {/* ── Hero + Next up ── */}
     <section className="relative overflow-hidden px-sky">

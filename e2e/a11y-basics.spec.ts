@@ -1,59 +1,30 @@
-import { test, expect, type Page } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 
-// Reduced motion, skip link, and the /learn checklist in a real
-// browser (jsdom can't paint a canvas or move keyboard focus realistically).
+// Reduced motion, skip link, and the /learn checklist in a real browser
+// (jsdom can't compute animations or move keyboard focus realistically).
 // Runs in both Playwright configs.
 
-async function canvasChanges(page: Page): Promise<boolean> {
-    // The canvas starts on requestIdleCallback (≤2s); wait until it has drawn.
-    await page.waitForFunction(() => {
-        const c = document.querySelector("canvas");
-        if (!c) return false;
-        const blank = document.createElement("canvas");
-        blank.width = c.width;
-        blank.height = c.height;
-        return c.toDataURL() !== blank.toDataURL();
-    }, null, { timeout: 5000 });
-    return page.evaluate(
-        () =>
-            new Promise<boolean>((resolve) => {
-                const c = document.querySelector("canvas")!;
-                const before = c.toDataURL();
-                setTimeout(() => resolve(c.toDataURL() !== before), 700);
-            }),
-    );
-}
-
 test.describe("prefers-reduced-motion", () => {
-    // Pages on the Stage 3 pixel theme have no canvas at all; their only
-    // ambient motion is the mascot's float, which must stop.
-    for (const path of ["/", "/events"]) {
-        test(`no animated canvas, and the mascot is still, on ${path}`, async ({ page }) => {
+    // No page has an animated background any more; the only ambient motion is
+    // the mascot's float, which must stop under reduced motion.
+    for (const path of ["/", "/events", "/learn", "/community", "/contact", "/no-such-page"]) {
+        test(`no canvas, and nothing floats, on ${path}`, async ({ page }) => {
             await page.emulateMedia({ reducedMotion: "reduce" });
             await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
             await page.goto(path);
             await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
             await expect(page.locator("canvas")).toHaveCount(0);
-            // Every floating element (if the page has any) has its animation off.
             const animations = await page.locator(".px-float").evaluateAll((els) => els.map((el) => getComputedStyle(el).animationName));
             expect(animations.every((name) => name === "none")).toBe(true);
         });
     }
 
-    for (const path of ["/learn"]) {
-        test(`background canvas stays still on ${path}`, async ({ page }) => {
-            await page.emulateMedia({ reducedMotion: "reduce" });
-            await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
-            await page.goto(path);
-            expect(await canvasChanges(page)).toBe(false);
-        });
-    }
-
-    test("background canvas still animates without the preference", async ({ page }) => {
+    test("without the preference, the homepage mascot does float", async ({ page }) => {
         await page.emulateMedia({ reducedMotion: "no-preference" });
         await page.route("**/api/events", (r) => r.fulfill({ status: 200, contentType: "application/json", body: "[]" }));
-        await page.goto("/learn");
-        expect(await canvasChanges(page)).toBe(true);
+        await page.goto("/");
+        const name = await page.locator(".px-float").first().evaluate((el) => getComputedStyle(el).animationName);
+        expect(name).toBe("px-float");
     });
 });
 

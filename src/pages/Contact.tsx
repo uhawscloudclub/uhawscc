@@ -4,10 +4,9 @@ import { Turnstile, type TurnstileInstance } from '@marsidev/react-turnstile';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import PageLayout from '@/components/PageLayout';
-import ScrollReveal from '@/components/ScrollReveal';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Mail, MessageSquare, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Linkedin, Instagram } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import { INTENTS, LIMITS, buildSubject, type IntentId } from '@/lib/contactForm';
 
@@ -40,7 +39,7 @@ type FormValues = z.infer<typeof schema>;
 // ── Reach-out channels ────────────────────────────────────────────────────────
 const channels = [
   {
-    icon: Mail,
+    icon: ({ className }: { className?: string }) => <PixelIcon name="mail" size={14} className={className} />,
     label: 'Email us directly',
     value: EXTERNAL_LINKS.emailContact,
     href: `mailto:${EXTERNAL_LINKS.emailContact}`,
@@ -81,7 +80,7 @@ const Field = ({
   <div className="flex flex-col gap-1.5">
     <label
       htmlFor={id}
-      className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-medium"
+      className="text-sm font-semibold text-foreground"
     >
       {label}{required && <span className="text-primary ml-0.5" aria-hidden="true">*</span>}
       {required && <span className="sr-only">(required)</span>}
@@ -89,7 +88,7 @@ const Field = ({
     {children}
     {error && (
       <p id={`${id}-error`} className="text-xs text-destructive flex items-center gap-1 mt-0.5">
-        <AlertCircle className="w-3 h-3 shrink-0" aria-hidden="true" />
+        <PixelIcon name="alert" size={12} />
         {error}
       </p>
     )}
@@ -105,10 +104,9 @@ function describe(id: string, hasError: boolean, hintId?: string) {
   } as const;
 }
 
-// focus:border-primary — color change for all input methods
-// focus-visible:ring-1 — visible ring for keyboard navigation (does not fire on mouse click)
-const inputClass =
-  'w-full bg-transparent border-b border-border text-foreground text-sm py-2.5 placeholder:text-muted-foreground/40 focus:border-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/30 focus-visible:ring-offset-0 transition-colors duration-200';
+// Boxed pixel input (.px-input in index.css): notched outline, Beacon outline
+// on keyboard focus like every other control.
+const inputClass = 'px-input w-full text-foreground text-base px-3 py-2.5 placeholder:text-muted-foreground/70';
 
 const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY as string | undefined;
 
@@ -191,41 +189,31 @@ const ContactPage = () => {
   };
 
   return (
-    <PageLayout intensity="low">
+    <PageLayout>
 
       {/* ── Header ── */}
-      <section className="relative z-10 min-h-[40vh] flex flex-col justify-end py-16 border-b border-border">
-        <div className="container mx-auto px-6">
-          <ScrollReveal>
-            <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-              Contact
-            </p>
-            <h1
-              className="font-heading font-extrabold leading-[0.88] tracking-tight text-foreground mb-6"
-              style={{ fontSize: 'clamp(2.5rem, 6vw, 4.5rem)' }}
-            >
-              We'd love to<br />
-              hear from <span style={{ color: 'var(--primary)' }}>you.</span>
-            </h1>
-            <p className="text-muted-foreground text-base leading-relaxed max-w-[50ch]">
-              Questions about membership, events, partnerships, or anything else?
-              Send us a message and an officer will reply within 24 hours.
-            </p>
-          </ScrollReveal>
+      <section className="relative overflow-hidden px-sky px-sky-high">
+        <div className="container mx-auto px-6 pt-28 sm:pt-36 pb-12 relative">
+          <h1 className="mb-5" style={{ fontSize: 'clamp(3rem, 9vw, 5rem)' }}>
+            We'd love to hear from you.
+          </h1>
+          <p className="text-muted-foreground text-base sm:text-lg leading-relaxed max-w-[52ch]">
+            Questions about membership, events, partnerships, or anything else?
+            Send us a message and an officer will reply within 24 hours.
+          </p>
         </div>
       </section>
 
       {/* ── Body ── */}
-      <section className="relative z-10 py-16">
+      <section className="relative py-16">
         <div className="container mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-24 items-start">
 
             {/* ── Left: channels ── */}
-            <ScrollReveal>
-              <div>
-                <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-6">
+            <div>
+                <h2 className="text-foreground mb-6" style={{ fontSize: '1.75rem' }}>
                   Other ways to reach us
-                </p>
+                </h2>
                 <div className="flex flex-col gap-5">
                   {channels.map((ch) => (
                     <a
@@ -235,8 +223,8 @@ const ContactPage = () => {
                       rel="noopener noreferrer"
                       className="flex items-start gap-3.5 group"
                     >
-                      <div className="w-8 h-8 rounded-lg bg-muted/50 border border-border flex items-center justify-center shrink-0 group-hover:border-primary/40 group-hover:bg-primary/5 transition-colors duration-150">
-                        <ch.icon className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors duration-150" />
+                      <div className="px-date !w-9 !h-9 shrink-0 text-foreground" aria-hidden="true">
+                        <ch.icon className="w-3.5 h-3.5" />
                       </div>
                       <div>
                         <p className="text-xs text-muted-foreground mb-0.5">{ch.label}</p>
@@ -247,17 +235,16 @@ const ContactPage = () => {
                     </a>
                   ))}
                 </div>
-              </div>
-            </ScrollReveal>
+            </div>
 
             {/* ── Right: form ── */}
-            <ScrollReveal delay={80}>
+            <div>
 
               {/* Success state */}
               {status === 'success' ? (
                 <div className="flex flex-col items-start gap-5 py-6">
-                  <div className="w-10 h-10 rounded-full bg-[var(--success)]/10 border border-[var(--success)]/30 flex items-center justify-center">
-                    <CheckCircle2 className="w-5 h-5" style={{ color: 'var(--success)' }} aria-hidden="true" />
+                  <div className="px-date !w-12 !h-12 text-[var(--success-fg)]" aria-hidden="true">
+                    <PixelIcon name="check" size={22} />
                   </div>
                   <div>
                     <h2
@@ -284,7 +271,6 @@ const ContactPage = () => {
                     className="inline-flex items-center gap-1.5 text-sm text-primary py-2 hover:gap-2.5 transition-all duration-150"
                   >
                     Send another message
-                    <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
                   </button>
                 </div>
               ) : (
@@ -304,18 +290,14 @@ const ContactPage = () => {
 
                   {/* Why are you writing? (optional) */}
                   <fieldset>
-                    <legend className="text-xs uppercase tracking-[0.12em] text-muted-foreground font-medium mb-3">
-                      What brings you here? <span className="normal-case tracking-normal">(optional)</span>
+                    <legend className="text-sm font-semibold text-foreground mb-3">
+                      What brings you here? <span className="font-normal text-muted-foreground">(optional)</span>
                     </legend>
                     <div className="flex flex-wrap gap-2">
                       {INTENTS.map((option) => (
                         <label
                           key={option.id}
-                          className={`inline-flex items-center gap-2 px-3 py-2.5 rounded border text-sm cursor-pointer transition-colors duration-150 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring ${
-                            intent === option.id
-                              ? 'border-primary bg-primary/10 text-foreground'
-                              : 'border-border text-muted-foreground hover:border-primary/50'
-                          }`}
+                          className={`px-option ${intent === option.id ? 'is-selected' : ''}`}
                         >
                           <input
                             type="radio"
@@ -423,7 +405,7 @@ const ContactPage = () => {
                   {/* Server error: announced, with a way to reach us anyway */}
                   {status === 'error' && serverError && (
                     <div role="alert" className="text-sm text-destructive flex items-start gap-2">
-                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" aria-hidden="true" />
+                      <PixelIcon name="alert" size={16} className="mt-0.5" />
                       <p>
                         {serverError} Try again, or email us at{' '}
                         <a href={`mailto:${EXTERNAL_LINKS.emailContact}`} className="underline underline-offset-2">
@@ -439,17 +421,14 @@ const ContactPage = () => {
                       type="submit"
                       disabled={status === 'loading'}
                       aria-busy={status === 'loading' || undefined}
-                      className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded bg-primary text-primary-foreground font-semibold text-sm transition-all duration-150 hover:opacity-90 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed self-start"
+                      className="px-button self-start disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {status === 'loading' ? (
-                        <>
-                          <span className="w-4 h-4 rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground animate-spin" aria-hidden="true" />
-                          Sending…
-                        </>
+                        <>Sending…</>
                       ) : (
                         <>
                           Send message
-                          <MessageSquare className="w-4 h-4" aria-hidden="true" />
+                          <PixelIcon name="chat" size={16} />
                         </>
                       )}
                     </button>
@@ -460,7 +439,7 @@ const ContactPage = () => {
 
                 </form>
               )}
-            </ScrollReveal>
+            </div>
 
           </div>
         </div>

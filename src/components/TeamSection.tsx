@@ -1,7 +1,7 @@
-import ScrollReveal from '@/components/ScrollReveal';
-import { Linkedin } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 import perryHeadshot from '@/images/perry-headshot.jpg';
-import peddojuHeadshot from '@/images/peddoju-headshot.png';
+import peddojuHeadshot from '@/images/peddoju-headshot.jpg';
+import martinezHeadshot from '@/images/jose-martinez-headshot.jpg';
 import hiabHeadshot from '@/images/hiab-headshot.jpg';
 import quincyHeadshot from '@/images/quincy-britton-headshot.jpeg';
 import ananyaHeadshot from '@/images/ananya.jpg';
@@ -17,113 +17,100 @@ const team = [
   { name: 'Abdul Ayinde Alao', role: 'Director of Content & Media', image: abdulHeadshot, linkedinUrl: 'https://www.linkedin.com/in/abdul-azeez-ayinde/' },
 ];
 
+// Faculty advisors, from their UH Computer Information Systems faculty pages.
+const advisors = [
+  {
+    name: 'Dr. Suresh Peddoju',
+    title: 'Instructional Assistant Professor, Computer Information Systems',
+    image: peddojuHeadshot,
+    email: 'speddoju@central.uh.edu',
+    phone: '713-743-3898',
+  },
+  {
+    name: 'Dr. José C. Martínez',
+    title: 'Instructional Associate Professor, Computer Information Systems',
+    image: martinezHeadshot,
+    email: 'jcmartinez34@uh.edu',
+    phone: '713-743-6756',
+  },
+];
+
 /**
- * Officers and faculty advisor, shown on /community under #team (the old
- * /team URL redirects there).
+ * Officers and faculty advisors, shown on /community under #team (the old
+ * /team URL redirects there). A plain grid of people, not cards: square
+ * headshots in notched pixel frames, name, role, and a LinkedIn link.
  */
 const TeamSection = () => (
-  <div id="team" className="scroll-mt-20">
-    <section aria-labelledby="team-heading" className="relative z-10 border-t border-border pt-16">
-      <div className="container mx-auto px-6">
-        <h2 id="team-heading" className="font-heading font-bold text-2xl leading-snug text-foreground">
-          The people behind the club
-        </h2>
-        <p className="text-base text-muted-foreground leading-relaxed mt-3 max-w-[50ch]">
-          Students who decided to build something instead of waiting for
-          someone else to do it.
-        </p>
-      </div>
-    </section>
+  <section id="team" aria-labelledby="team-heading" className="relative border-t border-border py-16 scroll-mt-20">
+    <div className="container mx-auto px-6">
+      <h2 id="team-heading" className="text-foreground">
+        The people behind the club
+      </h2>
+      <p className="text-base text-muted-foreground leading-relaxed mt-3 max-w-[50ch]">
+        Students who decided to build something instead of waiting for
+        someone else to do it.
+      </p>
 
-    {/* ── Leadership grid ── */}
-    <section className="relative z-10 py-16">
-      <div className="container mx-auto px-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-px bg-border">
-          {team.map((member, i) => (
-            <ScrollReveal key={member.name} delay={i * 50}>
-              <div className="bg-background p-6 flex flex-col items-start gap-3">
-                <div className="w-14 h-14 rounded-full overflow-hidden bg-muted shrink-0">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    width={56}
-                    height={56}
-                    loading={i >= 3 ? 'lazy' : undefined}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="flex-1">
-                  <p className="font-heading font-semibold text-foreground text-base leading-snug">
-                    {member.name}
-                  </p>
-                  <p className="text-sm text-muted-foreground mt-0.5 leading-snug">
-                    {member.role}
-                  </p>
-                </div>
-                <a
-                  href={member.linkedinUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center p-3 -m-3 rounded-lg"
-                  aria-label={`Visit ${member.name}'s LinkedIn profile`}
-                >
-                  <Linkedin className="linkedin-icon w-4 h-4" />
-                </a>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
-      </div>
-    </section>
-
-    {/* ── Faculty Advisors ── */}
-    <section className="relative z-10 border-t border-border py-16">
-      <div className="container mx-auto px-6">
-        <ScrollReveal>
-          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground mb-4">
-            Faculty advisors
-          </p>
-          <h2 className="font-heading font-bold text-2xl leading-snug text-foreground mb-10">
-            Academic<br />support
-          </h2>
-        </ScrollReveal>
-
-        <ScrollReveal>
-          <div className="border border-border bg-background p-6 flex flex-col items-start gap-3 w-64">
-            <div className="w-14 h-14 rounded-full overflow-hidden bg-muted shrink-0">
-              <img
-                src={peddojuHeadshot}
-                alt="Dr. Suresh Peddoju"
-                width={56}
-                height={56}
-                loading="lazy"
-                decoding="async"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="flex-1">
-              <p className="font-heading font-semibold text-foreground text-base leading-snug">
-                Dr. Suresh Peddoju
-              </p>
-              <p className="text-sm text-muted-foreground mt-0.5 leading-snug">
-                Faculty Advisor
-              </p>
-            </div>
-            <div className="space-y-1">
+      <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-10 mt-10">
+        {team.map((member, i) => (
+          <li key={member.name} className="flex items-center gap-5">
+            <img
+              src={member.image}
+              alt={member.name}
+              width={80}
+              height={80}
+              loading={i >= 3 ? 'lazy' : undefined}
+              className="px-avatar w-20 h-20 object-cover shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="font-bold text-foreground leading-snug">{member.name}</p>
+              <p className="text-sm text-muted-foreground mt-0.5 leading-snug">{member.role}</p>
               <a
-                href="mailto:speddoju@central.uh.edu"
-                className="text-sm text-primary hover:text-primary/80 transition-colors duration-150 block"
+                href={member.linkedinUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Visit ${member.name}'s LinkedIn profile`}
+                className="px-link text-sm"
               >
-                speddoju@central.uh.edu
+                LinkedIn
+                <PixelIcon name="external" size={12} />
               </a>
-              <p className="text-sm text-muted-foreground">+1 (713) 743-3898</p>
             </div>
-          </div>
-        </ScrollReveal>
-      </div>
-    </section>
+          </li>
+        ))}
+      </ul>
 
-  </div>
+      <h3 className="text-foreground text-lg mt-16 mb-6">Faculty advisors</h3>
+      <ul className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-10">
+        {advisors.map((a) => (
+          <li key={a.email} className="flex items-start gap-5">
+            <img
+              src={a.image}
+              alt={a.name}
+              width={80}
+              height={80}
+              loading="lazy"
+              decoding="async"
+              className="px-avatar w-20 h-20 object-cover shrink-0"
+            />
+            <div className="min-w-0">
+              <p className="font-bold text-foreground leading-snug">{a.name}</p>
+              <p className="text-sm text-muted-foreground mt-0.5 leading-snug">Faculty Advisor</p>
+              <p className="text-sm text-muted-foreground leading-snug">{a.title}</p>
+              <a href={`mailto:${a.email}`} className="px-link text-sm">
+                {a.email}
+              </a>
+              <p className="text-sm text-muted-foreground">
+                <a href={`tel:+1${a.phone.replace(/-/g, '')}`} className="underline underline-offset-4">
+                  {a.phone}
+                </a>
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
 );
 
 export default TeamSection;

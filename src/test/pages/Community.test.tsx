@@ -40,10 +40,17 @@ describe("Community page", () => {
         });
     });
 
-    it("lists the faculty advisor", () => {
+    it("lists both faculty advisors with headshot, email and phone", () => {
         renderWithRouter(<CommunityPage />);
-        expect(screen.getByText("Dr. Suresh Peddoju")).toBeInTheDocument();
-        expect(screen.getByRole("link", { name: "speddoju@central.uh.edu" })).toHaveAttribute("href", "mailto:speddoju@central.uh.edu");
+        expect(screen.getByRole("heading", { name: "Faculty advisors" })).toBeInTheDocument();
+        for (const [name, email, phone] of [
+            ["Dr. Suresh Peddoju", "speddoju@central.uh.edu", "713-743-3898"],
+            ["Dr. José C. Martínez", "jcmartinez34@uh.edu", "713-743-6756"],
+        ]) {
+            expect(screen.getByRole("img", { name })).toBeInTheDocument();
+            expect(screen.getByRole("link", { name: email })).toHaveAttribute("href", `mailto:${email}`);
+            expect(screen.getByRole("link", { name: phone })).toHaveAttribute("href", `tel:+1${phone.replace(/-/g, "")}`);
+        }
     });
 
     it("keeps the program note and disclaimer", () => {

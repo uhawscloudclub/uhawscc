@@ -176,7 +176,7 @@ const EventsPage = () => {
   const hasUpcoming = upcoming.length > 0;
 
   return (
-    <PageLayout theme="pixel">
+    <PageLayout>
 
       {/* Persistent status announcer, deliberately OUTSIDE the aria-busy
           content region below: a message nested inside that region can

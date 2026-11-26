@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 import { EXTERNAL_LINKS } from '@/config/externalLinks';
 import clubLogo from '@/images/aws-student-builder-group-logo.png';
 
@@ -27,11 +27,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'scrolled-nav bg-background/80 backdrop-blur-xl border-b border-border/40 shadow-sm'
-          : 'bg-transparent'
-      }`}
+      // Always solid: the hero art (moon, stars) must never sit behind nav text.
+      className={`site-nav fixed top-0 left-0 right-0 z-50 ${scrolled ? 'scrolled-nav' : ''}`}
     >
       <div className="container mx-auto px-6 h-16 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2.5 group">
@@ -52,9 +49,10 @@ const Navbar = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`text-sm font-medium transition-colors duration-200 hover:text-foreground relative ${
+              aria-current={location.pathname === link.to ? 'page' : undefined}
+              className={`text-[0.9375rem] font-semibold py-2 transition-colors duration-150 hover:text-foreground relative ${
                 location.pathname === link.to
-                  ? 'text-primary after:absolute after:bottom-[-2px] after:left-0 after:right-0 after:h-px after:bg-primary/50 after:rounded-full'
+                  ? 'text-primary after:absolute after:bottom-0 after:left-0 after:right-0'
                   : 'text-muted-foreground'
               }`}
             >
@@ -65,7 +63,7 @@ const Navbar = () => {
             href={EXTERNAL_LINKS.meetup}
             target="_blank"
             rel="noopener noreferrer"
-            className="nav-cta btn-outline-gradient px-4 py-2 text-sm font-semibold active:scale-95 transition-all duration-200"
+            className="nav-cta px-4 py-2"
           >
             Join on Meetup
           </a>
@@ -76,24 +74,25 @@ const Navbar = () => {
           onClick={() => setOpen(!open)}
           aria-label={open ? 'Close navigation' : 'Open navigation'}
           aria-expanded={open}
-          className="lg:hidden p-3 text-muted-foreground hover:text-foreground transition-colors"
+          className="lg:hidden p-3 text-foreground"
         >
-          {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          <PixelIcon name={open ? 'close' : 'menu'} size={18} />
         </button>
       </div>
 
       {/* Mobile/tablet menu */}
       {open && (
-        <div className="lg:hidden bg-background/95 backdrop-blur-xl border-t border-border/40 animate-fade-up">
+        <div className="lg:hidden bg-background border-t-2 border-[var(--hull-shadow)]">
           <div className="container mx-auto px-6 py-4 flex flex-col gap-1">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`text-sm font-medium py-2.5 px-3 rounded-lg transition-colors ${
+                aria-current={location.pathname === link.to ? 'page' : undefined}
+                className={`text-base font-semibold py-3 px-3 transition-colors ${
                   location.pathname === link.to
-                    ? 'text-primary bg-primary/10'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                    ? 'text-primary bg-[var(--hull)]'
+                    : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {link.label}
@@ -103,7 +102,7 @@ const Navbar = () => {
               href={EXTERNAL_LINKS.meetup}
               target="_blank"
               rel="noopener noreferrer"
-              className="nav-cta btn-outline-gradient mt-3 px-4 py-2.5 text-sm font-semibold text-center block transition-all duration-200 active:scale-[0.98]"
+              className="nav-cta mt-3 px-4 py-3 text-center block"
             >
               Join on Meetup
             </a>

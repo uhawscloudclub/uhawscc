@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ExternalLink } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
 import { JOIN_CHANNELS } from '@/data/joinChannels';
 
 /**
@@ -45,7 +45,7 @@ const WaysToJoin = () => (
                     className={`${linkClass} shrink-0 self-start sm:self-auto`}
                   >
                     {channel.action}
-                    <ExternalLink className="w-3.5 h-3.5" aria-hidden="true" />
+                    <PixelIcon name="external" size={12} />
                     <span className="sr-only">(opens in a new tab)</span>
                   </a>
                 )}
