@@ -59,6 +59,14 @@ describe("Home page (Index)", () => {
         expect(screen.getByRole("link", { name: "Meet the community" })).toHaveAttribute("href", "/community");
     });
 
+    it("shows each destination as a card with an icon tile", () => {
+        renderWithRouter(<HomePage />);
+        const heading = screen.getByRole("heading", { name: "What you can do here" });
+        const cards = heading.parentElement!.querySelectorAll("li");
+        expect(cards).toHaveLength(3);
+        cards.forEach((card) => expect(card.querySelector(".px-tile svg")).not.toBeNull());
+    });
+
     it("shows the mascot as decoration only (hidden from screen readers)", () => {
         const { container } = renderWithRouter(<HomePage />);
         const svg = container.querySelector("svg[viewBox='0 0 16 18']");

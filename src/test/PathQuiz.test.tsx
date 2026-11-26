@@ -52,7 +52,8 @@ describe("PathQuiz", () => {
         }
         const result = screen.getByTestId("quiz-result");
         expect(result).toHaveTextContent(RESULTS.ccp.name);
-        expect(screen.getByRole("link", { name: /Request a free exam voucher/ })).toHaveAttribute("target", "_blank");
+        expect(screen.getByRole("link", { name: /Get student access in Builder Center/ })).toHaveAttribute("target", "_blank");
+        expect(screen.queryByRole("link", { name: /exam voucher/ })).not.toBeInTheDocument();
 
         fireEvent.click(screen.getByRole("button", { name: "Retake the quiz" }));
         expect(screen.getByText("Question 1 of 5")).toBeInTheDocument();

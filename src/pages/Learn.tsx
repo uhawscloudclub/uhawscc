@@ -366,6 +366,8 @@ function ContinueCard({ resource, started }: { resource: Resource; started: bool
 // Free resources (formerly the /resources page)
 // ─────────────────────────────────────────────────────────────────────────────
 
+const TONES = ['tone-beacon', 'tone-chip', 'tone-mint', 'tone-pink'] as const;
+
 function FreeResources() {
     return (
         <section
@@ -378,28 +380,33 @@ function FreeResources() {
                     Free resources
                 </h2>
                 <p className="text-base text-muted-foreground max-w-[55ch] mb-8">
-                    Accounts, training, and exam vouchers. All free for UH students.
+                    Accounts, training, and hands-on practice. All free for UH students.
                 </p>
-                <ul className="divide-y divide-border">
-                    {FREE_RESOURCES.map((r) => (
-                        <li key={r.title} className="py-6 flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
-                            <div className="max-w-[55ch]">
-                                <h3 className="text-foreground text-lg">
-                                    {r.title}
-                                    <span className="px-chip align-middle">{r.tag}</span>
-                                </h3>
-                                <p className="text-base text-muted-foreground leading-relaxed mt-1">{r.desc}</p>
+                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {FREE_RESOURCES.map((r, i) => (
+                        <li key={r.title} className="px-panel px-join-card">
+                            <div className="flex items-start gap-3">
+                                <span className={`px-tile ${TONES[i % TONES.length]}`} aria-hidden="true">
+                                    <PixelIcon name={r.icon} size={27} />
+                                </span>
+                                <div className="min-w-0">
+                                    <h3 className="font-bold text-foreground text-lg leading-snug">{r.title}</h3>
+                                    <span className="px-chip ml-0 mt-1">{r.tag}</span>
+                                </div>
                             </div>
-                            <a
-                                href={r.href}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="px-link whitespace-nowrap shrink-0 self-start"
-                            >
-                                {r.cta}
-                                <PixelIcon name="external" size={12} />
-                                <span className="sr-only">(opens in a new tab)</span>
-                            </a>
+                            <p className="text-base text-muted-foreground leading-relaxed mt-3">{r.desc}</p>
+                            <div className="mt-auto pt-4">
+                                <a
+                                    href={r.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="px-link"
+                                >
+                                    {r.cta}
+                                    <PixelIcon name="external" size={12} />
+                                    <span className="sr-only">(opens in a new tab)</span>
+                                </a>
+                            </div>
                         </li>
                     ))}
                 </ul>

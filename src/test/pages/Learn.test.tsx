@@ -213,4 +213,13 @@ describe("Learn page (Cloud Practitioner path + free resources)", () => {
         renderWithRouter(<LearningPathsPage />);
         expect(screen.queryByTestId("pixel-toast")).not.toBeInTheDocument();
     });
+
+    it("shows free resources as icon cards, without the AWS Academy voucher form", () => {
+        renderWithRouter(<LearningPathsPage />);
+        const section = screen.getByRole("region", { name: "Free resources" });
+        const cards = section.querySelectorAll("li");
+        expect(cards).toHaveLength(FREE_RESOURCES.length);
+        cards.forEach((card) => expect(card.querySelector(".px-tile svg")).not.toBeNull());
+        expect(screen.queryByText(/Free Exam Vouchers/)).not.toBeInTheDocument();
+    });
 });
