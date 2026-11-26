@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { unlockBadge } from '@/lib/badges';
 import PixelIcon from '@/components/PixelIcon';
 import perryHeadshot from '@/images/perry-headshot.jpg';
 import peddojuHeadshot from '@/images/peddoju-headshot.jpg';
@@ -81,7 +82,7 @@ const advisors = [
  * focus never reach hidden content; the flip itself is a short CSS squash
  * that is skipped for reduced motion.
  */
-const OfficerCard = ({ member, lazy }: { member: Officer; lazy: boolean }) => {
+const OfficerCard = ({ member, lazy, onFlip }: { member: Officer; lazy: boolean; onFlip: (name: string) => void }) => {
   const [flips, setFlips] = useState(0);
   const flipped = flips % 2 === 1;
   const statsId = `stats-${member.name.toLowerCase().replace(/[^a-z]+/g, '-')}`;
@@ -137,7 +138,10 @@ const OfficerCard = ({ member, lazy }: { member: Officer; lazy: boolean }) => {
         )}
         <button
           type="button"
-          onClick={() => setFlips((n) => n + 1)}
+          onClick={() => {
+            setFlips((n) => n + 1);
+            onFlip(member.name);
+          }}
           aria-expanded={flipped}
           aria-controls={flipped ? statsId : undefined}
           className="px-link text-sm mt-auto pt-3 self-start"
@@ -155,7 +159,14 @@ const OfficerCard = ({ member, lazy }: { member: Officer; lazy: boolean }) => {
  * /team URL redirects there). Officers are flip cards (profile / player
  * stats); advisors stay a plain list with contact details.
  */
-const TeamSection = () => (
+const TeamSection = () => {
+  // Card Collector: unlocked once every officer card has been flipped.
+  const flippedRef = useRef(new Set<string>());
+  const onFlip = (name: string) => {
+    flippedRef.current.add(name);
+    if (flippedRef.current.size === team.length) unlockBadge('card-collector');
+  };
+  return (
   <section id="team" aria-labelledby="team-heading" className="relative border-t border-border py-16 scroll-mt-20">
     <div className="container mx-auto px-6">
       <h2 id="team-heading" className="text-foreground">
@@ -169,7 +180,7 @@ const TeamSection = () => (
       <p className="text-sm text-muted-foreground mt-2">Tap a card to see their player stats.</p>
       <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
         {team.map((member, i) => (
-          <OfficerCard key={member.name} member={member} lazy={i >= 3} />
+          <OfficerCard key={member.name} member={member} lazy={i >= 3} onFlip={onFlip} />
         ))}
       </ul>
 
@@ -204,6 +215,7 @@ const TeamSection = () => (
       </ul>
     </div>
   </section>
-);
+  );
+};
 
 export default TeamSection;

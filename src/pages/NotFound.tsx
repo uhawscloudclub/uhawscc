@@ -3,6 +3,7 @@ import { useEffect } from "react";
 import PageLayout from '@/components/PageLayout';
 import Mascot from '@/components/Mascot';
 import SkySparkles from '@/components/SkySparkles';
+import { unlockBadge } from '@/lib/badges';
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,6 +13,11 @@ const NotFound = () => {
       console.error("404 Error: User attempted to access non-existent route:", location.pathname);
     }
   }, [location.pathname]);
+
+  // Hidden badge for finding the page that isn't there.
+  useEffect(() => {
+    unlockBadge('lost-in-space');
+  }, []);
 
   return (
     <PageLayout>

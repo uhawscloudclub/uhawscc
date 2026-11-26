@@ -63,3 +63,17 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => { },
   }),
 });
+
+// Hidden badges keep an in-memory cache of what this browser has earned;
+// start every test from a clean slate so badge state never leaks between tests.
+import { afterEach } from "vitest";
+import { resetBadgeCacheForTests } from "@/lib/badges";
+afterEach(() => {
+  try {
+    localStorage.removeItem("uh_aws_sbg_badges_v1");
+    localStorage.removeItem("uh_aws_sbg_pages_v1");
+  } catch {
+    // storage unavailable in this test
+  }
+  resetBadgeCacheForTests();
+});

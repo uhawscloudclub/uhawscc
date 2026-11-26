@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import PixelIcon from '@/components/PixelIcon';
 import { QUIZ, RESULTS, scoreQuiz, type QuizLink } from '@/data/pathQuiz';
+import { unlockBadge } from '@/lib/badges';
 
 /**
  * "Find your cloud path" on /learn: one question at a time in a pixel window,
@@ -40,6 +41,7 @@ const PathQuiz = () => {
   const answer = (questionId: string, optionId: string) => {
     setAnswers((a) => ({ ...a, [questionId]: optionId }));
     setStep((s) => s + 1);
+    if (step === QUIZ.length - 1) unlockBadge('pathfinder');
     focusSoon();
   };
 

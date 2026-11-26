@@ -708,6 +708,140 @@ html {
   text-shadow: none;
 }
 
+/* Pixel toast ("LEVEL UP!", "Badge unlocked"): bottom centre, above content. */
+.theme-pixel .px-toast-region {
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  z-index: 70;
+  width: min(26rem, calc(100vw - 32px));
+  pointer-events: none;
+}
+.theme-pixel .px-toast {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  padding: 0.875rem 2.5rem 0.875rem 0.875rem;
+  color: var(--beacon-ink);
+  background: var(--beacon);
+  pointer-events: auto;
+  box-shadow:
+    0 -3px 0 0 var(--beacon-ink),
+    0 3px 0 0 var(--beacon-ink),
+    -3px 0 0 0 var(--beacon-ink),
+    3px 0 0 0 var(--beacon-ink),
+    0 9px 0 0 var(--hull-shadow);
+}
+.theme-pixel .px-toast-icon {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  flex-shrink: 0;
+  color: var(--beacon);
+  background: var(--beacon-ink);
+}
+.theme-pixel .px-toast-kicker {
+  display: block;
+  font-family: "Jersey 10", "Figtree", system-ui, sans-serif;
+  font-size: 1.375rem;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.theme-pixel .px-toast-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  color: var(--beacon-ink);
+}
+.theme-pixel .px-toast-close:focus-visible {
+  outline: 3px solid var(--beacon-ink);
+  outline-offset: -3px;
+}
+.theme-pixel .px-toast-burst {
+  display: none;
+}
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes px-toast-in {
+    0% { transform: translateY(24px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  .theme-pixel .px-toast {
+    animation: px-toast-in 0.25s steps(4, jump-end);
+  }
+  /* Eight pixels fly out from the icon, once. */
+  @keyframes px-burst {
+    0% { transform: translate(0, 0); opacity: 1; }
+    100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
+  }
+  .theme-pixel .px-toast-burst {
+    display: block;
+    position: absolute;
+    left: 2.25rem;
+    top: 2.25rem;
+  }
+  .theme-pixel .px-toast-burst span {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    background: var(--chip);
+    opacity: 0;
+    animation: px-burst 0.6s steps(6, jump-end) 0.15s;
+  }
+  .theme-pixel .px-toast-burst span:nth-child(1) { --dx: 0px; --dy: -48px; }
+  .theme-pixel .px-toast-burst span:nth-child(2) { --dx: 34px; --dy: -34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(3) { --dx: 48px; --dy: 0px; }
+  .theme-pixel .px-toast-burst span:nth-child(4) { --dx: 34px; --dy: 34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(5) { --dx: 0px; --dy: 48px; }
+  .theme-pixel .px-toast-burst span:nth-child(6) { --dx: -34px; --dy: 34px; background: var(--starlight, #f6f3ff); }
+  .theme-pixel .px-toast-burst span:nth-child(7) { --dx: -48px; --dy: 0px; }
+  .theme-pixel .px-toast-burst span:nth-child(8) { --dx: -34px; --dy: -34px; background: var(--starlight, #f6f3ff); }
+}
+
+/* Badge tiles on /learn: dim and "???" until earned, then Beacon. */
+.theme-pixel .px-badge {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.625rem;
+  margin: 2px;
+  color: var(--muted-foreground);
+  background: var(--hull-dark);
+  box-shadow:
+    0 -2px 0 0 var(--border),
+    0 2px 0 0 var(--border),
+    -2px 0 0 0 var(--border),
+    2px 0 0 0 var(--border);
+}
+.theme-pixel .px-badge-icon {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+  background: var(--hull);
+}
+.theme-pixel .px-badge.is-earned {
+  color: var(--beacon-ink);
+  background: var(--beacon);
+  box-shadow:
+    0 -2px 0 0 var(--beacon-ink),
+    0 2px 0 0 var(--beacon-ink),
+    -2px 0 0 0 var(--beacon-ink),
+    2px 0 0 0 var(--beacon-ink);
+}
+.theme-pixel .px-badge.is-earned .px-badge-icon {
+  color: var(--beacon);
+  background: var(--beacon-ink);
+}
+
 /* Quiz progress: one block per question, the current one outlined. */
 .theme-pixel .px-quiz-steps {
   display: flex;

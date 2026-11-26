@@ -1,6 +1,9 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import PixelToaster from './PixelToaster';
+import { recordPageVisit } from '@/lib/badges';
 
 /**
  * Shared page shell. Every page uses the pixel theme (src/index.css,
@@ -8,7 +11,13 @@ import Footer from './Footer';
  * components. No animated background; the hero pixel sky (.px-sky) is opt-in
  * per section.
  */
-const PageLayout = ({ children }: { children: ReactNode }) => (
+const PageLayout = ({ children }: { children: ReactNode }) => {
+  const { pathname } = useLocation();
+  // Runs after PixelToaster (a child) has subscribed, so an Explorer unlock shows.
+  useEffect(() => {
+    recordPageVisit(pathname);
+  }, [pathname]);
+  return (
   <div className="min-h-screen flex flex-col relative theme-pixel">
     {/* Skip link: first thing a keyboard user reaches; visible only on focus. */}
     <a
@@ -35,7 +44,9 @@ const PageLayout = ({ children }: { children: ReactNode }) => (
       {children}
     </main>
     <Footer />
+    <PixelToaster />
   </div>
-);
+  );
+};
 
 export default PageLayout;
